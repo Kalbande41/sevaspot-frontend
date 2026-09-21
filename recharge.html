@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>प्लॅन रिचार्ज करा • QuickIDPrint</title>
+    <title>QuickIDPrint | Plan Renewal & Recharge</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <!-- Supabase JS Library & Config -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Mukta', sans-serif; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Mukta',sans-serif; }
         
         :root {
             --primary: #123a8f;
@@ -21,216 +21,222 @@
             --orange: #f97316;
             --green: #16a34a;
             --bg: #f8fafc;
-            --text-dark: #0f172a;
+            --text-dark: #172554;
             --text-muted: #64748b;
-            --border: #e2e8f0;
+            --border: #dbe4ef;
         }
 
         body { 
-            background: radial-gradient(circle at 10% 10%, rgba(254, 240, 138, 0.15) 0%, transparent 30%),
-                        radial-gradient(circle at 90% 90%, rgba(37, 99, 235, 0.08) 0%, transparent 35%),
-                        linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+            min-height: 100vh; 
+            background: radial-gradient(circle at top left, #fff4b8 0%, transparent 30%), linear-gradient(135deg, #fffdf4 0%, #f1f6ff 100%); 
             color: var(--text-dark); 
             padding-bottom: 70px;
-            min-height: 100vh;
         }
 
         /* Navbar */
-        .navbar { 
-            background: rgba(255, 255, 255, 0.95); 
-            backdrop-filter: blur(12px);
-            padding: 14px 30px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06); 
-            position: sticky; 
-            top: 0; 
-            z-index: 100;
-            border-bottom: 1px solid var(--border);
+        .header { 
+            background: #ffffff; height: 76px; padding: 8px 6%; 
+            display: flex; align-items: center; justify-content: space-between; 
+            box-shadow: 0 5px 20px rgba(0,0,0,.06); position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid #e2e8f0;
         }
-        .logo-area { display: flex; align-items: center; gap: 14px; text-decoration: none; }
-        .site-logo { width: 50px; height: 48px; object-fit: contain; }
-        .logo-text h2 { font-size: 26px !important; font-weight: 800 !important; line-height: 1 !important; }
-        .brand-quick { color: #17428f; }
-        .brand-id { color: #f97316; }
-        .brand-print { color: #17428f; }
-        
-        .nav-back-btn {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 8px 18px; border-radius: 999px;
-            background: #eff6ff; color: #1e3a8a; font-weight: 700;
-            text-decoration: none; font-size: 14px; border: 1px solid #bfdbfe;
-            transition: 0.2s;
+        .logo-area { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-icon { width: 48px; height: 48px; border-radius: 12px; background: #fff5bf; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 22px; border: 1px solid #fed7aa; }
+        .logo-text h1 { font-size: 24px; line-height: 1; font-weight: 800; }
+        .blue { color: #123a8f; } .orange { color: #f97316; }
+        .logo-text p { color: #64748b; font-size: 11px; font-weight: 600; margin-top: 2px; }
+        .nav-back-btn { 
+            background: #eff6ff; color: #1d4ed8; border: 1px solid #cfe0ff; 
+            padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 800; 
+            text-decoration: none; display: flex; align-items: center; gap: 6px; transition: 0.25s; 
         }
         .nav-back-btn:hover { background: #dbeafe; transform: translateY(-2px); }
 
-        .container { max-width: 1050px; margin: 30px auto; padding: 0 20px; }
+        .container { max-width: 960px; margin: 30px auto; padding: 0 20px; }
+        
+        .heading { text-align: center; margin-bottom: 24px; }
+        .heading .tag { display: inline-flex; align-items: center; gap: 6px; background: #fff0e5; color: #f97316; padding: 6px 14px; border-radius: 30px; font-size: 12px; font-weight: 800; border: 1px solid #fed7aa; }
+        .heading h2 { color: #123a8f; font-size: 32px; margin-top: 8px; font-weight: 800; }
+        .heading p { color: #64748b; font-size: 14px; }
 
-        /* Current Status Card */
-        .status-card {
-            background: white; border-radius: 24px; padding: 24px 30px;
-            border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(18, 58, 143, 0.06);
-            display: flex; justify-content: space-between; align-items: center;
-            flex-wrap: wrap; gap: 20px; margin-bottom: 30px;
-            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+        /* 🟢 File 2 Status Box Design */
+        .status-box { 
+            background: #ffffff; border: 1px solid #cfe0ff; border-radius: 20px; 
+            padding: 18px 30px; margin-bottom: 25px; display: flex; 
+            justify-content: space-between; align-items: center; 
+            box-shadow: 0 8px 24px rgba(18,58,143,.06); 
         }
-        .status-left h3 { font-size: 22px; font-weight: 800; color: var(--primary); }
-        .status-left p { font-size: 14px; color: var(--text-muted); margin-top: 2px; }
-        .status-badge-box { display: flex; align-items: center; gap: 15px; }
-        .badge-pill {
-            padding: 8px 18px; border-radius: 999px; font-weight: 800; font-size: 13px;
-            display: inline-flex; align-items: center; gap: 6px;
-        }
-        .badge-active { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
-        .badge-expired { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
-        .badge-days { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-
-        /* Page Heading */
-        .page-header { text-align: center; margin-bottom: 30px; }
-        .page-header h1 { font-size: 30px; font-weight: 800; color: var(--primary); }
-        .page-header p { font-size: 15px; color: var(--text-muted); margin-top: 4px; }
+        .status-item { text-align: center; }
+        .status-title { font-size: 13px; color: #64748b; font-weight: 700; margin-bottom: 2px; }
+        .status-val { font-size: 22px; font-weight: 900; color: #123a8f; }
+        .status-val.highlight { color: #f97316; }
+        .status-divider { width: 1px; height: 42px; background: #e2e8f0; }
 
         /* Plans Grid */
-        .plans-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 18px; margin-bottom: 35px;
-        }
+        .plans-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
         .plan-card {
-            background: white; border: 2px solid var(--border); border-radius: 22px;
-            padding: 26px 20px; text-align: center; cursor: pointer;
+            background: white; border: 2px solid #e1e8f2; border-radius: 18px;
+            padding: 20px 16px; text-align: center; cursor: pointer;
             transition: all 0.25s ease; position: relative;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
         }
-        .plan-card:hover { transform: translateY(-5px); border-color: #93c5fd; box-shadow: 0 12px 28px rgba(37,99,235,0.12); }
+        .plan-card:hover { transform: translateY(-4px); border-color: #93c5fd; box-shadow: 0 10px 25px rgba(37,99,235,0.12); }
         .plan-card.selected {
             border-color: #2563eb; background: #eff6ff;
-            box-shadow: 0 14px 30px rgba(37, 99, 235, 0.16);
+            box-shadow: 0 12px 28px rgba(37, 99, 235, 0.16);
         }
         .plan-tag {
-            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
             background: linear-gradient(135deg, #f97316, #ea580c); color: white;
-            padding: 3px 12px; border-radius: 999px; font-size: 11px; font-weight: 800;
+            padding: 3px 10px; border-radius: 999px; font-size: 10px; font-weight: 800; white-space: nowrap;
         }
-        .plan-title { font-size: 18px; font-weight: 800; color: #1e293b; margin-top: 5px; }
-        .plan-price { font-size: 32px; font-weight: 900; color: #123a8f; margin: 10px 0 5px; line-height: 1; }
-        .plan-price small { font-size: 16px; font-weight: 600; color: #64748b; }
-        .plan-desc { font-size: 13px; color: #475569; font-weight: 600; margin-bottom: 12px; }
-        .plan-features { font-size: 12px; color: #166534; background: #f0fdf4; padding: 6px; border-radius: 8px; font-weight: 700; }
+        .plan-title { font-size: 16px; font-weight: 800; color: #1e293b; margin-top: 4px; }
+        .plan-price { font-size: 28px; font-weight: 900; color: #123a8f; margin: 8px 0 4px; line-height: 1; }
+        .plan-price small { font-size: 14px; font-weight: 600; color: #64748b; }
+        .plan-desc { font-size: 12px; color: #475569; font-weight: 600; margin-bottom: 8px; }
+        .plan-features { font-size: 11px; color: #166534; background: #f0fdf4; padding: 4px; border-radius: 6px; font-weight: 700; }
 
-        /* Payment & UTR Section */
-        .payment-section {
-            display: grid; grid-template-columns: 45% 55%;
-            gap: 25px; background: white; border-radius: 24px;
-            padding: 32px; border: 1px solid var(--border);
-            box-shadow: 0 12px 35px rgba(18, 58, 143, 0.06);
-            margin-bottom: 40px;
-        }
-        .qr-box {
-            background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 20px;
-            padding: 24px; text-align: center; display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-        }
-        .qr-image {
-            width: 200px; height: 200px; object-fit: contain;
-            background: white; border-radius: 14px; padding: 10px;
-            border: 1px solid #e2e8f0; box-shadow: 0 6px 16px rgba(0,0,0,0.06);
-            margin-bottom: 15px;
-        }
+        /* Recharge Card & Grid */
+        .recharge-card { background: #ffffff; border: 1px solid #e1e8f2; border-radius: 24px; padding: 28px; box-shadow: 0 15px 40px rgba(18,58,143,.08); margin-bottom: 30px; }
+        .payment-grid { display: grid; grid-template-columns: 320px 1fr; gap: 28px; }
+
+        /* QR Section */
+        .qr-section { background: #f8fbff; border: 1px solid #e0e8f4; border-radius: 20px; padding: 20px; text-align: center; }
+        .qr-title { color: #123a8f; font-size: 17px; font-weight: 800; margin-bottom: 12px; }
+        .qr-box { width: 220px; height: 220px; background: white; margin: auto; padding: 10px; border-radius: 14px; border: 1px solid #dbe4ef; box-shadow: 0 4px 14px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .qr-box img { width: 100%; height: 100%; object-fit: contain; }
         .upi-badge {
             background: #e2e8f0; color: #1e293b; padding: 6px 14px;
             border-radius: 8px; font-size: 13px; font-weight: 800;
             display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
-            transition: 0.2s;
+            margin-top: 10px; transition: 0.2s;
         }
         .upi-badge:hover { background: #cbd5e1; }
-
-        .form-box h3 { font-size: 22px; font-weight: 800; color: var(--primary); margin-bottom: 6px; }
-        .form-box p { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; }
+        .qr-note { color: #64748b; font-size: 11px; margin-top: 8px; font-weight: 600; }
         
-        .input-group { margin-bottom: 18px; text-align: left; }
-        .input-group label { display: block; margin-bottom: 6px; font-weight: 700; color: #334155; font-size: 14px; }
-        .input-group input {
-            width: 100%; height: 48px; padding: 10px 16px;
-            border: 1.5px solid #cbd5e1; border-radius: 12px; font-size: 15px;
-            color: #1e293b; background: #f8fbff; outline: none; transition: 0.2s;
-            font-weight: 600;
+        /* 🟢 Custom QR Upload Option */
+        .upload-qr-btn {
+            margin-top: 12px; display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 12px; background: #fff; border: 1px dashed #2563eb;
+            color: #2563eb; border-radius: 8px; font-size: 12px; font-weight: 700;
+            cursor: pointer; transition: 0.2s;
         }
-        .input-group input:focus { border-color: #3b82f6; background: #fff; box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
-        .input-group input[readonly] { background: #f1f5f9; cursor: not-allowed; color: #64748b; }
+        .upload-qr-btn:hover { background: #eff6ff; }
+        #qrFileInput { display: none; }
 
-        .submit-btn {
-            width: 100%; height: 50px; border: none; border-radius: 14px;
-            background: linear-gradient(135deg, #16a34a, #15803d); color: white;
-            font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.2s;
-            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.25); display: flex;
+        /* Form Section */
+        .form-section { padding: 4px; }
+        .form-title { color: #123a8f; font-size: 20px; font-weight: 800; margin-bottom: 14px; }
+        .field { margin-bottom: 14px; text-align: left; }
+        .field label { display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 5px; }
+        .field input { width: 100%; height: 44px; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 8px 14px; outline: none; font-size: 15px; color: #1e293b; background: #fff; transition: .2s; font-weight: 600; }
+        .field input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+        .field input[readonly] { background: #f1f5f9; color: #475569; cursor: not-allowed; }
+
+        /* Process Steps */
+        .process { margin-top: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; }
+        .process h3 { color: #123a8f; font-size: 15px; font-weight: 800; margin-bottom: 8px; }
+        .step { display: flex; gap: 9px; margin: 6px 0; align-items: center; }
+        .step-number { width: 22px; height: 22px; border-radius: 50%; background: #edf4ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; flex: none; }
+        .step-text { font-size: 13px; color: #475569; font-weight: 500; }
+
+        /* Action Buttons */
+        .action-btns-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+        
+        .portal-btn {
+            height: 48px; border: none; border-radius: 12px;
+            background: linear-gradient(135deg, #123a8f, #2563eb); color: #fff;
+            font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.2s;
+            box-shadow: 0 6px 18px rgba(18,58,143,.2); display: flex;
             align-items: center; justify-content: center; gap: 8px;
         }
-        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(22, 163, 74, 0.35); }
-        .submit-btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+        .portal-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(18,58,143,.3); }
+        .portal-btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        /* History Table */
-        .history-box {
-            background: white; border-radius: 24px; padding: 28px;
-            border: 1px solid var(--border); box-shadow: 0 8px 25px rgba(0,0,0,0.04);
+        .whatsapp-btn { 
+            height: 48px; border: none; border-radius: 12px; 
+            background: linear-gradient(135deg, #16a34a, #22c55e); color: #fff; 
+            font-size: 15px; font-weight: 800; cursor: pointer; 
+            box-shadow: 0 6px 18px rgba(22,163,74,.2); transition: 0.2s; 
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .history-box h3 { font-size: 20px; font-weight: 800; color: var(--primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .whatsapp-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(22,163,74,.3); }
+
+        .info { margin-top: 18px; padding: 12px 16px; background: #fff9e6; border: 1px solid #f4df91; border-radius: 12px; color: #8a6200; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        
+        /* History Box */
+        .history-box { background: white; border-radius: 20px; padding: 24px; border: 1px solid var(--border); box-shadow: 0 6px 20px rgba(0,0,0,0.04); margin-top: 30px; }
+        .history-box h3 { font-size: 18px; font-weight: 800; color: var(--primary); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
         .table-responsive { width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
-        th { background: #f8fafc; padding: 12px 16px; font-weight: 800; color: #475569; border-bottom: 2px solid #e2e8f0; }
-        td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; color: #334155; font-weight: 600; }
+        th { background: #f8fafc; padding: 10px 14px; font-weight: 800; color: #475569; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; color: #334155; font-weight: 600; }
         .status-pending { background: #fef3c7; color: #b45309; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; }
         .status-approved { background: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; }
         .status-cancelled { background: #fee2e2; color: #b91c1c; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; }
 
-        @media(max-width:900px){
-            .plans-grid { grid-template-columns: repeat(2, 1fr); }
-            .payment-section { grid-template-columns: 1fr; }
-        }
-        @media(max-width:550px){
-            .plans-grid { grid-template-columns: 1fr; }
-            .status-card { flex-direction: column; align-items: flex-start; }
-            .status-badge-box { width: 100%; justify-content: space-between; }
+        .footer { text-align: center; color: #7b8799; font-size: 13px; margin: 30px 0 10px; font-weight: 500; }
+
+        @media(max-width:768px){
+            .header { padding: 8px 16px; }
+            .logo-text h1 { font-size: 20px; }
+            .container { margin-top: 18px; padding: 0 14px; }
+            .heading h2 { font-size: 26px; }
+            .status-box { flex-direction: column; gap: 14px; padding: 18px; }
+            .status-divider { width: 100%; height: 1px; }
+            .plans-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .payment-grid { grid-template-columns: 1fr; }
+            .action-btns-grid { grid-template-columns: 1fr; }
+            .qr-box { width: 210px; height: 210px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar">
+    <!-- Header -->
+    <header class="header">
         <a href="home.html" class="logo-area">
-            <img src="logo.png" alt="QuickIDPrint Logo" class="site-logo" onerror="this.style.display='none'">
+            <div class="logo-icon"><i class="fas fa-id-card"></i></div>
             <div class="logo-text">
-                <h2><span class="brand-quick">Quick</span><span class="brand-id">ID</span><span class="brand-print">Print</span></h2>
+                <h1><span class="blue">Quick</span><span class="orange">ID</span><span class="blue">Print</span></h1>
+                <p>जलद • सोपे • विश्वासनीय</p>
             </div>
         </a>
         <a href="home.html" class="nav-back-btn">
-            <i class="fas fa-arrow-left"></i> डॅशबोर्डवर परत जा
+            <i class="fas fa-arrow-left"></i> डॅशबोर्ड
         </a>
-    </nav>
+    </header>
 
-    <div class="container">
+    <main class="container">
+        
+        <div class="heading">
+            <span class="tag"><i class="fas fa-sync-alt"></i> RENEW PLAN</span>
+            <h2>Plan Renewal & Recharge</h2>
+            <p>तुमच्या QuickIDPrint खात्याची मुदत (Validity) सोप्या पद्धतीने वाढवा.</p>
+        </div>
 
-        <!-- चालू प्लॅन माहिती -->
-        <div class="status-card">
-            <div class="status-left">
-                <h3 id="currentUserName">लोड करत आहे...</h3>
-                <p id="currentUserShop">दुकान/सेंटर: तपासत आहे...</p>
+        <!-- 🟢 File 2 प्रमाणे Current Status Box -->
+        <div class="status-box">
+            <div class="status-item">
+                <div class="status-title">सध्याचे उरलेले दिवस</div>
+                <div class="status-val highlight" id="dispDays">-</div>
             </div>
-            <div class="status-badge-box">
-                <div id="planBadge" class="badge-pill badge-active">तपासत आहे...</div>
-                <div id="daysBadge" class="badge-pill badge-days"><i class="far fa-clock"></i> ० दिवस शिल्लक</div>
+            <div class="status-divider"></div>
+            <div class="status-item">
+                <div class="status-title">प्लॅन एक्सपायरी डेट</div>
+                <div class="status-val" id="dispExpiry" style="font-size: 18px; margin-top: 4px;">-</div>
+            </div>
+            <div class="status-divider"></div>
+            <div class="status-item">
+                <div class="status-title">अकाउंट स्टेटस</div>
+                <div class="status-val" id="dispStatus" style="font-size: 16px; margin-top: 5px; color:#16a34a;">
+                    <i class="fas fa-check-circle"></i> Active
+                </div>
             </div>
         </div>
 
-        <div class="page-header">
-            <h1>प्लॅन निवडा आणि रिचार्ज करा</h1>
-            <p>खालीलपैकी तुमचा योग्य प्लॅन निवडा, पेमेंट करा आणि १२ अंकी UTR नंबर टाकून विनंती पाठवा.</p>
-        </div>
-
-        <!-- प्लॅन्सची यादी -->
+        <!-- प्लॅन्सची यादी (Selectable Cards) -->
         <div class="plans-grid">
-            <!-- १ महिना -->
             <div class="plan-card" onclick="selectPlan('1 Month Plan', 149, 30, this)">
                 <div class="plan-title">१ महिना प्लॅन</div>
                 <div class="plan-price">₹149 <small>/ ३० दिवस</small></div>
@@ -238,7 +244,6 @@
                 <div class="plan-features"><i class="fas fa-check-circle"></i> अमर्यादित ॲक्सेस</div>
             </div>
 
-            <!-- ३ महिने (Popular) -->
             <div class="plan-card selected" onclick="selectPlan('3 Months Plan', 399, 90, this)">
                 <span class="plan-tag">सर्वाधिक लोकप्रिय</span>
                 <div class="plan-title">३ महिने प्लॅन</div>
@@ -247,7 +252,6 @@
                 <div class="plan-features"><i class="fas fa-check-circle"></i> अमर्यादित ॲक्सेस</div>
             </div>
 
-            <!-- ६ महिने -->
             <div class="plan-card" onclick="selectPlan('6 Months Plan', 699, 180, this)">
                 <div class="plan-title">६ महिने प्लॅन</div>
                 <div class="plan-price">₹699 <small>/ १८० दिवस</small></div>
@@ -255,7 +259,6 @@
                 <div class="plan-features"><i class="fas fa-check-circle"></i> अमर्यादित ॲक्सेस</div>
             </div>
 
-            <!-- १ वर्ष (Best Value) -->
             <div class="plan-card" onclick="selectPlan('1 Year Plan', 1199, 365, this)">
                 <span class="plan-tag" style="background: linear-gradient(135deg, #16a34a, #15803d);">सर्वोत्कृष्ट बचत</span>
                 <div class="plan-title">१ वर्ष प्लॅन</div>
@@ -265,52 +268,79 @@
             </div>
         </div>
 
-        <!-- पेमेंट आणि UTR फॉर्म -->
-        <div class="payment-section">
-            <!-- डावा: QR कोड -->
-            <div class="qr-box">
-                <h4 style="font-size: 16px; color: #1e293b; font-weight: 800; margin-bottom: 12px;">
-                    <i class="fas fa-qrcode"></i> कोणत्याही UPI ॲपवरून स्कॅन करा
-                </h4>
-                
-                <!-- तुमचा QR कोड फोटो (qr.png) -->
-                <img src="qr.png" alt="Payment QR Code" class="qr-image" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=9403901395@ybl%26pn=QuickIDPrint%26cu=INR'">
+        <!-- मुख्य पेमेंट कार्ड -->
+        <section class="recharge-card">
+            <div class="payment-grid">
 
-                <div class="upi-badge" onclick="copyUpi()" title="UPI ID कॉपी करा">
-                    <i class="fas fa-copy"></i> <span id="upiText">9403901395@ybl</span>
+                <!-- डावा: QR कोड + अपलोड पर्याय -->
+                <div class="qr-section">
+                    <div class="qr-title"><i class="fas fa-qrcode"></i> Scan & Pay</div>
+                    
+                    <div class="qr-box">
+                        <img id="qrDisplayImg" src="payment_qr.png" alt="Payment QR" onerror="this.src='qr.png'; this.onerror=fallbackQr;">
+                    </div>
+
+                    <div class="upi-badge" onclick="copyUpi()" title="UPI ID कॉपी करा">
+                        <i class="fas fa-copy"></i> <span id="upiText">9403901395@ybl</span>
+                    </div>
+
+                    <div class="qr-note">Google Pay / PhonePe / Paytm / UPI</div>
+
+                    <!-- 🟢 QR कोड अपलोड करण्याचा पर्याय -->
+                    <label class="upload-qr-btn">
+                        <i class="fas fa-camera"></i> QR कोड फोटो बदला
+                        <input type="file" id="qrFileInput" accept="image/*" onchange="handleQrUpload(event)">
+                    </label>
                 </div>
-                <p style="font-size: 12px; color: #64748b; margin-top: 10px;">
-                    (PhonePe, Google Pay, Paytm, BHIM द्वारे पेमेंट स्वीकारले जाईल)
-                </p>
-            </div>
 
-            <!-- उजवा: UTR सबमिशन फॉर्म -->
-            <div class="form-box">
-                <h3>पेमेंटची माहिती भरा</h3>
-                <p>पेमेंट यशस्वी झाल्यावर आलेला १२ अंकी UTR नंबर खाली भरा.</p>
+                <!-- उजवा: पेमेंट डिटेल्स आणि UTR फॉर्म -->
+                <div class="form-section">
+                    <div class="form-title">Payment Details</div>
 
-                <form id="rechargeForm">
-                    <div class="input-group">
-                        <label>निवडलेला प्लॅन</label>
-                        <input type="text" id="selectedPlanName" value="3 Months Plan (९० दिवस)" readonly>
+                    <div class="field">
+                        <label>Payment Amount (रुपये)</label>
+                        <input type="number" id="amount" value="399">
                     </div>
 
-                    <div class="input-group">
-                        <label>भरलेली रक्कम (रुपये)</label>
-                        <input type="text" id="selectedPlanAmount" value="₹399" readonly>
+                    <div class="field">
+                        <label>User ID (Mobile No)</label>
+                        <input type="text" id="userId" placeholder="User ID" readonly>
                     </div>
 
-                    <div class="input-group">
+                    <div class="field">
+                        <label>Name</label>
+                        <input type="text" id="userName" placeholder="नाव" readonly>
+                    </div>
+
+                    <div class="field">
                         <label>१२ अंकी UTR / Ref Number <span style="color:red;">*</span></label>
-                        <input type="text" id="utrNumber" placeholder="उदा. 4256XXXXXXXX" required minlength="12" maxlength="12" pattern="[0-9]{12}">
+                        <input type="text" id="utrNumber" placeholder="उदा. 4256XXXXXXXX" maxlength="12" pattern="[0-9]{12}">
                     </div>
 
-                    <button type="submit" class="submit-btn" id="submitBtn">
-                        <i class="fas fa-paper-plane"></i> रिचार्ज विनंती पाठवा
-                    </button>
-                </form>
+                    <div class="process">
+                        <h3>Renewal Process</h3>
+                        <div class="step"><div class="step-number">1</div><div class="step-text">QR कोड स्कॅन करून वर दिलेली रक्कम पाठवा.</div></div>
+                        <div class="step"><div class="step-number">2</div><div class="step-text">UTR नंबर टाकून खालील <strong>पोर्टलवर नोंदवा</strong> किंवा <strong>WhatsApp</strong> बटण दाबा.</div></div>
+                    </div>
+
+                    <!-- दोन्ही बटणे (Portal + WhatsApp) -->
+                    <div class="action-btns-grid">
+                        <button type="button" class="portal-btn" id="submitUtrBtn" onclick="submitPortalRecharge()">
+                            <i class="fas fa-paper-plane"></i> पोर्टलवर UTR नोंदवा
+                        </button>
+                        <button type="button" class="whatsapp-btn" onclick="sendRechargeRequestWhatsApp()">
+                            <i class="fab fa-whatsapp"></i> WhatsApp वर पाठवा
+                        </button>
+                    </div>
+                </div>
+
             </div>
-        </div>
+
+            <div class="info">
+                <i class="fas fa-info-circle"></i>
+                <span><strong>महत्त्वाचे:</strong> पेमेंट केल्यानंतर मिळालेला १२ अंकी UTR नंबर नोंदवा किंवा WhatsApp वर स्क्रीनशॉट पाठवा, तुमचा प्लॅन तात्काळ ॲक्टिव्हेट केला जाईल.</span>
+            </div>
+        </section>
 
         <!-- मागील रिचार्ज हिस्ट्री -->
         <div class="history-box">
@@ -335,7 +365,11 @@
             </div>
         </div>
 
-    </div>
+        <div class="footer">
+            © 2026 QuickIDPrint • Plan Renewal Portal
+        </div>
+
+    </main>
 
     <script>
         let currentUserId = null;
@@ -343,8 +377,14 @@
         let selectedAmount = 399;
         let selectedDays = 90;
 
-        // १. युझर सेशन आणि चालू माहिती तपासणे
+        // १. पेज लोड झाल्यावर युझर माहिती व सेव्ह केलेला QR लोड करणे
         document.addEventListener("DOMContentLoaded", async function() {
+            // जर युझरने स्वतःचा QR आधी अपलोड केला असेल तर तो दाखवणे
+            const savedQr = localStorage.getItem('custom_payment_qr');
+            if (savedQr) {
+                document.getElementById('qrDisplayImg').src = savedQr;
+            }
+
             try {
                 const { data: { session } } = await _supabase.auth.getSession();
                 if (!session) {
@@ -354,7 +394,7 @@
 
                 currentUserId = session.user.id;
 
-                // प्रोफाईल माहिती आणणे
+                // प्रोफाईल आणणे
                 const { data: profile, error } = await _supabase
                     .from('user_profiles')
                     .select('*')
@@ -363,13 +403,11 @@
 
                 if (error) throw error;
 
-                document.getElementById('currentUserName').innerText = profile.full_name || "दुकानदार";
-                document.getElementById('currentUserShop').innerText = "दुकान/सेंटर: " + (profile.shop_name || "उपलब्ध नाही");
+                // फील्ड्स भरणे
+                document.getElementById("userId").value = profile.mobile_number || profile.email || "";
+                document.getElementById("userName").value = profile.full_name || "दुकानदार";
 
-                // व्हॅलिडिटी बॅज
-                const planBadge = document.getElementById('planBadge');
-                const daysBadge = document.getElementById('daysBadge');
-
+                // व्हॅलिडिटी मोजणे
                 let remainingDays = 0;
                 if (profile.expire_date && profile.plan_status === 'Active') {
                     const today = new Date();
@@ -379,14 +417,15 @@
                     remainingDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
                 }
 
+                // File 2 प्रमाणे Status Box भरणे
                 if (profile.plan_status === 'Active' && remainingDays > 0) {
-                    planBadge.className = "badge-pill badge-active";
-                    planBadge.innerText = "Active प्लॅन";
-                    daysBadge.innerHTML = `<i class="far fa-clock"></i> ${remainingDays} दिवस शिल्लक (${profile.expire_date})`;
+                    document.getElementById("dispDays").innerText = remainingDays + " दिवस";
+                    document.getElementById("dispExpiry").innerText = profile.expire_date;
+                    document.getElementById("dispStatus").innerHTML = '<i class="fas fa-check-circle" style="color:#16a34a;"></i> Active';
                 } else {
-                    planBadge.className = "badge-pill badge-expired";
-                    planBadge.innerText = profile.plan_status === 'Expired' ? "प्लॅन संपला आहे" : "Inactive प्लॅन";
-                    daysBadge.innerHTML = `<i class="fas fa-exclamation-triangle"></i> रिचार्ज आवश्यक`;
+                    document.getElementById("dispDays").innerText = "० दिवस";
+                    document.getElementById("dispExpiry").innerText = profile.expire_date || "मुदत संपली";
+                    document.getElementById("dispStatus").innerHTML = '<i class="fas fa-exclamation-circle" style="color:#ef4444;"></i> Inactive';
                 }
 
                 // हिस्ट्री लोड करणे
@@ -394,12 +433,31 @@
 
             } catch (err) {
                 console.error(err);
-                alert("माहिती लोड करताना अडचण आली. कृपया पुन्हा लॉगिन करा.");
-                window.location.href = "login.html";
             }
         });
 
-        // २. प्लॅन निवडणे
+        // २. QR कोड इमेज एरर आल्यास फॉलबॅक
+        function fallbackQr() {
+            this.onerror = null;
+            this.src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=9403901395@ybl%26pn=QuickIDPrint%26cu=INR";
+        }
+
+        // ३. नवीन QR कोड अपलोड करणे
+        function handleQrUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Data = e.target.result;
+                document.getElementById('qrDisplayImg').src = base64Data;
+                localStorage.setItem('custom_payment_qr', base64Data);
+                alert("नवीन Payment QR यशस्वीरीत्या अपलोड झाला आहे!");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ४. प्लॅन निवडणे
         function selectPlan(name, amount, days, element) {
             selectedPlan = name;
             selectedAmount = amount;
@@ -408,34 +466,38 @@
             document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
             element.classList.add('selected');
 
-            document.getElementById('selectedPlanName').value = `${name} (${days} दिवस)`;
-            document.getElementById('selectedPlanAmount').value = `₹${amount}`;
+            document.getElementById('amount').value = amount;
         }
 
-        // ३. UPI आयडी कॉपी करणे
+        // ५. UPI ID कॉपी
         function copyUpi() {
             const upiId = document.getElementById('upiText').innerText;
             navigator.clipboard.writeText(upiId);
             alert("UPI ID कॉपी झाला: " + upiId + "\nतुमच्या UPI ॲपमध्ये जाऊन पेमेंट करा.");
         }
 
-        // ४. रिचार्ज फॉर्म सबमिट करणे (Supabase मध्ये सेव्ह करणे)
-        document.getElementById('rechargeForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const submitBtn = document.getElementById('submitBtn');
+        // ६. पर्याय अ: थेट पोर्टलवर UTR नोंदवणे
+        async function submitPortalRecharge() {
             const utr = document.getElementById('utrNumber').value.trim();
+            const amount = document.getElementById('amount').value.trim();
+            const submitBtn = document.getElementById('submitUtrBtn');
 
-            if (utr.length !== 12 || isNaN(utr)) {
-                alert("कृपया अचूक १२ अंकी UTR किंवा Ref Number टाका.");
+            if (!amount || amount <= 0) {
+                alert("कृपया अचूक रक्कम निवडा.");
                 return;
             }
 
-            submitBtn.innerText = "विनंती पाठवत आहे...";
+            if (utr.length !== 12 || isNaN(utr)) {
+                alert("कृपया पेमेंट झाल्यावर मिळालेला अचूक १२ अंकी UTR / Ref Number टाका.");
+                document.getElementById('utrNumber').focus();
+                return;
+            }
+
+            submitBtn.innerText = "नोंदवत आहे...";
             submitBtn.disabled = true;
 
             try {
-                // UTR आधी वापरला गेला आहे का तपासणे
+                // UTR आधी वापरला आहे का तपासणे
                 const { data: existingUtr } = await _supabase
                     .from('recharge_requests')
                     .select('id')
@@ -443,15 +505,15 @@
                     .maybeSingle();
 
                 if (existingUtr) {
-                    throw new Error("हा UTR नंबर आधीच वापरला गेला आहे. कृपया तुमच्या पेमेंटचा अचूक UTR टाका.");
+                    throw new Error("हा UTR नंबर आधीच नोंदवला गेला आहे. कृपया तुमच्या नवीन पेमेंटचा UTR टाका.");
                 }
 
-                // recharge_requests टेबलमध्ये नोंद करणे
+                // recharge_requests टेबलमध्ये नोंद
                 const { error: insertError } = await _supabase
                     .from('recharge_requests')
                     .insert([{
                         user_id: currentUserId,
-                        recharge_amount: selectedAmount,
+                        recharge_amount: parseInt(amount),
                         utr_number: utr,
                         plan_name: selectedPlan,
                         status: 'Pending'
@@ -459,20 +521,47 @@
 
                 if (insertError) throw insertError;
 
-                alert("अभिनंदन! तुमची रिचार्ज विनंती यशस्वीरीत्या पाठवण्यात आली आहे.\nॲडमिनद्वारे लवकरच खात्री करून प्लॅन ॲक्टिव्हेट केला जाईल.");
-                
+                alert("अभिनंदन! तुमची रिचार्ज विनंती पोर्टलवर नोंदवली गेली आहे.\nॲडमिन खात्री करून तुमचा प्लॅन तात्काळ ॲक्टिव्हेट करतील.");
                 document.getElementById('utrNumber').value = "";
                 loadRechargeHistory();
 
             } catch (err) {
-                alert("विनंती पाठवताना अडचण आली: \n" + (err.message || "कृपया पुन्हा प्रयत्न करा."));
+                alert("त्रुटी: \n" + (err.message || "कृपया पुन्हा प्रयत्न करा."));
             } finally {
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> रिचार्ज विनंती पाठवा';
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> पोर्टलवर UTR नोंदवा';
                 submitBtn.disabled = false;
             }
-        });
+        }
 
-        // ५. रिचार्ज हिस्ट्री लोड करणे
+        // ७. पर्याय ब: WhatsApp वर थेट विनंती पाठवणे (File 2 लॉजिक)
+        function sendRechargeRequestWhatsApp() {
+            const amount = document.getElementById("amount").value.trim();
+            const userId = document.getElementById("userId").value.trim();
+            const name = document.getElementById("userName").value.trim();
+            const utr = document.getElementById("utrNumber").value.trim();
+
+            if (!amount || !userId || !name) {
+                alert("कृपया माहिती तपासा.");
+                return;
+            }
+
+            const message = 
+`*PLAN RENEWAL REQUEST* ⚡
+------------------------------------
+*👤 Name:* ${name}
+*📱 User ID:* ${userId}
+*📦 Plan:* ${selectedPlan}
+*💰 Amount Paid:* ₹${amount}
+*🔢 UTR Number:* ${utr || "स्क्रीनशॉटमध्ये सोबत जोडला आहे"}
+------------------------------------
+कृपया माझा पेमेंट स्क्रीनशॉट तपासा आणि माझ्या खात्याची मुदत (Validity) वाढवून द्या. धन्यवाद! 🙏`;
+
+            const whatsappNumber = "919403901395";
+            const url = "https://wa.me/" + whatsappNumber + "?text=" + encodeURIComponent(message);
+            window.open(url, "_blank");
+        }
+
+        // ८. मागील रिचार्ज हिस्ट्री लोड करणे
         async function loadRechargeHistory() {
             const tbody = document.getElementById('historyTableBody');
 
