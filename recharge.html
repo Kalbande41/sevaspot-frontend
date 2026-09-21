@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>प्लॅन रिचार्ज करा • QuickIDPrint</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase JS Library & Config -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Mukta', sans-serif; }
+        
+        :root {
+            --primary: #123a8f;
+            --primary-light: #2563eb;
+            --orange: #f97316;
+            --green: #16a34a;
+            --bg: #f8fafc;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body { 
+            background: radial-gradient(circle at 10% 10%, rgba(254, 240, 138, 0.15) 0%, transparent 30%),
+                        radial-gradient(circle at 90% 90%, rgba(37, 99, 235, 0.08) 0%, transparent 35%),
+                        linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+            color: var(--text-dark); 
+            padding-bottom: 70px;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar { 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(12px);
+            padding: 14px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06); 
+            position: sticky; 
+            top: 0; 
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+        .logo-area { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+        .site-logo { width: 50px; height: 48px; object-fit: contain; }
+        .logo-text h2 { font-size: 26px !important; font-weight: 800 !important; line-height: 1 !important; }
+        .brand-quick { color: #17428f; }
+        .brand-id { color: #f97316; }
+        .brand-print { color: #17428f; }
+        
+        .nav-back-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 18px; border-radius: 999px;
+            background: #eff6ff; color: #1e3a8a; font-weight: 700;
+            text-decoration: none; font-size: 14px; border: 1px solid #bfdbfe;
+            transition: 0.2s;
+        }
+        .nav-back-btn:hover { background: #dbeafe; transform: translateY(-2px); }
+
+        .container { max-width: 1050px; margin: 30px auto; padding: 0 20px; }
+
+        /* Current Status Card */
+        .status-card {
+            background: white; border-radius: 24px; padding: 24px 30px;
+            border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(18, 58, 143, 0.06);
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 20px; margin-bottom: 30px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+        }
+        .status-left h3 { font-size: 22px; font-weight: 800; color: var(--primary); }
+        .status-left p { font-size: 14px; color: var(--text-muted); margin-top: 2px; }
+        .status-badge-box { display: flex; align-items: center; gap: 15px; }
+        .badge-pill {
+            padding: 8px 18px; border-radius: 999px; font-weight: 800; font-size: 13px;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .badge-active { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+        .badge-expired { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+        .badge-days { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+
+        /* Page Heading */
+        .page-header { text-align: center; margin-bottom: 30px; }
+        .page-header h1 { font-size: 30px; font-weight: 800; color: var(--primary); }
+        .page-header p { font-size: 15px; color: var(--text-muted); margin-top: 4px; }
+
+        /* Plans Grid */
+        .plans-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 18px; margin-bottom: 35px;
+        }
+        .plan-card {
+            background: white; border: 2px solid var(--border); border-radius: 22px;
+            padding: 26px 20px; text-align: center; cursor: pointer;
+            transition: all 0.25s ease; position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+        .plan-card:hover { transform: translateY(-5px); border-color: #93c5fd; box-shadow: 0 12px 28px rgba(37,99,235,0.12); }
+        .plan-card.selected {
+            border-color: #2563eb; background: #eff6ff;
+            box-shadow: 0 14px 30px rgba(37, 99, 235, 0.16);
+        }
+        .plan-tag {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(135deg, #f97316, #ea580c); color: white;
+            padding: 3px 12px; border-radius: 999px; font-size: 11px; font-weight: 800;
+        }
+        .plan-title { font-size: 18px; font-weight: 800; color: #1e293b; margin-top: 5px; }
+        .plan-price { font-size: 32px; font-weight: 900; color: #123a8f; margin: 10px 0 5px; line-height: 1; }
+        .plan-price small { font-size: 16px; font-weight: 600; color: #64748b; }
+        .plan-desc { font-size: 13px; color: #475569; font-weight: 600; margin-bottom: 12px; }
+        .plan-features { font-size: 12px; color: #166534; background: #f0fdf4; padding: 6px; border-radius: 8px; font-weight: 700; }
+
+        /* Payment & UTR Section */
+        .payment-section {
+            display: grid; grid-template-columns: 45% 55%;
+            gap: 25px; background: white; border-radius: 24px;
+            padding: 32px; border: 1px solid var(--border);
+            box-shadow: 0 12px 35px rgba(18, 58, 143, 0.06);
+            margin-bottom: 40px;
+        }
+        .qr-box {
+            background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 20px;
+            padding: 24px; text-align: center; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+        }
+        .qr-image {
+            width: 200px; height: 200px; object-fit: contain;
+            background: white; border-radius: 14px; padding: 10px;
+            border: 1px solid #e2e8f0; box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+            margin-bottom: 15px;
+        }
+        .upi-badge {
+            background: #e2e8f0; color: #1e293b; padding: 6px 14px;
+            border-radius: 8px; font-size: 13px; font-weight: 800;
+            display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+            transition: 0.2s;
+        }
+        .upi-badge:hover { background: #cbd5e1; }
+
+        .form-box h3 { font-size: 22px; font-weight: 800; color: var(--primary); margin-bottom: 6px; }
+        .form-box p { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; }
+        
+        .input-group { margin-bottom: 18px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 6px; font-weight: 700; color: #334155; font-size: 14px; }
+        .input-group input {
+            width: 100%; height: 48px; padding: 10px 16px;
+            border: 1.5px solid #cbd5e1; border-radius: 12px; font-size: 15px;
+            color: #1e293b; background: #f8fbff; outline: none; transition: 0.2s;
+            font-weight: 600;
+        }
+        .input-group input:focus { border-color: #3b82f6; background: #fff; box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
+        .input-group input[readonly] { background: #f1f5f9; cursor: not-allowed; color: #64748b; }
+
+        .submit-btn {
+            width: 100%; height: 50px; border: none; border-radius: 14px;
+            background: linear-gradient(135deg, #16a34a, #15803d); color: white;
+            font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.2s;
+            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.25); display: flex;
+            align-items: center; justify-content: center; gap: 8px;
+        }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(22, 163, 74, 0.35); }
+        .submit-btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* History Table */
+        .history-box {
+            background: white; border-radius: 24px; padding: 28px;
+            border: 1px solid var(--border); box-shadow: 0 8px 25px rgba(0,0,0,0.04);
+        }
+        .history-box h3 { font-size: 20px; font-weight: 800; color: var(--primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .table-responsive { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        th { background: #f8fafc; padding: 12px 16px; font-weight: 800; color: #475569; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; color: #334155; font-weight: 600; }
+        .status-pending { background: #fef3c7; color: #b45309; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+        .status-approved { background: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+        .status-cancelled { background: #fee2e2; color: #b91c1c; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+
+        @media(max-width:900px){
+            .plans-grid { grid-template-columns: repeat(2, 1fr); }
+            .payment-section { grid-template-columns: 1fr; }
+        }
+        @media(max-width:550px){
+            .plans-grid { grid-template-columns: 1fr; }
+            .status-card { flex-direction: column; align-items: flex-start; }
+            .status-badge-box { width: 100%; justify-content: space-between; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="home.html" class="logo-area">
+            <img src="logo.png" alt="QuickIDPrint Logo" class="site-logo" onerror="this.style.display='none'">
+            <div class="logo-text">
+                <h2><span class="brand-quick">Quick</span><span class="brand-id">ID</span><span class="brand-print">Print</span></h2>
+            </div>
+        </a>
+        <a href="home.html" class="nav-back-btn">
+            <i class="fas fa-arrow-left"></i> डॅशबोर्डवर परत जा
+        </a>
+    </nav>
+
+    <div class="container">
+
+        <!-- चालू प्लॅन माहिती -->
+        <div class="status-card">
+            <div class="status-left">
+                <h3 id="currentUserName">लोड करत आहे...</h3>
+                <p id="currentUserShop">दुकान/सेंटर: तपासत आहे...</p>
+            </div>
+            <div class="status-badge-box">
+                <div id="planBadge" class="badge-pill badge-active">तपासत आहे...</div>
+                <div id="daysBadge" class="badge-pill badge-days"><i class="far fa-clock"></i> ० दिवस शिल्लक</div>
+            </div>
+        </div>
+
+        <div class="page-header">
+            <h1>प्लॅन निवडा आणि रिचार्ज करा</h1>
+            <p>खालीलपैकी तुमचा योग्य प्लॅन निवडा, पेमेंट करा आणि १२ अंकी UTR नंबर टाकून विनंती पाठवा.</p>
+        </div>
+
+        <!-- प्लॅन्सची यादी -->
+        <div class="plans-grid">
+            <!-- १ महिना -->
+            <div class="plan-card" onclick="selectPlan('1 Month Plan', 149, 30, this)">
+                <div class="plan-title">१ महिना प्लॅन</div>
+                <div class="plan-price">₹149 <small>/ ३० दिवस</small></div>
+                <div class="plan-desc">सर्व प्रिंट आणि घोषणापत्र सेवा</div>
+                <div class="plan-features"><i class="fas fa-check-circle"></i> अमर्यादित ॲक्सेस</div>
+            </div>
+
+            <!-- ३ महिने (Popular) -->
+            <div class="plan-card selected" onclick="selectPlan('3 Months Plan', 399, 90, this)">
+                <span class="plan-tag">सर्वाधिक लोकप्रिय</span>
+                <div class="plan-title">३ महिने प्लॅन</div>
+                <div class="plan-price">₹399 <small>/ ९० दिवस</small></div>
+                <div class="plan-desc">फायदेशीर आणि सोयीस्कर</div>
+                <div class="plan-features"><i class="fas fa-check-circle"></i> अमर्यादित ॲक्सेस</div>
+            </div>
+
+            <!-- ६ महिने -->
+            <div class="plan-card" onclick="selectPlan('6 Months Plan', 699, 180, this)">
+                <div class="plan-title">६ महिने प्लॅन</div>
+                <div class="plan-price">₹699 <small>/ १८० दिवस</small></div>
+                <div class="plan-desc">दीर्घकालीन बचत प्लॅन</div>
+                <div class="plan-features"><i class="fas fa-check-circle"></i> अमर्यादित ॲक्सेस</div>
+            </div>
+
+            <!-- १ वर्ष (Best Value) -->
+            <div class="plan-card" onclick="selectPlan('1 Year Plan', 1199, 365, this)">
+                <span class="plan-tag" style="background: linear-gradient(135deg, #16a34a, #15803d);">सर्वोत्कृष्ट बचत</span>
+                <div class="plan-title">१ वर्ष प्लॅन</div>
+                <div class="plan-price">₹1199 <small>/ ३६५ दिवस</small></div>
+                <div class="plan-desc">वर्षभर निश्चिंत वापर</div>
+                <div class="plan-features"><i class="fas fa-check-circle"></i> अमर्यादित ॲक्सेस</div>
+            </div>
+        </div>
+
+        <!-- पेमेंट आणि UTR फॉर्म -->
+        <div class="payment-section">
+            <!-- डावा: QR कोड -->
+            <div class="qr-box">
+                <h4 style="font-size: 16px; color: #1e293b; font-weight: 800; margin-bottom: 12px;">
+                    <i class="fas fa-qrcode"></i> कोणत्याही UPI ॲपवरून स्कॅन करा
+                </h4>
+                
+                <!-- तुमचा QR कोड फोटो (qr.png) -->
+                <img src="qr.png" alt="Payment QR Code" class="qr-image" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=9403901395@ybl%26pn=QuickIDPrint%26cu=INR'">
+
+                <div class="upi-badge" onclick="copyUpi()" title="UPI ID कॉपी करा">
+                    <i class="fas fa-copy"></i> <span id="upiText">9403901395@ybl</span>
+                </div>
+                <p style="font-size: 12px; color: #64748b; margin-top: 10px;">
+                    (PhonePe, Google Pay, Paytm, BHIM द्वारे पेमेंट स्वीकारले जाईल)
+                </p>
+            </div>
+
+            <!-- उजवा: UTR सबमिशन फॉर्म -->
+            <div class="form-box">
+                <h3>पेमेंटची माहिती भरा</h3>
+                <p>पेमेंट यशस्वी झाल्यावर आलेला १२ अंकी UTR नंबर खाली भरा.</p>
+
+                <form id="rechargeForm">
+                    <div class="input-group">
+                        <label>निवडलेला प्लॅन</label>
+                        <input type="text" id="selectedPlanName" value="3 Months Plan (९० दिवस)" readonly>
+                    </div>
+
+                    <div class="input-group">
+                        <label>भरलेली रक्कम (रुपये)</label>
+                        <input type="text" id="selectedPlanAmount" value="₹399" readonly>
+                    </div>
+
+                    <div class="input-group">
+                        <label>१२ अंकी UTR / Ref Number <span style="color:red;">*</span></label>
+                        <input type="text" id="utrNumber" placeholder="उदा. 4256XXXXXXXX" required minlength="12" maxlength="12" pattern="[0-9]{12}">
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i> रिचार्ज विनंती पाठवा
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- मागील रिचार्ज हिस्ट्री -->
+        <div class="history-box">
+            <h3><i class="fas fa-history"></i> माझी मागील रिचार्ज हिस्ट्री</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>तारीख</th>
+                            <th>प्लॅन</th>
+                            <th>रक्कम</th>
+                            <th>UTR नंबर</th>
+                            <th>स्टेटस</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <tr>
+                            <td colspan="5" style="text-align:center; color:#64748b;">हिस्ट्री तपासत आहे...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentUserId = null;
+        let selectedPlan = '3 Months Plan';
+        let selectedAmount = 399;
+        let selectedDays = 90;
+
+        // १. युझर सेशन आणि चालू माहिती तपासणे
+        document.addEventListener("DOMContentLoaded", async function() {
+            try {
+                const { data: { session } } = await _supabase.auth.getSession();
+                if (!session) {
+                    window.location.href = "login.html";
+                    return;
+                }
+
+                currentUserId = session.user.id;
+
+                // प्रोफाईल माहिती आणणे
+                const { data: profile, error } = await _supabase
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('id', currentUserId)
+                    .single();
+
+                if (error) throw error;
+
+                document.getElementById('currentUserName').innerText = profile.full_name || "दुकानदार";
+                document.getElementById('currentUserShop').innerText = "दुकान/सेंटर: " + (profile.shop_name || "उपलब्ध नाही");
+
+                // व्हॅलिडिटी बॅज
+                const planBadge = document.getElementById('planBadge');
+                const daysBadge = document.getElementById('daysBadge');
+
+                let remainingDays = 0;
+                if (profile.expire_date && profile.plan_status === 'Active') {
+                    const today = new Date();
+                    today.setHours(0,0,0,0);
+                    const expDate = new Date(profile.expire_date);
+                    expDate.setHours(0,0,0,0);
+                    remainingDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
+                }
+
+                if (profile.plan_status === 'Active' && remainingDays > 0) {
+                    planBadge.className = "badge-pill badge-active";
+                    planBadge.innerText = "Active प्लॅन";
+                    daysBadge.innerHTML = `<i class="far fa-clock"></i> ${remainingDays} दिवस शिल्लक (${profile.expire_date})`;
+                } else {
+                    planBadge.className = "badge-pill badge-expired";
+                    planBadge.innerText = profile.plan_status === 'Expired' ? "प्लॅन संपला आहे" : "Inactive प्लॅन";
+                    daysBadge.innerHTML = `<i class="fas fa-exclamation-triangle"></i> रिचार्ज आवश्यक`;
+                }
+
+                // हिस्ट्री लोड करणे
+                loadRechargeHistory();
+
+            } catch (err) {
+                console.error(err);
+                alert("माहिती लोड करताना अडचण आली. कृपया पुन्हा लॉगिन करा.");
+                window.location.href = "login.html";
+            }
+        });
+
+        // २. प्लॅन निवडणे
+        function selectPlan(name, amount, days, element) {
+            selectedPlan = name;
+            selectedAmount = amount;
+            selectedDays = days;
+
+            document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+
+            document.getElementById('selectedPlanName').value = `${name} (${days} दिवस)`;
+            document.getElementById('selectedPlanAmount').value = `₹${amount}`;
+        }
+
+        // ३. UPI आयडी कॉपी करणे
+        function copyUpi() {
+            const upiId = document.getElementById('upiText').innerText;
+            navigator.clipboard.writeText(upiId);
+            alert("UPI ID कॉपी झाला: " + upiId + "\nतुमच्या UPI ॲपमध्ये जाऊन पेमेंट करा.");
+        }
+
+        // ४. रिचार्ज फॉर्म सबमिट करणे (Supabase मध्ये सेव्ह करणे)
+        document.getElementById('rechargeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            const utr = document.getElementById('utrNumber').value.trim();
+
+            if (utr.length !== 12 || isNaN(utr)) {
+                alert("कृपया अचूक १२ अंकी UTR किंवा Ref Number टाका.");
+                return;
+            }
+
+            submitBtn.innerText = "विनंती पाठवत आहे...";
+            submitBtn.disabled = true;
+
+            try {
+                // UTR आधी वापरला गेला आहे का तपासणे
+                const { data: existingUtr } = await _supabase
+                    .from('recharge_requests')
+                    .select('id')
+                    .eq('utr_number', utr)
+                    .maybeSingle();
+
+                if (existingUtr) {
+                    throw new Error("हा UTR नंबर आधीच वापरला गेला आहे. कृपया तुमच्या पेमेंटचा अचूक UTR टाका.");
+                }
+
+                // recharge_requests टेबलमध्ये नोंद करणे
+                const { error: insertError } = await _supabase
+                    .from('recharge_requests')
+                    .insert([{
+                        user_id: currentUserId,
+                        recharge_amount: selectedAmount,
+                        utr_number: utr,
+                        plan_name: selectedPlan,
+                        status: 'Pending'
+                    }]);
+
+                if (insertError) throw insertError;
+
+                alert("अभिनंदन! तुमची रिचार्ज विनंती यशस्वीरीत्या पाठवण्यात आली आहे.\nॲडमिनद्वारे लवकरच खात्री करून प्लॅन ॲक्टिव्हेट केला जाईल.");
+                
+                document.getElementById('utrNumber').value = "";
+                loadRechargeHistory();
+
+            } catch (err) {
+                alert("विनंती पाठवताना अडचण आली: \n" + (err.message || "कृपया पुन्हा प्रयत्न करा."));
+            } finally {
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> रिचार्ज विनंती पाठवा';
+                submitBtn.disabled = false;
+            }
+        });
+
+        // ५. रिचार्ज हिस्ट्री लोड करणे
+        async function loadRechargeHistory() {
+            const tbody = document.getElementById('historyTableBody');
+
+            const { data: history, error } = await _supabase
+                .from('recharge_requests')
+                .select('*')
+                .eq('user_id', currentUserId)
+                .order('created_at', { ascending: false });
+
+            if (error || !history || history.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#64748b;">कोणतीही मागील विनंती सापडली नाही.</td></tr>';
+                return;
+            }
+
+            let rowsHtml = '';
+            history.forEach(item => {
+                const date = new Date(item.created_at).toLocaleDateString('mr-IN');
+                let statusBadge = '<span class="status-pending">⏳ Pending</span>';
+                if (item.status === 'Approved') {
+                    statusBadge = '<span class="status-approved">✅ Approved</span>';
+                } else if (item.status === 'Cancelled') {
+                    statusBadge = '<span class="status-cancelled">❌ Cancelled</span>';
+                }
+
+                rowsHtml += `
+                    <tr>
+                        <td>${date}</td>
+                        <td>${item.plan_name || '-'}</td>
+                        <td>₹${item.recharge_amount}</td>
+                        <td style="font-family:monospace; font-weight:bold;">${item.utr_number}</td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = rowsHtml;
+        }
+    </script>
+</body>
+</html>
