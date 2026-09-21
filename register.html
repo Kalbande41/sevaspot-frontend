@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - QuickIDPrint</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Config File -->
+    <script src="config.js"></script>
+
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Mukta',sans-serif}
+        :root{
+            --navy:#123a8f;--blue:#2563eb;--orange:#f97316;
+            --text:#172554;--muted:#64748b;--line:#dce5f2
+        }
+        body{
+            min-height:100vh;display:flex;align-items:center;justify-content:center;
+            padding:24px;
+            background:
+              radial-gradient(circle at 8% 8%,rgba(255,211,70,.20),transparent 25%),
+              radial-gradient(circle at 92% 85%,rgba(37,99,235,.11),transparent 27%),
+              linear-gradient(135deg,#fffdf6 0%,#f4f8fd 52%,#edf3fb 100%);
+            color:var(--text);
+        }
+        .login-container{
+            width:100%;max-width:920px;display:grid;
+            grid-template-columns:40% 60%;
+            background:rgba(255,255,255,.96);border:1px solid #e3eaf4;
+            border-radius:28px;box-shadow:0 24px 60px rgba(18,58,143,.13);
+            overflow: hidden;
+        }
+        .brand-panel{
+            position:relative;padding:48px 38px;display:flex;flex-direction:column;
+            justify-content:center;
+            background:linear-gradient(145deg,#102d73 0%,#1d4fa8 68%,#2866c9 100%);
+            color:#fff;
+        }
+        .panel-logo{
+            width:80px;height:80px;border-radius:20px;object-fit:contain;
+            background:#fff;padding:7px;box-shadow:0 12px 28px rgba(0,0,0,.18);
+            margin-bottom:22px;
+        }
+        .panel-brand{font-size:32px;font-weight:800;line-height:1;}
+        .panel-brand .q-blue{color:#fff}.panel-brand .q-orange{color:#ff9b42}
+        .panel-tag{font-size:15px;color:#dce8ff;margin-top:8px;}
+        .form-panel{padding:35px 45px;display:flex;flex-direction:column;justify-content:center;}
+        .form-top{text-align:left;margin-bottom:20px}
+        .form-top h1{font-size:28px;color:var(--navy);margin-top:5px;font-weight:800}
+        .form-top p{font-size:13px;color:var(--muted);margin-top:3px}
+        
+        /* Grid for Inputs */
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .input-group{position:relative;text-align:left;}
+        .input-group.full-width { grid-column: span 2; }
+        .input-group label{display:block;margin-bottom:5px;font-weight:700;color:#334155;font-size:13px}
+        .input-group i{
+            position:absolute;top:32px;left:14px;color:#7b8ca6;font-size:14px
+        }
+        .input-group input{
+            width:100%;height:42px;padding:10px 13px 10px 40px;
+            border:1px solid var(--line);border-radius:10px;font-size:14px;
+            color:#1e293b;background:#f8fbff;outline:none;transition:.22s
+        }
+        .input-group input:focus{
+            border-color:#80a8ff;background:#fff;
+            box-shadow:0 0 0 4px rgba(37,99,235,.09)
+        }
+        .login-btn{
+            width:100%;height:48px;margin-top:15px;border:0;border-radius:12px;
+            background:linear-gradient(135deg,#f97316,#d95d08);color:#fff;
+            font-size:17px;font-weight:800;cursor:pointer;transition:.22s;
+            box-shadow:0 9px 20px rgba(249,115,22,.2)
+        }
+        .login-btn:hover{transform:translateY(-2px);box-shadow:0 13px 25px rgba(249,115,22,.3)}
+        .login-btn:disabled{background:#94a3b8;cursor:not-allowed;transform:none}
+        .auth-links{text-align:center;margin-top:15px;font-size:14px;font-weight:600;}
+        .auth-links a{color:var(--blue);text-decoration:none;}
+        
+        @media(max-width:760px){
+            .login-container{grid-template-columns:1fr;max-width:480px;}
+            .brand-panel{display:none;} 
+            .form-panel{padding:25px;}
+            .input-grid { grid-template-columns: 1fr; gap: 10px; }
+            .input-group.full-width { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <section class="brand-panel">
+            <img src="logo.png" alt="QuickIDPrint Logo" class="panel-logo">
+            <div class="panel-brand"><span class="q-blue">Quick</span><span class="q-orange">ID</span><span class="q-blue">Print</span></div>
+            <div class="panel-tag">डिजिटल सेवा केंद्र - नोंदणी</div>
+            <p style="color:#cbdcff; margin-top:20px; font-size:14px; line-height:1.6;">
+                तुमच्या सेंटरची नोंदणी करा आणि सर्व ऑनलाइन घोषणापत्र व आयडी प्रिंट सेवांचा लाभ घ्या.
+            </p>
+        </section>
+
+        <section class="form-panel">
+            <div class="form-top">
+                <h1>नवीन खाते तयार करा</h1>
+                <p>खालील माहिती भरून तुमची नोंदणी पूर्ण करा</p>
+            </div>
+
+            <form id="registerForm">
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label>पूर्ण नाव</label>
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="fullName" placeholder="तुमचे नाव" required>
+                    </div>
+                    <div class="input-group">
+                        <label>मोबाईल नंबर</label>
+                        <i class="fas fa-phone-alt"></i>
+                        <input type="tel" id="mobile" placeholder="१० अंकी नंबर" required pattern="[0-9]{10}">
+                    </div>
+                    <div class="input-group full-width">
+                        <label>दुकानाचे/सेंटरचे नाव</label>
+                        <i class="fas fa-store"></i>
+                        <input type="text" id="shopName" placeholder="उदा. साई मल्टिसर्विसेस" required>
+                    </div>
+                    <div class="input-group full-width">
+                        <label>पत्ता (गाव/शहर व जिल्हा)</label>
+                        <i class="fas fa-map-marker-alt"></i>
+                        <input type="text" id="address" placeholder="तुमचा संपूर्ण पत्ता" required>
+                    </div>
+                    <div class="input-group">
+                        <label>ईमेल (लॉगिन आयडी)</label>
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" placeholder="तुमचा ईमेल" required>
+                    </div>
+                    <div class="input-group">
+                        <label>पासवर्ड</label>
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="किमान ६ अक्षरे" required minlength="6">
+                    </div>
+                </div>
+                
+                <button type="submit" class="login-btn" id="registerBtn">नोंदणी करा</button>
+            </form>
+            
+            <div class="auth-links">
+                आधीपासून खाते आहे? <a href="login.html">येथे लॉगिन करा</a>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const registerBtn = document.getElementById('registerBtn');
+            registerBtn.innerText = "खाते तयार करत आहे...";
+            registerBtn.disabled = true;
+
+            const fullName = document.getElementById('fullName').value;
+            const mobile = document.getElementById('mobile').value;
+            const shopName = document.getElementById('shopName').value;
+            const address = document.getElementById('address').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                // १. Supabase Auth मध्ये युजर तयार करणे
+                const { data: authData, error: authError } = await _supabase.auth.signUp({
+                    email: email,
+                    password: password
+                });
+
+                if (authError) throw new Error(authError.message);
+                
+                const userId = authData.user.id;
+
+                // २. युजरची संपूर्ण माहिती user_profiles टेबलमध्ये सेव्ह करणे
+                const today = new Date().toISOString().split('T')[0];
+                
+                const { error: profileError } = await _supabase
+                    .from('user_profiles')
+                    .insert([{
+                        id: userId,
+                        full_name: fullName,
+                        email: email,
+                        mobile_number: mobile,
+                        shop_name: shopName,
+                        address: address,
+                        plan_status: 'Inactive',
+                        expire_date: today
+                    }]);
+
+                if (profileError) throw new Error("प्रोफाईल डेटाबेसमध्ये सेव्ह करताना अडचण आली.");
+
+                alert("नोंदणी यशस्वी झाली! कृपया आता लॉगिन करा.");
+                window.location.href = "login.html";
+
+            } catch (err) {
+                let errorMsg = err.message;
+                if (errorMsg.includes("already registered")) {
+                    errorMsg = "या ईमेलवर आधीपासून खाते आहे. कृपया लॉगिन करा.";
+                }
+                alert("नोंदणी अयशस्वी: \n" + errorMsg);
+                registerBtn.innerText = "नोंदणी करा";
+                registerBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
