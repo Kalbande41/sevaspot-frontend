@@ -238,15 +238,30 @@
             try {
                 let userEmail = identifier;
 
-                // जर युजरने मोबाईल नंबर टाकला असेल, तर डेटाबेसमधून त्याचा ईमेल शोधणे
+                // 🟢 जर युजरने मोबाईल नंबर टाकला असेल तर दोन्ही प्रकारे (Text व Number) शोधणे
                 if (!identifier.includes('@')) {
-                    const { data: userProfile, error: searchError } = await _supabase
+                    const cleanMobile = identifier.replace(/\D/g, ''); // फक्त अंक ठेवणे
+
+                    // प्रथम Text किंवा Numeric दोन्ही जुळवून पाहणे
+                    let { data: userProfile, error: searchError } = await _supabase
                         .from('user_profiles')
                         .select('email')
-                        .eq('mobile_number', identifier)
+                        .eq('mobile_number', cleanMobile)
                         .maybeSingle();
 
-                    if (searchError || !userProfile) {
+                    // जर Number मुळे न सापडल्यास Number(cleanMobile) ने प्रयत्न
+                    if (!userProfile && cleanMobile.length === 10) {
+                        const numTry = await _supabase
+                            .from('user_profiles')
+                            .select('email')
+                            .eq('mobile_number', Number(cleanMobile))
+                            .maybeSingle();
+                        if (numTry.data) {
+                            userProfile = numTry.data;
+                        }
+                    }
+
+                    if (!userProfile) {
                         throw new Error("हा मोबाईल नंबर नोंदणीकृत नाही. कृपया बरोबर नंबर टाका किंवा नोंदणी करा.");
                     }
                     userEmail = userProfile.email;
@@ -275,7 +290,7 @@
                     throw new Error("प्रोफाईल माहिती मिळू शकली नाही.");
                 }
 
-                // पर्याय १: व्हॅलिडिटी आणि शिल्लक दिवसांचे अचूक गणित
+                // 🟢 पर्याय १: व्हॅलिडिटी आणि शिल्लक दिवसांचे अचूक गणित
                 let planStatus = profile.plan_status || 'Inactive';
                 let remainingDays = 0;
                 const today = new Date();
@@ -324,7 +339,7 @@
         });
 
         // ==========================================
-        // २. थेट पासवर्ड रीसेट (No Render, 100% Supabase RPC)
+        // २. थेट पासवर्ड रीसेट (Supabase RPC)
         // ==========================================
         function openForgotModal() {
             document.getElementById('forgotModal').style.display = 'flex';
@@ -345,7 +360,7 @@
             const newPassword = document.getElementById('resetNewPassword').value.trim();
 
             try {
-                // 🟢 थेट Supabase चे PostgreSQL RPC फंक्शन कॉल करणे (Zero Error Guarantee)
+                // 🟢 थेट Supabase PostgreSQL RPC फंक्शन कॉल करणे
                 const { data: resData, error: rpcError } = await _supabase.rpc('reset_user_password', {
                     p_mobile: mobile,
                     p_email: email,
