@@ -18,4 +18,49 @@ async function logServicePrint(serviceCategory, serviceDetails = '') {
     } catch (e) {
         console.error("लॉग नोंदवताना अडचण:", e);
     }
+    // ==========================================
+// 🚀 QUICKIDPRINT प्लॅन्स कॉन्फिगरेशन
+// (भविष्यात किंमत किंवा दिवस बदलायचे असल्यास फक्त येथे बदला!)
+// ==========================================
+const RECHARGE_PLANS = [
+    { 
+        id: "1m", 
+        name: "१ महिना प्लॅन", 
+        amount: 199, 
+        days: 30, 
+        tag: "", 
+        desc: "सर्व प्रिंट आणि घोषणापत्र सेवा",
+        popular: true
+    },
+    { 
+        id: "3m", 
+        name: "३ महिने प्लॅन", 
+        amount: 499, 
+        days: 90, 
+        tag: "सर्वाधिक लोकप्रिय", 
+        desc: "फायदेशीर आणि सोयीस्कर",
+        popular: true // हा प्लॅन सुरुवातीला सिलेक्ट राहील
+    },
+    { 
+        id: "6m", 
+        name: "६ महिने प्लॅन", 
+        amount: 699, 
+        days: 180, 
+        tag: "", 
+        desc: "दीर्घकालीन बचत प्लॅन",
+        popular: false
+    },
+    { 
+        id: "1y", 
+        name: "१ वर्ष प्लॅन", 
+        amount: 1199, 
+        days: 365, 
+        tag: "सर्वोत्कृष्ट बचत", 
+        desc: "वर्षभर निश्चिंत वापर",
+        popular: false
+    }
+];
+
+// WhatsApp सपोर्ट नंबर (भविष्यात नंबर बदलल्यास फक्त इथे बदला!)
+const SUPPORT_WHATSAPP_NUMBER = "9403901395";
 }
