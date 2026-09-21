@@ -188,9 +188,9 @@
                 
                 const userId = authData.user.id;
 
-                // २. युजरची माहिती user_profiles टेबलमध्ये सेव्ह करणे
-                const today = new Date().toISOString().split('T')[0];
-                
+                // २. युजरची माहिती user_profiles टेबलमध्ये सेव्ह करणे (पर्याय १ नुसार)
+                // 🟢 लक्ष द्या: start_date आणि expire_date दोन्ही null (रिकामे) ठेवले आहेत
+                // जेणेकरून युझर एक्सपायर दिसणार नाही आणि रिचार्ज झाल्यावरच तारीख पडेल!
                 const { error: profileError } = await _supabase
                     .from('user_profiles')
                     .insert([{
@@ -200,8 +200,9 @@
                         mobile_number: mobile,
                         shop_name: shopName,
                         address: address,
-                        plan_status: 'Inactive',
-                        expire_date: today
+                        plan_status: 'Inactive', // नवीन युझरचा प्लॅन इनॅक्टिव्ह राहील
+                        start_date: null,        // रिचार्ज झाल्यावर तारीख पडेल
+                        expire_date: null        // रिचार्ज झाल्यावर तारीख पडेल
                     }]);
 
                 if (profileError) {
