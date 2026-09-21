@@ -1,346 +1,228 @@
 <!DOCTYPE html>
 <html lang="mr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>खात्यात प्रवेश करा • Login</title>
-  <style>
-    /* बेसिक रिसेट आणि फॉन्ट */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - QuickIDPrint</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- तुमची Config फाईल जिथे Backend URL आणि Supabase Keys आहेत -->
+    <script src="config.js"></script>
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
-      background-color: #f8fafc; /* स्वच्छ फिकट बॅकग्राउंड */
-      color: #0f172a;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.25rem;
-    }
-
-    /* लॉगिन कार्ड बॉक्स */
-    .login-card {
-      width: 100%;
-      max-width: 400px;
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 1rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-      padding: 2.25rem;
-    }
-
-    /* हेडर आणि लोगो */
-    .header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    .logo-badge {
-      width: 48px;
-      height: 48px;
-      background: #eff6ff;
-      color: #2563eb;
-      border-radius: 0.75rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1rem;
-    }
-
-    .logo-badge svg {
-      width: 24px;
-      height: 24px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-    }
-
-    .title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #0f172a;
-      margin-bottom: 0.35rem;
-      letter-spacing: -0.025em;
-    }
-
-    .subtitle {
-      font-size: 0.875rem;
-      color: #64748b;
-    }
-
-    /* इनपुट फिल्ड्स */
-    .form-group {
-      margin-bottom: 1.25rem;
-    }
-
-    .form-label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: #334155;
-      margin-bottom: 0.5rem;
-    }
-
-    .input-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .input-icon {
-      position: absolute;
-      left: 0.875rem;
-      color: #94a3b8;
-      display: flex;
-      pointer-events: none;
-    }
-
-    .input-icon svg {
-      width: 18px;
-      height: 18px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-    }
-
-    .form-input {
-      width: 100%;
-      height: 2.75rem;
-      padding: 0 0.875rem 0 2.625rem;
-      font-size: 0.9375rem;
-      color: #0f172a;
-      background-color: #ffffff;
-      border: 1px solid #cbd5e1;
-      border-radius: 0.5rem;
-      outline: none;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    .form-input:focus {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-    }
-
-    .form-input::placeholder {
-      color: #94a3b8;
-    }
-
-    /* पासवर्ड दाखवणे/लपवणे आयकॉन */
-    .toggle-password {
-      position: absolute;
-      right: 0.875rem;
-      background: none;
-      border: none;
-      color: #64748b;
-      cursor: pointer;
-      display: flex;
-      padding: 0;
-    }
-
-    .toggle-password:hover {
-      color: #0f172a;
-    }
-
-    .toggle-password svg {
-      width: 18px;
-      height: 18px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-    }
-
-    /* ऑप्शन्स: माझी नोंद ठेवा आणि पासवर्ड विसरलात */
-    .form-options {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 0.875rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .remember-me {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: #475569;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .remember-me input {
-      accent-color: #2563eb;
-      cursor: pointer;
-    }
-
-    .forgot-link {
-      color: #2563eb;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    .forgot-link:hover {
-      text-decoration: underline;
-    }
-
-    /* मुख्य लॉगिन बटन */
-    .btn-submit {
-      width: 100%;
-      height: 2.75rem;
-      background-color: #2563eb;
-      color: #ffffff;
-      border: none;
-      border-radius: 0.5rem;
-      font-size: 0.9375rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      transition: background-color 0.15s ease, transform 0.05s ease;
-    }
-
-    .btn-submit:hover {
-      background-color: #1d4ed8;
-    }
-
-    .btn-submit:active {
-      transform: scale(0.99);
-    }
-
-    .btn-submit svg {
-      width: 18px;
-      height: 18px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-    }
-
-    /* फुटर */
-    .footer {
-      text-align: center;
-      margin-top: 1.5rem;
-      font-size: 0.875rem;
-      color: #64748b;
-    }
-
-    .footer a {
-      color: #2563eb;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .footer a:hover {
-      text-decoration: underline;
-    }
-  </style>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Mukta',sans-serif}
+        :root{
+            --navy:#123a8f;--blue:#2563eb;--orange:#f97316;
+            --text:#172554;--muted:#64748b;--line:#dce5f2
+        }
+        body{
+            min-height:100vh;display:flex;align-items:center;justify-content:center;
+            padding:24px;
+            background:
+              radial-gradient(circle at 8% 8%,rgba(255,211,70,.20),transparent 25%),
+              radial-gradient(circle at 92% 85%,rgba(37,99,235,.11),transparent 27%),
+              linear-gradient(135deg,#fffdf6 0%,#f4f8fd 52%,#edf3fb 100%);
+            color:var(--text);overflow-x:hidden
+        }
+        .login-container{
+            width:100%;max-width:920px;min-height:550px;display:grid;
+            grid-template-columns:46% 54%;overflow:hidden;
+            background:rgba(255,255,255,.96);border:1px solid #e3eaf4;
+            border-radius:28px;box-shadow:0 24px 60px rgba(18,58,143,.13)
+        }
+        .login-container:before{
+            content:"";position:absolute;pointer-events:none
+        }
+        .brand-panel{
+            position:relative;padding:48px 38px;display:flex;flex-direction:column;
+            justify-content:center;overflow:hidden;
+            background:linear-gradient(145deg,#102d73 0%,#1d4fa8 68%,#2866c9 100%);
+            color:#fff
+        }
+        .brand-panel:after{
+            content:"";position:absolute;width:330px;height:330px;right:-150px;top:-120px;
+            border-radius:50%;background:rgba(255,215,70,.13)
+        }
+        .brand-panel:before{
+            content:"";position:absolute;width:210px;height:210px;left:-110px;bottom:-100px;
+            border-radius:50%;background:rgba(255,255,255,.06)
+        }
+        .panel-logo{
+            width:100px;height:100px;border-radius:24px;object-fit:contain;
+            background:#fff;padding:7px;box-shadow:0 12px 28px rgba(0,0,0,.18);
+            margin-bottom:22px;position:relative;z-index:2
+        }
+        .panel-brand{font-size:37px;font-weight:800;line-height:1;position:relative;z-index:2}
+        .panel-brand .q-blue{color:#fff}.panel-brand .q-orange{color:#ff9b42}
+        .panel-tag{font-size:15px;color:#dce8ff;margin-top:8px;position:relative;z-index:2}
+        .panel-title{font-size:25px;font-weight:800;margin-top:35px;position:relative;z-index:2}
+        .panel-sub{font-size:14px;color:#cbdcff;line-height:1.6;margin-top:6px;position:relative;z-index:2}
+        .feature-list{display:flex;flex-direction:column;gap:11px;margin-top:25px;position:relative;z-index:2}
+        .feature-list div{
+            display:flex;align-items:center;gap:10px;color:#eaf1ff;font-size:13px
+        }
+        .feature-list i{
+            width:28px;height:28px;border-radius:9px;display:grid;place-items:center;
+            background:rgba(255,255,255,.12);color:#ffe27a
+        }
+        .form-panel{padding:48px 48px;display:flex;flex-direction:column;justify-content:center}
+        .form-top{text-align:left;margin-bottom:28px}
+        .form-top .eyebrow{
+            display:inline-flex;align-items:center;gap:6px;
+            color:#f97316;font-size:12px;font-weight:800;letter-spacing:.5px;
+            background:#fff3e9;padding:5px 10px;border-radius:999px
+        }
+        .form-top h1{font-size:31px;color:var(--navy);margin-top:11px;font-weight:800}
+        .form-top p{font-size:13px;color:var(--muted);margin-top:3px}
+        .input-group{position:relative;margin-bottom:19px;text-align:left}
+        .input-group label{display:block;margin-bottom:7px;font-weight:700;color:#334155;font-size:14px}
+        .input-group i{
+            position:absolute;top:40px;left:14px;color:#7b8ca6;font-size:14px
+        }
+        .input-group input{
+            width:100%;height:48px;padding:11px 13px 11px 40px;
+            border:1px solid var(--line);border-radius:12px;font-size:15px;
+            color:#1e293b;background:#f8fbff;outline:none;transition:.22s
+        }
+        .input-group input:focus{
+            border-color:#80a8ff;background:#fff;
+            box-shadow:0 0 0 4px rgba(37,99,235,.09)
+        }
+        .login-btn{
+            width:100%;height:49px;margin-top:5px;border:0;border-radius:12px;
+            background:linear-gradient(135deg,#123a8f,#2e60c8);color:#fff;
+            font-size:17px;font-weight:800;cursor:pointer;transition:.22s;
+            box-shadow:0 9px 20px rgba(18,58,143,.18)
+        }
+        .login-btn:hover{transform:translateY(-2px);box-shadow:0 13px 25px rgba(18,58,143,.24)}
+        .login-btn:disabled{background:#94a3b8;box-shadow:none;cursor:not-allowed;transform:none}
+        .secure-note{
+            display:flex;align-items:center;justify-content:center;gap:7px;
+            color:#718096;font-size:11px;margin-top:18px
+        }
+        .secure-note i{color:#22c55e}
+        @media(max-width:760px){
+            body{padding:13px}
+            .login-container{grid-template-columns:1fr;max-width:480px;min-height:auto;border-radius:22px}
+            .brand-panel{padding:25px 25px 27px;min-height:235px}
+            .panel-logo{width:72px;height:72px;border-radius:18px;margin-bottom:13px}
+            .panel-brand{font-size:29px}.panel-title{font-size:19px;margin-top:16px}
+            .panel-sub,.feature-list{display:none}
+            .form-panel{padding:30px 25px 32px}
+            .form-top h1{font-size:27px}
+        }
+    </style>
 </head>
 <body>
 
-  <div class="login-card">
-    <!-- Header -->
-    <div class="header">
-      <div class="logo-badge">
-        <svg viewBox="0 0 24 24">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-      </div>
-      <h1 class="title">खात्यात प्रवेश करा</h1>
-      <p class="subtitle">तुमचा ईमेल व पासवर्ड टाकून लॉगिन करा</p>
+    <div class="login-container">
+        <section class="brand-panel">
+            <img src="logo.png" alt="QuickIDPrint Logo" class="panel-logo">
+            <div class="panel-brand"><span class="q-blue">Quick</span><span class="q-orange">ID</span><span class="q-blue">Print</span></div>
+            <div class="panel-tag">जलद • सोपे • विश्वासनीय</div>
+            <div class="panel-title">आपल्या डिजिटल सेवांचे स्वागत आहे</div>
+            <div class="panel-sub">घोषणापत्र, आयडी कार्ड आणि इतर ऑनलाइन सेवा एका सुरक्षित पोर्टलवर.</div>
+            <div class="feature-list">
+                <div><i class="fas fa-shield-halved"></i> सुरक्षित लॉगिन</div>
+                <div><i class="fas fa-bolt"></i> जलद आणि सोपी प्रक्रिया</div>
+                <div><i class="fas fa-print"></i> प्रिंटसाठी तयार सेवा</div>
+            </div>
+        </section>
+
+        <section class="form-panel">
+            <div class="form-top">
+                <span class="eyebrow"><i class="fas fa-lock"></i> SECURE LOGIN</span>
+                <h1>लॉगिन करा</h1>
+                <p>आपल्या QuickIDPrint खात्यात प्रवेश करा</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="input-group">
+                    <label>ईमेल (युजरनेम)</label>
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" placeholder="तुमचा नोंदणीकृत ईमेल" required>
+                </div>
+                <div class="input-group">
+                    <label>पासवर्ड</label>
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="तुमचा पासवर्ड टाका" required>
+                </div>
+                <button type="submit" class="login-btn" id="loginBtn">लॉगिन करा</button>
+            </form>
+            
+            <!-- नवीन रजिस्ट्रेशन लिंक -->
+            <div style="text-align:center; margin-top:18px; font-size:14px; font-weight:600;">
+                नवीन आहात? <a href="register.html" style="color:var(--blue); text-decoration:none;">येथे खाते तयार करा</a>
+            </div>
+
+            <div class="secure-note"><i class="fas fa-circle-check"></i> तुमची माहिती सुरक्षित ठेवली जाते</div>
+        </section>
     </div>
 
-    <!-- Login Form -->
-    <form id="loginForm" onsubmit="submitLogin(event)">
-      <!-- Email / User ID -->
-      <div class="form-group">
-        <label for="userEmail" class="form-label">ईमेल किंवा युझर आयडी</label>
-        <div class="input-wrapper">
-          <span class="input-icon">
-            <svg viewBox="0 0 24 24">
-              <rect width="20" height="16" x="2" y="4" rx="2"/>
-              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-            </svg>
-          </span>
-          <input 
-            type="text" 
-            id="userEmail" 
-            class="form-input" 
-            placeholder="नाव@example.com" 
-            required 
-            autocomplete="username"
-          >
-        </div>
-      </div>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.innerText = "तपासत आहे...";
+            loginBtn.disabled = true;
 
-      <!-- Password -->
-      <div class="form-group">
-        <label for="userPassword" class="form-label">पासवर्ड</label>
-        <div class="input-wrapper">
-          <span class="input-icon">
-            <svg viewBox="0 0 24 24">
-              <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-            </svg>
-          </span>
-          <input 
-            type="password" 
-            id="userPassword" 
-            class="form-input" 
-            placeholder="••••••••" 
-            required 
-            autocomplete="current-password"
-          >
-          <button type="button" class="toggle-password" onclick="togglePassword()">
-            <svg viewBox="0 0 24 24">
-              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
-        </div>
-      </div>
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
 
-      <!-- Options -->
-      <div class="form-options">
-        <label class="remember-me">
-          <input type="checkbox" id="rememberMe">
-          <span>माझी नोंद ठेवा</span>
-        </label>
-        <a href="#" class="forgot-link">पासवर्ड विसरलात?</a>
-      </div>
+            try {
+                // १. Supabase Auth द्वारे लॉगिन करणे
+                const { data: authData, error: authError } = await _supabase.auth.signInWithPassword({
+                    email: email,
+                    password: pass
+                });
 
-      <!-- Submit Button -->
-      <button type="submit" class="btn-submit">
-        <span>लॉगिन करा</span>
-        <svg viewBox="0 0 24 24">
-          <path d="M5 12h14M12 5l7 7-7 7"/>
-        </svg>
-      </button>
-    </form>
+                if (authError) {
+                    throw new Error("चुकीचा ईमेल किंवा पासवर्ड.");
+                }
 
-    <!-- Footer -->
-    <div class="footer">
-      खाते नाही का? <a href="#">नवीन खाते तयार करा</a>
-    </div>
-  </div>
+                const userId = authData.user.id;
 
-  <script>
-    // पासवर्ड पाहण्यासाठी आयकॉनवर क्लिक केल्यास toggle करणे
-    function togglePassword() {
-      const pwd = document.getElementById('userPassword');
-      pwd.type = (pwd.type === 'password') ? 'text' : 'password';
-    }
+                // २. Python Backend (Render) कडे व्हॅलिडिटी चेकसाठी पाठवणे
+                const response = await fetch(`${BACKEND_URL}/check-validity`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: userId })
+                });
 
-    // लॉगिन फॉर्म सबमिट फंक्शन
-    function submitLogin(e) {
-      e.preventDefault();
-      const email = document.getElementById('userEmail').value;
-      alert("स्वागत आहे! " + email + " लॉगिन यशस्वी झाले.");
-    }
-  </script>
+                const result = await response.json();
+
+                // बॅकएंडकडून एरर आल्यास (उदा. प्लॅन संपला असेल)
+                if (!response.ok || result.error) {
+                    await _supabase.auth.signOut(); // प्लॅन नसल्यास सुरक्षेसाठी लॉगआऊट करा
+                    throw new Error(result.error || "प्लॅन तपासताना त्रुटी आली.");
+                }
+
+                // ३. प्लॅन ॲक्टिव्ह असल्यास डॅशबोर्डवर पाठवणे
+                if (result.is_active) {
+                    // ब्राउझरमध्ये माहिती सेव्ह करा
+                    sessionStorage.setItem('username', email);
+                    sessionStorage.setItem('expireDate', result.expire_date || "");
+                    
+                    // ॲडमिन लॉगिन असल्यास ॲडमिन पेजवर पाठवा
+                    if(email.toLowerCase().includes('admin')) {
+                        window.location.href = "admin.html"; 
+                    } else {
+                        // सामान्य युजर असल्यास होम पेजवर पाठवा
+                        window.location.href = "home.html"; 
+                    }
+                }
+
+            } catch (err) {
+                alert("लॉगिन अयशस्वी! \n" + err.message);
+                loginBtn.innerText = "लॉगिन करा";
+                loginBtn.disabled = false;
+            }
+        });
+    </script>
 </body>
 </html>
