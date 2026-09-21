@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - QuickIDPrint</title>
+    <title>लॉगिन • QuickIDPrint</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Supabase JS Library -->
+    <!-- Supabase JS Library & Config -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- तुमची Config फाईल जिथे Backend URL आणि Supabase Keys आहेत -->
     <script src="config.js"></script>
 
     <style>
@@ -26,113 +25,126 @@
               radial-gradient(circle at 8% 8%,rgba(255,211,70,.20),transparent 25%),
               radial-gradient(circle at 92% 85%,rgba(37,99,235,.11),transparent 27%),
               linear-gradient(135deg,#fffdf6 0%,#f4f8fd 52%,#edf3fb 100%);
-            color:var(--text);overflow-x:hidden
+            color:var(--text);overflow-x:hidden;
         }
         .login-container{
             width:100%;max-width:920px;min-height:550px;display:grid;
             grid-template-columns:46% 54%;overflow:hidden;
             background:rgba(255,255,255,.96);border:1px solid #e3eaf4;
-            border-radius:28px;box-shadow:0 24px 60px rgba(18,58,143,.13)
-        }
-        .login-container:before{
-            content:"";position:absolute;pointer-events:none
+            border-radius:28px;box-shadow:0 24px 60px rgba(18,58,143,.13);
         }
         .brand-panel{
             position:relative;padding:48px 38px;display:flex;flex-direction:column;
             justify-content:center;overflow:hidden;
             background:linear-gradient(145deg,#102d73 0%,#1d4fa8 68%,#2866c9 100%);
-            color:#fff
-        }
-        .brand-panel:after{
-            content:"";position:absolute;width:330px;height:330px;right:-150px;top:-120px;
-            border-radius:50%;background:rgba(255,215,70,.13)
-        }
-        .brand-panel:before{
-            content:"";position:absolute;width:210px;height:210px;left:-110px;bottom:-100px;
-            border-radius:50%;background:rgba(255,255,255,.06)
+            color:#fff;
         }
         .panel-logo{
-            width:100px;height:100px;border-radius:24px;object-fit:contain;
+            width:90px;height:90px;border-radius:22px;object-fit:contain;
             background:#fff;padding:7px;box-shadow:0 12px 28px rgba(0,0,0,.18);
-            margin-bottom:22px;position:relative;z-index:2
+            margin-bottom:20px;position:relative;z-index:2;
         }
-        .panel-brand{font-size:37px;font-weight:800;line-height:1;position:relative;z-index:2}
+        .panel-brand{font-size:35px;font-weight:800;line-height:1;position:relative;z-index:2}
         .panel-brand .q-blue{color:#fff}.panel-brand .q-orange{color:#ff9b42}
         .panel-tag{font-size:15px;color:#dce8ff;margin-top:8px;position:relative;z-index:2}
-        .panel-title{font-size:25px;font-weight:800;margin-top:35px;position:relative;z-index:2}
+        .panel-title{font-size:23px;font-weight:800;margin-top:30px;position:relative;z-index:2}
         .panel-sub{font-size:14px;color:#cbdcff;line-height:1.6;margin-top:6px;position:relative;z-index:2}
-        .feature-list{display:flex;flex-direction:column;gap:11px;margin-top:25px;position:relative;z-index:2}
-        .feature-list div{
-            display:flex;align-items:center;gap:10px;color:#eaf1ff;font-size:13px
-        }
+        .feature-list{display:flex;flex-direction:column;gap:11px;margin-top:22px;position:relative;z-index:2}
+        .feature-list div{display:flex;align-items:center;gap:10px;color:#eaf1ff;font-size:13px}
         .feature-list i{
             width:28px;height:28px;border-radius:9px;display:grid;place-items:center;
-            background:rgba(255,255,255,.12);color:#ffe27a
+            background:rgba(255,255,255,.12);color:#ffe27a;
         }
-        .form-panel{padding:48px 48px;display:flex;flex-direction:column;justify-content:center}
-        .form-top{text-align:left;margin-bottom:28px}
+        .form-panel{padding:45px 45px;display:flex;flex-direction:column;justify-content:center}
+        .form-top{text-align:left;margin-bottom:24px}
         .form-top .eyebrow{
             display:inline-flex;align-items:center;gap:6px;
             color:#f97316;font-size:12px;font-weight:800;letter-spacing:.5px;
-            background:#fff3e9;padding:5px 10px;border-radius:999px
+            background:#fff3e9;padding:5px 10px;border-radius:999px;
         }
-        .form-top h1{font-size:31px;color:var(--navy);margin-top:11px;font-weight:800}
+        .form-top h1{font-size:30px;color:var(--navy);margin-top:10px;font-weight:800}
         .form-top p{font-size:13px;color:var(--muted);margin-top:3px}
-        .input-group{position:relative;margin-bottom:19px;text-align:left}
+        .input-group{position:relative;margin-bottom:18px;text-align:left}
         .input-group label{display:block;margin-bottom:7px;font-weight:700;color:#334155;font-size:14px}
-        .input-group i{
-            position:absolute;top:40px;left:14px;color:#7b8ca6;font-size:14px
-        }
+        .input-group i{position:absolute;top:40px;left:14px;color:#7b8ca6;font-size:14px}
         .input-group input{
             width:100%;height:48px;padding:11px 13px 11px 40px;
             border:1px solid var(--line);border-radius:12px;font-size:15px;
-            color:#1e293b;background:#f8fbff;outline:none;transition:.22s
+            color:#1e293b;background:#f8fbff;outline:none;transition:.22s;
         }
         .input-group input:focus{
             border-color:#80a8ff;background:#fff;
-            box-shadow:0 0 0 4px rgba(37,99,235,.09)
+            box-shadow:0 0 0 4px rgba(37,99,235,.09);
         }
+        .form-options{
+            display:flex;justify-content:space-between;align-items:center;
+            margin-bottom:15px;font-size:13px;
+        }
+        .forgot-link{color:var(--blue);text-decoration:none;font-weight:700;cursor:pointer}
+        .forgot-link:hover{text-decoration:underline}
+        
         .login-btn{
-            width:100%;height:49px;margin-top:5px;border:0;border-radius:12px;
+            width:100%;height:49px;border:0;border-radius:12px;
             background:linear-gradient(135deg,#123a8f,#2e60c8);color:#fff;
             font-size:17px;font-weight:800;cursor:pointer;transition:.22s;
-            box-shadow:0 9px 20px rgba(18,58,143,.18)
+            box-shadow:0 9px 20px rgba(18,58,143,.18);
         }
         .login-btn:hover{transform:translateY(-2px);box-shadow:0 13px 25px rgba(18,58,143,.24)}
-        .login-btn:disabled{background:#94a3b8;box-shadow:none;cursor:not-allowed;transform:none}
-        .secure-note{
-            display:flex;align-items:center;justify-content:center;gap:7px;
-            color:#718096;font-size:11px;margin-top:18px
+        .login-btn:disabled{background:#94a3b8;cursor:not-allowed;transform:none}
+        
+        .register-link{text-align:center;margin-top:18px;font-size:14px;color:#64748b}
+        .register-link a{color:var(--orange);font-weight:700;text-decoration:none}
+        
+        /* Modal (पासवर्ड विसरलात? चा पॉपअप बॉक्स) */
+        .modal-backdrop{
+            position:fixed;top:0;left:0;width:100%;height:100%;
+            background:rgba(15,23,42,0.65);backdrop-filter:blur(4px);
+            display:none;align-items:center;justify-content:center;
+            z-index:9999;padding:16px;
         }
-        .secure-note i{color:#22c55e}
+        .modal-box{
+            background:#fff;width:100%;max-width:420px;border-radius:24px;
+            padding:30px;box-shadow:0 20px 40px rgba(0,0,0,0.25);
+            text-align:left;position:relative;animation:popIn 0.25s ease-out;
+        }
+        @keyframes popIn {
+            from{transform:scale(0.95);opacity:0}
+            to{transform:scale(1);opacity:1}
+        }
+        .modal-close{
+            position:absolute;top:18px;right:18px;background:none;border:none;
+            font-size:20px;color:#94a3b8;cursor:pointer;
+        }
+        .modal-close:hover{color:#0f172a}
+        .modal-title{font-size:20px;color:var(--navy);font-weight:800;margin-bottom:6px}
+        .modal-desc{font-size:13px;color:#64748b;margin-bottom:20px;line-height:1.5}
+        
         @media(max-width:760px){
             body{padding:13px}
-            .login-container{grid-template-columns:1fr;max-width:480px;min-height:auto;border-radius:22px}
-            .brand-panel{padding:25px 25px 27px;min-height:235px}
-            .panel-logo{width:72px;height:72px;border-radius:18px;margin-bottom:13px}
-            .panel-brand{font-size:29px}.panel-title{font-size:19px;margin-top:16px}
-            .panel-sub,.feature-list{display:none}
-            .form-panel{padding:30px 25px 32px}
-            .form-top h1{font-size:27px}
+            .login-container{grid-template-columns:1fr;max-width:480px;border-radius:22px}
+            .brand-panel{display:none}
+            .form-panel{padding:32px 24px}
         }
     </style>
 </head>
 <body>
 
     <div class="login-container">
+        <!-- डावा ब्रँडिंग पॅनेल -->
         <section class="brand-panel">
             <img src="logo.png" alt="QuickIDPrint Logo" class="panel-logo">
             <div class="panel-brand"><span class="q-blue">Quick</span><span class="q-orange">ID</span><span class="q-blue">Print</span></div>
             <div class="panel-tag">जलद • सोपे • विश्वासनीय</div>
             <div class="panel-title">आपल्या डिजिटल सेवांचे स्वागत आहे</div>
-            <div class="panel-sub">घोषणापत्र, आयडी कार्ड आणि इतर ऑनलाइन सेवा एका सुरक्षित पोर्टलवर.</div>
+            <div class="panel-sub">घोषणापत्र, आयडी कार्ड आणि इतर सर्व सेवा एकाच सुरक्षित पोर्टलवर.</div>
             <div class="feature-list">
-                <div><i class="fas fa-shield-halved"></i> सुरक्षित लॉगिन</div>
+                <div><i class="fas fa-shield-halved"></i> सुरक्षित लॉगिन आणि डेटाबेस</div>
                 <div><i class="fas fa-bolt"></i> जलद आणि सोपी प्रक्रिया</div>
                 <div><i class="fas fa-print"></i> प्रिंटसाठी तयार सेवा</div>
             </div>
         </section>
 
+        <!-- उजवा फॉर्म पॅनेल -->
         <section class="form-panel">
             <div class="form-top">
                 <span class="eyebrow"><i class="fas fa-lock"></i> SECURE LOGIN</span>
@@ -141,29 +153,78 @@
             </div>
 
             <form id="loginForm">
+                <!-- ईमेल किंवा मोबाईल नंबर -->
                 <div class="input-group">
-                    <label>ईमेल (युजरनेम)</label>
+                    <label>नोंदणीकृत ईमेल किंवा मोबाईल नंबर</label>
                     <i class="fas fa-envelope"></i>
-                    <input type="email" id="email" placeholder="तुमचा नोंदणीकृत ईमेल" required>
+                    <input type="text" id="loginIdentifier" placeholder="उदा. नाव@gmail.com किंवा मोबाईल" required>
                 </div>
+
+                <!-- पासवर्ड -->
                 <div class="input-group">
                     <label>पासवर्ड</label>
                     <i class="fas fa-lock"></i>
-                    <input type="password" id="password" placeholder="तुमचा पासवर्ड टाका" required>
+                    <input type="password" id="loginPassword" placeholder="तुमचा पासवर्ड टाका" required>
                 </div>
+
+                <!-- पर्याय: पासवर्ड विसरलात -->
+                <div class="form-options">
+                    <span></span>
+                    <a class="forgot-link" onclick="openForgotModal()">पासवर्ड विसरलात?</a>
+                </div>
+
+                <!-- लॉगिन बटण -->
                 <button type="submit" class="login-btn" id="loginBtn">लॉगिन करा</button>
             </form>
-            
-            <!-- नवीन रजिस्ट्रेशन लिंक -->
-            <div style="text-align:center; margin-top:18px; font-size:14px; font-weight:600;">
-                नवीन आहात? <a href="register.html" style="color:var(--blue); text-decoration:none;">येथे खाते तयार करा</a>
-            </div>
 
-            <div class="secure-note"><i class="fas fa-circle-check"></i> तुमची माहिती सुरक्षित ठेवली जाते</div>
+            <div class="register-link">
+                नवीन सेंटर आहे का? <a href="register.html">येथे मोफत नोंदणी करा</a>
+            </div>
         </section>
     </div>
 
+    <!-- 🟢 पासवर्ड विसरलात? (Mobile Number + Email द्वारे थेट पासवर्ड बदलणारा पॉपअप) -->
+    <div class="modal-backdrop" id="forgotModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeForgotModal()">&times;</button>
+            
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                <div style="width:40px;height:40px;background:#eff6ff;color:#2563eb;border-radius:12px;display:grid;place-items:center;">
+                    <i class="fas fa-key"></i>
+                </div>
+                <h2 class="modal-title" style="margin:0;">पासवर्ड रीसेट करा</h2>
+            </div>
+            
+            <p class="modal-desc">खाते सुरक्षिततेसाठी तुमचा नोंदणीकृत मोबाईल नंबर आणि ईमेल टाकून नवीन पासवर्ड सेट करा.</p>
+
+            <form id="forgotForm">
+                <div class="input-group">
+                    <label>नोंदणीकृत मोबाईल नंबर</label>
+                    <i class="fas fa-phone-alt"></i>
+                    <input type="tel" id="resetMobile" placeholder="१० अंकी मोबाईल नंबर" required pattern="[0-9]{10}">
+                </div>
+
+                <div class="input-group">
+                    <label>नोंदणीकृत ईमेल आयडी</label>
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="resetEmail" placeholder="तुमचा नोंदणीकृत ईमेल" required>
+                </div>
+
+                <div class="input-group">
+                    <label>नवीन पासवर्ड सेट करा</label>
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="resetNewPassword" placeholder="किमान ६ अक्षरांचा नवीन पासवर्ड" required minlength="6">
+                </div>
+
+                <button type="submit" class="login-btn" id="resetBtn" style="margin-top:10px;">पासवर्ड अपडेट करा</button>
+            </form>
+        </div>
+    </div>
+
     <script>
+        // ==========================================
+        // १. लॉगिन आणि व्हॅलिडिटी (Validity) लॉजिक
+        // ==========================================
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -171,56 +232,161 @@
             loginBtn.innerText = "तपासत आहे...";
             loginBtn.disabled = true;
 
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
+            const identifier = document.getElementById('loginIdentifier').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
 
             try {
-                // १. Supabase Auth द्वारे लॉगिन करणे
+                let userEmail = identifier;
+
+                // जर युजरने मोबाईल नंबर टाकला असेल, तर डेटाबेसमधून त्याचा ईमेल शोधणे
+                if (!identifier.includes('@')) {
+                    const { data: userProfile, error: searchError } = await _supabase
+                        .from('user_profiles')
+                        .select('email')
+                        .eq('mobile_number', identifier)
+                        .maybeSingle();
+
+                    if (searchError || !userProfile) {
+                        throw new Error("हा मोबाईल नंबर नोंदणीकृत नाही. कृपया बरोबर नंबर टाका किंवा नोंदणी करा.");
+                    }
+                    userEmail = userProfile.email;
+                }
+
+                // Supabase Auth द्वारे सुरक्षित लॉगिन
                 const { data: authData, error: authError } = await _supabase.auth.signInWithPassword({
-                    email: email,
-                    password: pass
+                    email: userEmail,
+                    password: password
                 });
 
                 if (authError) {
-                    throw new Error("चुकीचा ईमेल किंवा पासवर्ड.");
+                    throw new Error("ईमेल/मोबाईल नंबर किंवा पासवर्ड चुकीचा आहे. कृपया पुन्हा तपासा.");
                 }
 
                 const userId = authData.user.id;
 
-                // २. Python Backend (Render) कडे व्हॅलिडिटी चेकसाठी पाठवणे
-                const response = await fetch(`${BACKEND_URL}/check-validity`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: userId })
-                });
+                // युजरच्या प्रोफाइलमधून व्हॅलिडिटी डिटेल्स आणणे
+                const { data: profile, error: profileError } = await _supabase
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
 
-                const result = await response.json();
-
-                // बॅकएंडकडून एरर आल्यास (उदा. प्लॅन संपला असेल)
-                if (!response.ok || result.error) {
-                    await _supabase.auth.signOut(); // प्लॅन नसल्यास सुरक्षेसाठी लॉगआऊट करा
-                    throw new Error(result.error || "प्लॅन तपासताना त्रुटी आली.");
+                if (profileError || !profile) {
+                    throw new Error("प्रोफाईल माहिती मिळू शकली नाही.");
                 }
 
-                // ३. प्लॅन ॲक्टिव्ह असल्यास डॅशबोर्डवर पाठवणे
-                if (result.is_active) {
-                    // ब्राउझरमध्ये माहिती सेव्ह करा
-                    sessionStorage.setItem('username', email);
-                    sessionStorage.setItem('expireDate', result.expire_date || "");
-                    
-                    // ॲडमिन लॉगिन असल्यास ॲडमिन पेजवर पाठवा
-                    if(email.toLowerCase().includes('admin')) {
-                        window.location.href = "admin.html"; 
-                    } else {
-                        // सामान्य युजर असल्यास होम पेजवर पाठवा
-                        window.location.href = "home.html"; 
+                // 🟢 पर्याय १: व्हॅलिडिटी आणि शिल्लक दिवसांचे अचूक गणित
+                let planStatus = profile.plan_status || 'Inactive';
+                let remainingDays = 0;
+                const today = new Date();
+                today.setHours(0,0,0,0);
+
+                if (profile.expire_date && planStatus === 'Active') {
+                    const expireDate = new Date(profile.expire_date);
+                    expireDate.setHours(0,0,0,0);
+                    const diffTime = expireDate - today;
+                    remainingDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                    // मुदत संपली असल्यास 'Expired' करणे
+                    if (remainingDays <= 0) {
+                        planStatus = 'Expired';
+                        remainingDays = 0;
+                        await _supabase.from('user_profiles').update({ plan_status: 'Expired' }).eq('id', userId);
                     }
+                } else {
+                    // नवीन नोंदणी (अजून रिचार्ज नाही)
+                    planStatus = 'Inactive';
+                    remainingDays = 0;
+                }
+
+                // सेशनमध्ये माहिती सेव्ह करणे (ज्यामुळे home.html वर सर्व माहिती दिसेल)
+                sessionStorage.setItem('userId', userId);
+                sessionStorage.setItem('username', profile.mobile_number);
+                sessionStorage.setItem('userEmail', profile.email);
+                sessionStorage.setItem('userFullName', profile.full_name || "युजर");
+                sessionStorage.setItem('shopName', profile.shop_name || "");
+                sessionStorage.setItem('planStatus', planStatus);
+                sessionStorage.setItem('startDate', profile.start_date || "");
+                sessionStorage.setItem('expireDate', profile.expire_date || "");
+                sessionStorage.setItem('remainingDays', remainingDays);
+
+                // ॲडमिन असल्यास admin.html वर, नाहीतर home.html वर नेणे
+                const returnedName = (profile.full_name || "").trim().toLowerCase();
+                if (returnedName === 'admin' || profile.email === 'admin@quickidprint.com') {
+                    window.location.href = "admin.html";
+                } else {
+                    window.location.href = "home.html";
                 }
 
             } catch (err) {
-                alert("लॉगिन अयशस्वी! \n" + err.message);
+                alert("लॉगिन अयशस्वी: \n" + (err.message || "कृपया माहिती तपासा."));
                 loginBtn.innerText = "लॉगिन करा";
                 loginBtn.disabled = false;
+            }
+        });
+
+        // ==========================================
+        // २. थेट पासवर्ड रीसेट (Mobile + Email)
+        // ==========================================
+        function openForgotModal() {
+            document.getElementById('forgotModal').style.display = 'flex';
+        }
+        function closeForgotModal() {
+            document.getElementById('forgotModal').style.display = 'none';
+        }
+
+        document.getElementById('forgotForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const resetBtn = document.getElementById('resetBtn');
+            resetBtn.innerText = "पासवर्ड बदलत आहे...";
+            resetBtn.disabled = true;
+
+            const mobile = document.getElementById('resetMobile').value.trim();
+            const email = document.getElementById('resetEmail').value.trim().toLowerCase();
+            const newPassword = document.getElementById('resetNewPassword').value.trim();
+
+            try {
+                // पायरी १: मोबाईल आणि ईमेल दोन्ही जुळतात का ते तपासणे
+                const { data: userProfile, error: checkError } = await _supabase
+                    .from('user_profiles')
+                    .select('id, email, mobile_number')
+                    .eq('mobile_number', mobile)
+                    .eq('email', email)
+                    .maybeSingle();
+
+                if (checkError || !userProfile) {
+                    throw new Error("हा मोबाईल नंबर आणि ईमेल रेकॉर्डमध्ये जुळले नाहीत. कृपया नोंदणी करताना दिलेलीच माहिती टाका.");
+                }
+
+                // पायरी २: Render वरील बॅकएंड API कडून Supabase Auth चा पासवर्ड बदलणे
+                // (टीप: येथे तुमच्या Render वरील Flask ॲपची खरी URL टाका)
+                const response = await fetch("https://your-flask-app.onrender.com/reset-password", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        userId: userProfile.id,
+                        email: email,
+                        mobile: mobile,
+                        newPassword: newPassword
+                    })
+                });
+
+                const resData = await response.json();
+
+                if (resData.status === 'success') {
+                    alert("अभिनंदन! तुमचा पासवर्ड यशस्वीरीत्या बदलला आहे.\nकृपया आता नवीन पासवर्ड वापरून लॉगिन करा.");
+                    closeForgotModal();
+                    document.getElementById('loginPassword').value = newPassword;
+                } else {
+                    throw new Error(resData.message || "पासवर्ड बदलता आला नाही.");
+                }
+
+            } catch (err) {
+                alert("पासवर्ड रीसेट अयशस्वी: \n" + err.message);
+            } finally {
+                resetBtn.innerText = "पासवर्ड अपडेट करा";
+                resetBtn.disabled = false;
             }
         });
     </script>
