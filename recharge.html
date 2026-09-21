@@ -35,31 +35,31 @@
 
         /* Navbar */
         .header { 
-            background: #ffffff; height: 76px; padding: 8px 6%; 
+            background: #ffffff; height: 74px; padding: 8px 6%; 
             display: flex; align-items: center; justify-content: space-between; 
-            box-shadow: 0 5px 20px rgba(0,0,0,.06); position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,.06); position: sticky; top: 0; z-index: 100;
             border-bottom: 1px solid #e2e8f0;
         }
         .logo-area { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-        .logo-icon { width: 48px; height: 48px; border-radius: 12px; background: #fff5bf; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 22px; border: 1px solid #fed7aa; }
+        .logo-icon { width: 46px; height: 46px; border-radius: 12px; background: #fff5bf; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 22px; border: 1px solid #fed7aa; }
         .logo-text h1 { font-size: 24px; line-height: 1; font-weight: 800; }
         .blue { color: #123a8f; } .orange { color: #f97316; }
         .logo-text p { color: #64748b; font-size: 11px; font-weight: 600; margin-top: 2px; }
         .nav-back-btn { 
             background: #eff6ff; color: #1d4ed8; border: 1px solid #cfe0ff; 
-            padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 800; 
+            padding: 8px 18px; border-radius: 999px; font-size: 13px; font-weight: 800; 
             text-decoration: none; display: flex; align-items: center; gap: 6px; transition: 0.25s; 
         }
         .nav-back-btn:hover { background: #dbeafe; transform: translateY(-2px); }
 
-        .container { max-width: 960px; margin: 30px auto; padding: 0 20px; }
+        .container { max-width: 960px; margin: 28px auto; padding: 0 20px; }
         
-        .heading { text-align: center; margin-bottom: 24px; }
+        .heading { text-align: center; margin-bottom: 22px; }
         .heading .tag { display: inline-flex; align-items: center; gap: 6px; background: #fff0e5; color: #f97316; padding: 6px 14px; border-radius: 30px; font-size: 12px; font-weight: 800; border: 1px solid #fed7aa; }
         .heading h2 { color: #123a8f; font-size: 32px; margin-top: 8px; font-weight: 800; }
         .heading p { color: #64748b; font-size: 14px; }
 
-        /* 🟢 File 2 Status Box Design */
+        /* 🟢 Current Status Box */
         .status-box { 
             background: #ffffff; border: 1px solid #cfe0ff; border-radius: 20px; 
             padding: 18px 30px; margin-bottom: 25px; display: flex; 
@@ -73,7 +73,7 @@
         .status-divider { width: 1px; height: 42px; background: #e2e8f0; }
 
         /* Plans Grid */
-        .plans-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+        .plans-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 28px; }
         .plan-card {
             background: white; border: 2px solid #e1e8f2; border-radius: 18px;
             padding: 20px 16px; text-align: center; cursor: pointer;
@@ -96,33 +96,15 @@
         .plan-desc { font-size: 12px; color: #475569; font-weight: 600; margin-bottom: 8px; }
         .plan-features { font-size: 11px; color: #166534; background: #f0fdf4; padding: 4px; border-radius: 6px; font-weight: 700; }
 
-        /* Recharge Card & Grid */
+        /* Payment Card & Grid */
         .recharge-card { background: #ffffff; border: 1px solid #e1e8f2; border-radius: 24px; padding: 28px; box-shadow: 0 15px 40px rgba(18,58,143,.08); margin-bottom: 30px; }
-        .payment-grid { display: grid; grid-template-columns: 320px 1fr; gap: 28px; }
+        .payment-grid { display: grid; grid-template-columns: 310px 1fr; gap: 28px; }
 
         /* QR Section */
-        .qr-section { background: #f8fbff; border: 1px solid #e0e8f4; border-radius: 20px; padding: 20px; text-align: center; }
+        .qr-section { background: #f8fbff; border: 1px solid #e0e8f4; border-radius: 20px; padding: 22px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .qr-title { color: #123a8f; font-size: 17px; font-weight: 800; margin-bottom: 12px; }
-        .qr-box { width: 220px; height: 220px; background: white; margin: auto; padding: 10px; border-radius: 14px; border: 1px solid #dbe4ef; box-shadow: 0 4px 14px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .qr-box { width: 230px; height: 230px; background: white; padding: 10px; border-radius: 16px; border: 1px solid #dbe4ef; box-shadow: 0 6px 18px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .qr-box img { width: 100%; height: 100%; object-fit: contain; }
-        .upi-badge {
-            background: #e2e8f0; color: #1e293b; padding: 6px 14px;
-            border-radius: 8px; font-size: 13px; font-weight: 800;
-            display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
-            margin-top: 10px; transition: 0.2s;
-        }
-        .upi-badge:hover { background: #cbd5e1; }
-        .qr-note { color: #64748b; font-size: 11px; margin-top: 8px; font-weight: 600; }
-        
-        /* 🟢 Custom QR Upload Option */
-        .upload-qr-btn {
-            margin-top: 12px; display: inline-flex; align-items: center; gap: 6px;
-            padding: 6px 12px; background: #fff; border: 1px dashed #2563eb;
-            color: #2563eb; border-radius: 8px; font-size: 12px; font-weight: 700;
-            cursor: pointer; transition: 0.2s;
-        }
-        .upload-qr-btn:hover { background: #eff6ff; }
-        #qrFileInput { display: none; }
 
         /* Form Section */
         .form-section { padding: 4px; }
@@ -134,33 +116,22 @@
         .field input[readonly] { background: #f1f5f9; color: #475569; cursor: not-allowed; }
 
         /* Process Steps */
-        .process { margin-top: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; }
+        .process { margin: 16px 0; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; }
         .process h3 { color: #123a8f; font-size: 15px; font-weight: 800; margin-bottom: 8px; }
         .step { display: flex; gap: 9px; margin: 6px 0; align-items: center; }
         .step-number { width: 22px; height: 22px; border-radius: 50%; background: #edf4ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; flex: none; }
-        .step-text { font-size: 13px; color: #475569; font-weight: 500; }
+        .step-text { font-size: 13px; color: #475569; font-weight: 600; }
 
-        /* Action Buttons */
-        .action-btns-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
-        
-        .portal-btn {
-            height: 48px; border: none; border-radius: 12px;
-            background: linear-gradient(135deg, #123a8f, #2563eb); color: #fff;
-            font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.2s;
-            box-shadow: 0 6px 18px rgba(18,58,143,.2); display: flex;
-            align-items: center; justify-content: center; gap: 8px;
+        /* 🟢 Single Smart Action Button */
+        .single-action-btn { 
+            width: 100%; height: 50px; border: none; border-radius: 14px; 
+            background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; 
+            font-size: 16px; font-weight: 800; cursor: pointer; 
+            box-shadow: 0 8px 24px rgba(22,163,74,.25); transition: 0.25s; 
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .portal-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(18,58,143,.3); }
-        .portal-btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
-
-        .whatsapp-btn { 
-            height: 48px; border: none; border-radius: 12px; 
-            background: linear-gradient(135deg, #16a34a, #22c55e); color: #fff; 
-            font-size: 15px; font-weight: 800; cursor: pointer; 
-            box-shadow: 0 6px 18px rgba(22,163,74,.2); transition: 0.2s; 
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .whatsapp-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(22,163,74,.3); }
+        .single-action-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(22,163,74,.35); background: linear-gradient(135deg, #15803d, #16a34a); }
+        .single-action-btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
 
         .info { margin-top: 18px; padding: 12px 16px; background: #fff9e6; border: 1px solid #f4df91; border-radius: 12px; color: #8a6200; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
         
@@ -186,8 +157,7 @@
             .status-divider { width: 100%; height: 1px; }
             .plans-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
             .payment-grid { grid-template-columns: 1fr; }
-            .action-btns-grid { grid-template-columns: 1fr; }
-            .qr-box { width: 210px; height: 210px; }
+            .qr-box { width: 220px; height: 220px; }
         }
     </style>
 </head>
@@ -215,7 +185,7 @@
             <p>तुमच्या QuickIDPrint खात्याची मुदत (Validity) सोप्या पद्धतीने वाढवा.</p>
         </div>
 
-        <!-- 🟢 File 2 प्रमाणे Current Status Box -->
+        <!-- 🟢 Current Status Box -->
         <div class="status-box">
             <div class="status-item">
                 <div class="status-title">सध्याचे उरलेले दिवस</div>
@@ -235,7 +205,7 @@
             </div>
         </div>
 
-        <!-- प्लॅन्सची यादी (Selectable Cards) -->
+        <!-- प्लॅन्सची यादी -->
         <div class="plans-grid">
             <div class="plan-card" onclick="selectPlan('1 Month Plan', 149, 30, this)">
                 <div class="plan-title">१ महिना प्लॅन</div>
@@ -272,34 +242,23 @@
         <section class="recharge-card">
             <div class="payment-grid">
 
-                <!-- डावा: QR कोड + अपलोड पर्याय -->
+                <!-- डावा: GitHub वरील तुमचा अधिकृत पेमेंट QR कोड -->
                 <div class="qr-section">
                     <div class="qr-title"><i class="fas fa-qrcode"></i> Scan & Pay</div>
                     
                     <div class="qr-box">
-                        <img id="qrDisplayImg" src="payment_qr.png" alt="Payment QR" onerror="this.src='qr.png'; this.onerror=fallbackQr;">
+                        <!-- 🟢 तुमच्या GitHub रिपॉझिटरीमधील payment_qr.png किंवा qr.png थेट लोड होईल -->
+                        <img src="payment_qr.png" alt="Payment QR" onerror="this.onerror=null; this.src='qr.png';">
                     </div>
-
-                    <div class="upi-badge" onclick="copyUpi()" title="UPI ID कॉपी करा">
-                        <i class="fas fa-copy"></i> <span id="upiText">9403901395@ybl</span>
-                    </div>
-
-                    <div class="qr-note">Google Pay / PhonePe / Paytm / UPI</div>
-
-                    <!-- 🟢 QR कोड अपलोड करण्याचा पर्याय -->
-                    <label class="upload-qr-btn">
-                        <i class="fas fa-camera"></i> QR कोड फोटो बदला
-                        <input type="file" id="qrFileInput" accept="image/*" onchange="handleQrUpload(event)">
-                    </label>
                 </div>
 
-                <!-- उजवा: पेमेंट डिटेल्स आणि UTR फॉर्म -->
+                <!-- उजवा: पेमेंट डिटेल्स आणि १-क्लिक सबमिशन फॉर्म -->
                 <div class="form-section">
                     <div class="form-title">Payment Details</div>
 
                     <div class="field">
                         <label>Payment Amount (रुपये)</label>
-                        <input type="number" id="amount" value="399">
+                        <input type="number" id="amount" value="399" readonly>
                     </div>
 
                     <div class="field">
@@ -314,31 +273,26 @@
 
                     <div class="field">
                         <label>१२ अंकी UTR / Ref Number <span style="color:red;">*</span></label>
-                        <input type="text" id="utrNumber" placeholder="उदा. 4256XXXXXXXX" maxlength="12" pattern="[0-9]{12}">
+                        <input type="text" id="utrNumber" placeholder="उदा. 4256XXXXXXXX" maxlength="12" pattern="[0-9]{12}" required>
                     </div>
 
                     <div class="process">
                         <h3>Renewal Process</h3>
                         <div class="step"><div class="step-number">1</div><div class="step-text">QR कोड स्कॅन करून वर दिलेली रक्कम पाठवा.</div></div>
-                        <div class="step"><div class="step-number">2</div><div class="step-text">UTR नंबर टाकून खालील <strong>पोर्टलवर नोंदवा</strong> किंवा <strong>WhatsApp</strong> बटण दाबा.</div></div>
+                        <div class="step"><div class="step-number">2</div><div class="step-text">UTR नंबर टाकून खालील बटण दाबा. सिस्टीम नोंदणी करून WhatsApp उघडेल.</div></div>
                     </div>
 
-                    <!-- दोन्ही बटणे (Portal + WhatsApp) -->
-                    <div class="action-btns-grid">
-                        <button type="button" class="portal-btn" id="submitUtrBtn" onclick="submitPortalRecharge()">
-                            <i class="fas fa-paper-plane"></i> पोर्टलवर UTR नोंदवा
-                        </button>
-                        <button type="button" class="whatsapp-btn" onclick="sendRechargeRequestWhatsApp()">
-                            <i class="fab fa-whatsapp"></i> WhatsApp वर पाठवा
-                        </button>
-                    </div>
+                    <!-- 🟢 एकाच बटणामध्ये दोन्ही कामे (Database Entry + WhatsApp) -->
+                    <button type="button" class="single-action-btn" id="smartSubmitBtn" onclick="submitRechargeBoth()">
+                        <i class="fas fa-paper-plane"></i> <i class="fab fa-whatsapp"></i> UTR नोंदवा आणि WhatsApp वर पाठवा
+                    </button>
                 </div>
 
             </div>
 
             <div class="info">
                 <i class="fas fa-info-circle"></i>
-                <span><strong>महत्त्वाचे:</strong> पेमेंट केल्यानंतर मिळालेला १२ अंकी UTR नंबर नोंदवा किंवा WhatsApp वर स्क्रीनशॉट पाठवा, तुमचा प्लॅन तात्काळ ॲक्टिव्हेट केला जाईल.</span>
+                <span><strong>महत्त्वाचे:</strong> पेमेंट केल्यानंतर मिळालेला १२ अंकी UTR नंबर टाकून सबमिट करा, तुमचा प्लॅन तात्काळ ॲक्टिव्हेट केला जाईल.</span>
             </div>
         </section>
 
@@ -377,14 +331,8 @@
         let selectedAmount = 399;
         let selectedDays = 90;
 
-        // १. पेज लोड झाल्यावर युझर माहिती व सेव्ह केलेला QR लोड करणे
+        // १. पेज लोड झाल्यावर युझर माहिती आणणे
         document.addEventListener("DOMContentLoaded", async function() {
-            // जर युझरने स्वतःचा QR आधी अपलोड केला असेल तर तो दाखवणे
-            const savedQr = localStorage.getItem('custom_payment_qr');
-            if (savedQr) {
-                document.getElementById('qrDisplayImg').src = savedQr;
-            }
-
             try {
                 const { data: { session } } = await _supabase.auth.getSession();
                 if (!session) {
@@ -394,7 +342,6 @@
 
                 currentUserId = session.user.id;
 
-                // प्रोफाईल आणणे
                 const { data: profile, error } = await _supabase
                     .from('user_profiles')
                     .select('*')
@@ -403,11 +350,9 @@
 
                 if (error) throw error;
 
-                // फील्ड्स भरणे
                 document.getElementById("userId").value = profile.mobile_number || profile.email || "";
                 document.getElementById("userName").value = profile.full_name || "दुकानदार";
 
-                // व्हॅलिडिटी मोजणे
                 let remainingDays = 0;
                 if (profile.expire_date && profile.plan_status === 'Active') {
                     const today = new Date();
@@ -417,7 +362,6 @@
                     remainingDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
                 }
 
-                // File 2 प्रमाणे Status Box भरणे
                 if (profile.plan_status === 'Active' && remainingDays > 0) {
                     document.getElementById("dispDays").innerText = remainingDays + " दिवस";
                     document.getElementById("dispExpiry").innerText = profile.expire_date;
@@ -428,7 +372,6 @@
                     document.getElementById("dispStatus").innerHTML = '<i class="fas fa-exclamation-circle" style="color:#ef4444;"></i> Inactive';
                 }
 
-                // हिस्ट्री लोड करणे
                 loadRechargeHistory();
 
             } catch (err) {
@@ -436,28 +379,7 @@
             }
         });
 
-        // २. QR कोड इमेज एरर आल्यास फॉलबॅक
-        function fallbackQr() {
-            this.onerror = null;
-            this.src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=9403901395@ybl%26pn=QuickIDPrint%26cu=INR";
-        }
-
-        // ३. नवीन QR कोड अपलोड करणे
-        function handleQrUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const base64Data = e.target.result;
-                document.getElementById('qrDisplayImg').src = base64Data;
-                localStorage.setItem('custom_payment_qr', base64Data);
-                alert("नवीन Payment QR यशस्वीरीत्या अपलोड झाला आहे!");
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // ४. प्लॅन निवडणे
+        // २. प्लॅन निवडणे
         function selectPlan(name, amount, days, element) {
             selectedPlan = name;
             selectedAmount = amount;
@@ -469,26 +391,16 @@
             document.getElementById('amount').value = amount;
         }
 
-        // ५. UPI ID कॉपी
-        function copyUpi() {
-            const upiId = document.getElementById('upiText').innerText;
-            navigator.clipboard.writeText(upiId);
-            alert("UPI ID कॉपी झाला: " + upiId + "\nतुमच्या UPI ॲपमध्ये जाऊन पेमेंट करा.");
-        }
-
-        // ६. पर्याय अ: थेट पोर्टलवर UTR नोंदवणे
-        async function submitPortalRecharge() {
+        // ३. 🟢 एकाच बटणात दोन्ही कामे (Database Insert + WhatsApp Direct)
+        async function submitRechargeBoth() {
             const utr = document.getElementById('utrNumber').value.trim();
             const amount = document.getElementById('amount').value.trim();
-            const submitBtn = document.getElementById('submitUtrBtn');
+            const userId = document.getElementById("userId").value.trim();
+            const name = document.getElementById("userName").value.trim();
+            const submitBtn = document.getElementById('smartSubmitBtn');
 
-            if (!amount || amount <= 0) {
-                alert("कृपया अचूक रक्कम निवडा.");
-                return;
-            }
-
-            if (utr.length !== 12 || isNaN(utr)) {
-                alert("कृपया पेमेंट झाल्यावर मिळालेला अचूक १२ अंकी UTR / Ref Number टाका.");
+            if (!utr || utr.length !== 12 || isNaN(utr)) {
+                alert("कृपया पेमेंट झाल्यावर आलेला अचूक १२ अंकी UTR नंबर टाका.");
                 document.getElementById('utrNumber').focus();
                 return;
             }
@@ -497,7 +409,7 @@
             submitBtn.disabled = true;
 
             try {
-                // UTR आधी वापरला आहे का तपासणे
+                // १. आधी UTR वापरला आहे का तपासणे
                 const { data: existingUtr } = await _supabase
                     .from('recharge_requests')
                     .select('id')
@@ -505,10 +417,10 @@
                     .maybeSingle();
 
                 if (existingUtr) {
-                    throw new Error("हा UTR नंबर आधीच नोंदवला गेला आहे. कृपया तुमच्या नवीन पेमेंटचा UTR टाका.");
+                    throw new Error("हा UTR नंबर आधीच नोंदवला गेला आहे. कृपया नवीन पेमेंटचा UTR टाका.");
                 }
 
-                // recharge_requests टेबलमध्ये नोंद
+                // २. डेटाबेस (Supabase) मध्ये सेव्ह करणे
                 const { error: insertError } = await _supabase
                     .from('recharge_requests')
                     .insert([{
@@ -521,47 +433,38 @@
 
                 if (insertError) throw insertError;
 
-                alert("अभिनंदन! तुमची रिचार्ज विनंती पोर्टलवर नोंदवली गेली आहे.\nॲडमिन खात्री करून तुमचा प्लॅन तात्काळ ॲक्टिव्हेट करतील.");
-                document.getElementById('utrNumber').value = "";
+                // ३. हिस्ट्री तात्काळ अपडेट करणे
                 loadRechargeHistory();
 
-            } catch (err) {
-                alert("त्रुटी: \n" + (err.message || "कृपया पुन्हा प्रयत्न करा."));
-            } finally {
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> पोर्टलवर UTR नोंदवा';
-                submitBtn.disabled = false;
-            }
-        }
-
-        // ७. पर्याय ब: WhatsApp वर थेट विनंती पाठवणे (File 2 लॉजिक)
-        function sendRechargeRequestWhatsApp() {
-            const amount = document.getElementById("amount").value.trim();
-            const userId = document.getElementById("userId").value.trim();
-            const name = document.getElementById("userName").value.trim();
-            const utr = document.getElementById("utrNumber").value.trim();
-
-            if (!amount || !userId || !name) {
-                alert("कृपया माहिती तपासा.");
-                return;
-            }
-
-            const message = 
+                // ४. लगेच WhatsApp मेसेज तयार करून उघडणे
+                const message = 
 `*PLAN RENEWAL REQUEST* ⚡
 ------------------------------------
 *👤 Name:* ${name}
 *📱 User ID:* ${userId}
 *📦 Plan:* ${selectedPlan}
 *💰 Amount Paid:* ₹${amount}
-*🔢 UTR Number:* ${utr || "स्क्रीनशॉटमध्ये सोबत जोडला आहे"}
+*🔢 UTR Number:* ${utr}
 ------------------------------------
-कृपया माझा पेमेंट स्क्रीनशॉट तपासा आणि माझ्या खात्याची मुदत (Validity) वाढवून द्या. धन्यवाद! 🙏`;
+मी पेमेंट केले असून UTR पोर्टलवर नोंदवला आहे. कृपया खात्री करून माझ्या खात्याची मुदत (Validity) वाढवून द्या. धन्यवाद! 🙏`;
 
-            const whatsappNumber = "919403901395";
-            const url = "https://wa.me/" + whatsappNumber + "?text=" + encodeURIComponent(message);
-            window.open(url, "_blank");
+                const whatsappNumber = "919403901395";
+                const url = "https://wa.me/" + whatsappNumber + "?text=" + encodeURIComponent(message);
+                
+                alert("अभिनंदन! तुमची विनंती पोर्टलवर यशस्वीरीत्या सेव्ह झाली आहे.\nआता WhatsApp वर मेसेज पाठवण्यासाठी OK दाबा.");
+                
+                document.getElementById('utrNumber').value = "";
+                window.open(url, "_blank");
+
+            } catch (err) {
+                alert("त्रुटी: \n" + (err.message || "कृपया पुन्हा प्रयत्न करा."));
+            } finally {
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <i class="fab fa-whatsapp"></i> UTR नोंदवा आणि WhatsApp वर पाठवा';
+                submitBtn.disabled = false;
+            }
         }
 
-        // ८. मागील रिचार्ज हिस्ट्री लोड करणे
+        // ४. मागील रिचार्ज हिस्ट्री लोड करणे
         async function loadRechargeHistory() {
             const tbody = document.getElementById('historyTableBody');
 
