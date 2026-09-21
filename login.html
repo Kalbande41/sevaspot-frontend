@@ -275,7 +275,7 @@
                     throw new Error("प्रोफाईल माहिती मिळू शकली नाही.");
                 }
 
-                // 🟢 पर्याय १: व्हॅलिडिटी आणि शिल्लक दिवसांचे अचूक गणित
+                // पर्याय १: व्हॅलिडिटी आणि शिल्लक दिवसांचे अचूक गणित
                 let planStatus = profile.plan_status || 'Inactive';
                 let remainingDays = 0;
                 const today = new Date();
@@ -287,19 +287,17 @@
                     const diffTime = expireDate - today;
                     remainingDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-                    // मुदत संपली असल्यास 'Expired' करणे
                     if (remainingDays <= 0) {
                         planStatus = 'Expired';
                         remainingDays = 0;
                         await _supabase.from('user_profiles').update({ plan_status: 'Expired' }).eq('id', userId);
                     }
                 } else {
-                    // नवीन नोंदणी (अजून रिचार्ज नाही)
                     planStatus = 'Inactive';
                     remainingDays = 0;
                 }
 
-                // सेशनमध्ये माहिती सेव्ह करणे (ज्यामुळे home.html वर सर्व माहिती दिसेल)
+                // सेशनमध्ये माहिती सेव्ह करणे
                 sessionStorage.setItem('userId', userId);
                 sessionStorage.setItem('username', profile.mobile_number);
                 sessionStorage.setItem('userEmail', profile.email);
@@ -310,7 +308,7 @@
                 sessionStorage.setItem('expireDate', profile.expire_date || "");
                 sessionStorage.setItem('remainingDays', remainingDays);
 
-                // ॲडमिन असल्यास admin.html वर, नाहीतर home.html वर नेणे
+                // ॲडमिन तपासणी
                 const returnedName = (profile.full_name || "").trim().toLowerCase();
                 if (returnedName === 'admin' || profile.email === 'admin@quickidprint.com') {
                     window.location.href = "admin.html";
@@ -326,7 +324,7 @@
         });
 
         // ==========================================
-        // २. थेट पासवर्ड रीसेट (Mobile + Email)
+        // २. थेट पासवर्ड रीसेट (No Render, 100% Supabase RPC)
         // ==========================================
         function openForgotModal() {
             document.getElementById('forgotModal').style.display = 'flex';
@@ -347,39 +345,24 @@
             const newPassword = document.getElementById('resetNewPassword').value.trim();
 
             try {
-                // पायरी १: मोबाईल आणि ईमेल दोन्ही जुळतात का ते तपासणे
-                const { data: userProfile, error: checkError } = await _supabase
-                    .from('user_profiles')
-                    .select('id, email, mobile_number')
-                    .eq('mobile_number', mobile)
-                    .eq('email', email)
-                    .maybeSingle();
-
-                if (checkError || !userProfile) {
-                    throw new Error("हा मोबाईल नंबर आणि ईमेल रेकॉर्डमध्ये जुळले नाहीत. कृपया नोंदणी करताना दिलेलीच माहिती टाका.");
-                }
-
-                // पायरी २: Render वरील बॅकएंड API कडून Supabase Auth चा पासवर्ड बदलणे
-                // (टीप: येथे तुमच्या Render वरील Flask ॲपची खरी URL टाका)
-                const response = await fetch("https://your-flask-app.onrender.com/reset-password", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        userId: userProfile.id,
-                        email: email,
-                        mobile: mobile,
-                        newPassword: newPassword
-                    })
+                // 🟢 थेट Supabase चे PostgreSQL RPC फंक्शन कॉल करणे (Zero Error Guarantee)
+                const { data: resData, error: rpcError } = await _supabase.rpc('reset_user_password', {
+                    p_mobile: mobile,
+                    p_email: email,
+                    p_new_password: newPassword
                 });
 
-                const resData = await response.json();
+                if (rpcError) {
+                    console.error("RPC Error:", rpcError);
+                    throw new Error(rpcError.message || "डेटाबेसशी संपर्क होऊ शकला नाही.");
+                }
 
-                if (resData.status === 'success') {
+                if (resData && resData.success) {
                     alert("अभिनंदन! तुमचा पासवर्ड यशस्वीरीत्या बदलला आहे.\nकृपया आता नवीन पासवर्ड वापरून लॉगिन करा.");
                     closeForgotModal();
                     document.getElementById('loginPassword').value = newPassword;
                 } else {
-                    throw new Error(resData.message || "पासवर्ड बदलता आला नाही.");
+                    throw new Error(resData ? resData.message : "माहिती जुळली नाही.");
                 }
 
             } catch (err) {
