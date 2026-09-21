@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - QuickIDPrint</title>
+    <title>नोंदणी करा • QuickIDPrint</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Config File -->
+    <!-- Config File (ज्यात SUPABASE_URL आणि ANON_KEY आहे) -->
     <script src="config.js"></script>
 
     <style>
@@ -164,12 +164,12 @@
             registerBtn.innerText = "खाते तयार करत आहे...";
             registerBtn.disabled = true;
 
-            const fullName = document.getElementById('fullName').value;
-            const mobile = document.getElementById('mobile').value;
-            const shopName = document.getElementById('shopName').value;
-            const address = document.getElementById('address').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            const fullName = document.getElementById('fullName').value.trim();
+            const mobile = document.getElementById('mobile').value.trim();
+            const shopName = document.getElementById('shopName').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
 
             try {
                 // १. Supabase Auth मध्ये युजर तयार करणे
@@ -178,11 +178,17 @@
                     password: password
                 });
 
-                if (authError) throw new Error(authError.message);
+                if (authError) {
+                    throw new Error(authError.message);
+                }
+
+                if (!authData || !authData.user) {
+                    throw new Error("युजर तयार होऊ शकला नाही. कृपया पुन्हा प्रयत्न करा.");
+                }
                 
                 const userId = authData.user.id;
 
-                // २. युजरची संपूर्ण माहिती user_profiles टेबलमध्ये सेव्ह करणे
+                // २. युजरची माहिती user_profiles टेबलमध्ये सेव्ह करणे
                 const today = new Date().toISOString().split('T')[0];
                 
                 const { error: profileError } = await _supabase
@@ -198,16 +204,26 @@
                         expire_date: today
                     }]);
 
-                if (profileError) throw new Error("प्रोफाईल डेटाबेसमध्ये सेव्ह करताना अडचण आली.");
+                if (profileError) {
+                    console.error("Supabase Profile Error Details:", profileError);
+                    throw new Error(profileError.message || "प्रोफाईल डेटाबेसमध्ये सेव्ह करताना अडचण आली.");
+                }
 
-                alert("नोंदणी यशस्वी झाली! कृपया आता लॉगिन करा.");
+                alert("अभिनंदन! नोंदणी यशस्वी झाली आहे.\nकृपया आता लॉगिन करा.");
                 window.location.href = "login.html";
 
             } catch (err) {
-                let errorMsg = err.message;
-                if (errorMsg.includes("already registered")) {
+                console.error("Full Registration Error:", err);
+                let errorMsg = err.message || "";
+                
+                if (errorMsg.includes("already registered") || errorMsg.includes("User already registered")) {
                     errorMsg = "या ईमेलवर आधीपासून खाते आहे. कृपया लॉगिन करा.";
+                } else if (errorMsg.includes("duplicate key") && errorMsg.includes("mobile_number")) {
+                    errorMsg = "हा मोबाईल नंबर आधीपासून वापरला गेला आहे. कृपया दुसरा नंबर वापरा.";
+                } else if (errorMsg.includes("row-level security policy")) {
+                    errorMsg = "डेटाबेस पॉलिसी (RLS) ची परवानगी नाही. कृपया SQL मध्ये RLS Policy जोडा.";
                 }
+
                 alert("नोंदणी अयशस्वी: \n" + errorMsg);
                 registerBtn.innerText = "नोंदणी करा";
                 registerBtn.disabled = false;
