@@ -8,9 +8,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
-    <!-- Supabase JS Library & Config with Cache Buster (?v=2) -->
+    <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js?v=2"></script>
+
+    <!-- ⚡ ऑटो-कॅश बस्टर: युझरच्या ब्राऊझरला प्रत्येक वेळी ताजी config.js फाईल आणायला भाग पाडते -->
+    <script>
+        (function() {
+            var script = document.createElement('script');
+            script.src = 'config.js?t=' + new Date().getTime();
+            script.async = false;
+            document.head.appendChild(script);
+        })();
+    </script>
 
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Mukta',sans-serif; }
@@ -205,7 +214,7 @@
             </div>
         </div>
 
-        <!-- 🟢 प्लॅन्सची यादी (फक्त visible: true असणारेच दिसतील) -->
+        <!-- 🟢 प्लॅन्सची यादी (फक्त visible: true असणारेच आपोआप लोड होतील) -->
         <div class="plans-grid" id="plansContainer">
             <!-- JavaScript आपोआप कार्ड्स तयार करेल -->
         </div>
@@ -214,7 +223,7 @@
         <section class="recharge-card">
             <div class="payment-grid">
 
-                <!-- डावा: GitHub वरील तुमचा अधिकृत पेमेंट QR कोड -->
+                <!-- डावा: GitHub वरील अधिकृत QR कोड -->
                 <div class="qr-section">
                     <div class="qr-title"><i class="fas fa-qrcode"></i> Scan & Pay</div>
                     
@@ -312,10 +321,10 @@
             const container = document.getElementById('plansContainer');
             if (!container) return;
 
-            // config.js मधून खात्रीपूर्वक लिस्ट घेणे
+            // config.js मधील RECHARGE_PLANS लिस्ट घेणे
             const allPlans = (typeof RECHARGE_PLANS !== 'undefined' && Array.isArray(RECHARGE_PLANS)) ? RECHARGE_PLANS : [];
 
-            // 🟢 कडक नियम: फक्त ज्याच्या समोर visible === true आहे तोच घेतला जाईल
+            // 🟢 फक्त ज्याच्या समोर visible === true आहे तोच घेतला जाईल
             const activePlans = allPlans.filter(plan => plan.visible === true);
 
             if (activePlans.length === 0) {
@@ -327,7 +336,6 @@
             let defaultSet = false;
 
             activePlans.forEach((plan, index) => {
-                // popular प्लॅन आधी सिलेक्ट करणे, किंवा पहिल्याला सिलेक्ट करणे
                 const isSelected = (!defaultSet && plan.popular === true) || (!defaultSet && index === 0 && !activePlans.some(p => p.popular === true)) ? 'selected' : '';
                 
                 if (isSelected) {
@@ -350,7 +358,6 @@
                 `;
             });
 
-            // जर एकही popular सापडला नाही तर पहिल्याला निवडणे
             if (!defaultSet && activePlans.length > 0) {
                 selectedPlan = activePlans[0].name;
                 selectedAmount = activePlans[0].amount;
@@ -380,54 +387,59 @@
             if (amountDisplay) amountDisplay.value = selectedAmount;
         }
 
-        // ३. पेज लोड झाल्यावर युझर माहिती आणणे
-        document.addEventListener("DOMContentLoaded", async function() {
-            renderPlansFromConfig();
+        // ३. पेज लोड झाल्यावर युझर माहिती आणणे (config.js लोड होण्याची खात्री करून)
+        document.addEventListener("DOMContentLoaded", function() {
+            // थोडा वेळ देऊन config.js मधील व्हेरिएबल्स लोड करणे
+            setTimeout(async function() {
+                renderPlansFromConfig();
 
-            try {
-                const { data: { session } } = await _supabase.auth.getSession();
-                if (!session) {
-                    window.location.href = "login.html";
-                    return;
+                try {
+                    if (typeof _supabase === 'undefined') return;
+
+                    const { data: { session } } = await _supabase.auth.getSession();
+                    if (!session) {
+                        window.location.href = "login.html";
+                        return;
+                    }
+
+                    currentUserId = session.user.id;
+
+                    const { data: profile, error } = await _supabase
+                        .from('user_profiles')
+                        .select('*')
+                        .eq('id', currentUserId)
+                        .single();
+
+                    if (error) throw error;
+
+                    document.getElementById("userId").value = profile.mobile_number || profile.email || "";
+                    document.getElementById("userName").value = profile.full_name || "दुकानदार";
+
+                    let remainingDays = 0;
+                    if (profile.expire_date && profile.plan_status === 'Active') {
+                        const today = new Date();
+                        today.setHours(0,0,0,0);
+                        const expDate = new Date(profile.expire_date);
+                        expDate.setHours(0,0,0,0);
+                        remainingDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
+                    }
+
+                    if (profile.plan_status === 'Active' && remainingDays > 0) {
+                        document.getElementById("dispDays").innerText = remainingDays + " दिवस";
+                        document.getElementById("dispExpiry").innerText = profile.expire_date;
+                        document.getElementById("dispStatus").innerHTML = '<i class="fas fa-check-circle" style="color:#16a34a;"></i> Active';
+                    } else {
+                        document.getElementById("dispDays").innerText = "० दिवस";
+                        document.getElementById("dispExpiry").innerText = profile.expire_date || "मुदत संपली";
+                        document.getElementById("dispStatus").innerHTML = '<i class="fas fa-exclamation-circle" style="color:#ef4444;"></i> Inactive';
+                    }
+
+                    loadRechargeHistory();
+
+                } catch (err) {
+                    console.error(err);
                 }
-
-                currentUserId = session.user.id;
-
-                const { data: profile, error } = await _supabase
-                    .from('user_profiles')
-                    .select('*')
-                    .eq('id', currentUserId)
-                    .single();
-
-                if (error) throw error;
-
-                document.getElementById("userId").value = profile.mobile_number || profile.email || "";
-                document.getElementById("userName").value = profile.full_name || "दुकानदार";
-
-                let remainingDays = 0;
-                if (profile.expire_date && profile.plan_status === 'Active') {
-                    const today = new Date();
-                    today.setHours(0,0,0,0);
-                    const expDate = new Date(profile.expire_date);
-                    expDate.setHours(0,0,0,0);
-                    remainingDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
-                }
-
-                if (profile.plan_status === 'Active' && remainingDays > 0) {
-                    document.getElementById("dispDays").innerText = remainingDays + " दिवस";
-                    document.getElementById("dispExpiry").innerText = profile.expire_date;
-                    document.getElementById("dispStatus").innerHTML = '<i class="fas fa-check-circle" style="color:#16a34a;"></i> Active';
-                } else {
-                    document.getElementById("dispDays").innerText = "० दिवस";
-                    document.getElementById("dispExpiry").innerText = profile.expire_date || "मुदत संपली";
-                    document.getElementById("dispStatus").innerHTML = '<i class="fas fa-exclamation-circle" style="color:#ef4444;"></i> Inactive';
-                }
-
-                loadRechargeHistory();
-
-            } catch (err) {
-                console.error(err);
-            }
+            }, 100);
         });
 
         // ४. एकाच बटणात दोन्ही कामे (Database Insert + WhatsApp Direct)
