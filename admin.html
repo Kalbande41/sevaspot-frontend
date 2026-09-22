@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickIDPrint | Master Admin Control Panel</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- Supabase JS Library & Config -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Mukta',sans-serif; }
+        
+        :root {
+            --primary: #123a8f;
+            --primary-light: #2563eb;
+            --orange: #f97316;
+            --green: #16a34a;
+            --red: #dc2626;
+            --bg: #f8fafc;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body { 
+            min-height: 100vh; 
+            background: #f1f5f9; 
+            color: var(--text-dark); 
+            padding-bottom: 60px;
+        }
+
+        /* Navbar */
+        .navbar { 
+            background: #123a8f; 
+            padding: 12px 5%; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
+            position: sticky; top: 0; z-index: 100;
+        }
+        .logo-area { display: flex; align-items: center; gap: 10px; text-decoration: none; color: white; }
+        .logo-icon { width: 42px; height: 42px; border-radius: 10px; background: #fff; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 20px; }
+        .logo-text h1 { font-size: 22px; line-height: 1; font-weight: 800; }
+        .logo-text span { color: #f97316; }
+        .admin-badge { background: #f97316; color: white; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 800; }
+
+        .nav-actions { display: flex; align-items: center; gap: 12px; }
+        .nav-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 700;
+            text-decoration: none; cursor: pointer; border: none; transition: 0.2s;
+        }
+        .btn-portal { background: #eff6ff; color: #1e3a8a; }
+        .btn-logout { background: #ef4444; color: white; }
+        .btn-portal:hover { background: #dbeafe; }
+        .btn-logout:hover { background: #dc2626; }
+
+        .container { max-width: 1200px; margin: 25px auto; padding: 0 20px; }
+
+        /* Stats Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 25px; }
+        .stat-card {
+            background: white; border-radius: 18px; padding: 20px;
+            border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            display: flex; align-items: center; gap: 16px;
+        }
+        .stat-icon {
+            width: 50px; height: 50px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; flex: none;
+        }
+        .icon-users { background: #eff6ff; color: #2563eb; }
+        .icon-active { background: #f0fdf4; color: #16a34a; }
+        .icon-pending { background: #fffbeb; color: #d97706; }
+        .icon-prints { background: #faf5ff; color: #9333ea; }
+        .stat-info h4 { font-size: 13px; color: var(--text-muted); font-weight: 700; }
+        .stat-info h2 { font-size: 26px; font-weight: 900; color: var(--text-dark); margin-top: 2px; }
+
+        /* Section Layout */
+        .admin-section {
+            background: white; border-radius: 20px; padding: 25px;
+            border: 1px solid var(--border); box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+            margin-bottom: 30px;
+        }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; }
+        .section-header h3 { font-size: 20px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+
+        /* Tables */
+        .table-responsive { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        th { background: #f8fafc; padding: 12px 14px; font-weight: 800; color: #475569; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 13px 14px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-weight: 600; vertical-align: middle; }
+        tr:hover { background: #f8fafc; }
+
+        /* Badges */
+        .badge { padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; }
+        .badge-active { background: #dcfce7; color: #15803d; }
+        .badge-expired { background: #fee2e2; color: #b91c1c; }
+        .badge-blocked { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
+        .badge-pending { background: #fef3c7; color: #92400e; }
+
+        /* Action Buttons */
+        .btn-approve { background: #16a34a; color: white; padding: 6px 14px; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; font-size: 12px; transition: 0.2s; }
+        .btn-reject { background: #dc2626; color: white; padding: 6px 14px; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; font-size: 12px; transition: 0.2s; margin-left: 6px; }
+        .btn-approve:hover { background: #15803d; }
+        .btn-reject:hover { background: #b91c1c; }
+
+        /* Search Box */
+        .search-box-wrap { display: flex; gap: 10px; margin-bottom: 18px; }
+        .search-input { flex: 1; height: 46px; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 8px 16px; font-size: 15px; outline: none; font-weight: 600; }
+        .search-input:focus { border-color: #2563eb; }
+        .search-btn { background: #123a8f; color: white; border: none; border-radius: 12px; padding: 0 22px; font-weight: 800; font-size: 15px; cursor: pointer; }
+
+        /* User Edit Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+        .modal.open { display: flex; }
+        .modal-content { background: white; border-radius: 20px; padding: 26px; width: 100%; max-width: 600px; box-shadow: 0 15px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
+        .modal-header h3 { font-size: 20px; font-weight: 800; color: var(--primary); }
+        .modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: #64748b; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+        .field { margin-bottom: 12px; text-align: left; }
+        .field label { display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 4px; }
+        .field input, .field select { width: 100%; height: 42px; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 6px 12px; font-size: 14px; outline: none; font-weight: 600; }
+
+        .save-btn { width: 100%; height: 46px; background: #16a34a; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; }
+        .save-btn:hover { background: #15803d; }
+
+        @media(max-width:850px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .form-grid { grid-template-columns: 1fr; }
+        }
+        @media(max-width:550px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .navbar { flex-direction: column; gap: 10px; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Admin Navbar -->
+    <nav class="navbar">
+        <a href="admin.html" class="logo-area">
+            <div class="logo-icon"><i class="fas fa-shield-alt"></i></div>
+            <div class="logo-text">
+                <h1>Quick<span>ID</span>Print</h1>
+            </div>
+            <span class="admin-badge"><i class="fas fa-lock"></i> MASTER ADMIN</span>
+        </a>
+        <div class="nav-actions">
+            <a href="home.html" class="nav-btn btn-portal"><i class="fas fa-home"></i> पोर्टल डॅशबोर्ड</a>
+            <button onclick="logoutAdmin()" class="nav-btn btn-logout"><i class="fas fa-sign-out-alt"></i> लॉगआउट</button>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- Stats Overview Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon icon-users"><i class="fas fa-users"></i></div>
+                <div class="stat-info">
+                    <h4>एकूण रजिस्टर्ड युझर्स</h4>
+                    <h2 id="totalUsersCount">0</h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon icon-active"><i class="fas fa-user-check"></i></div>
+                <div class="stat-info">
+                    <h4>ॲक्टिव्ह युझर्स</h4>
+                    <h2 id="activeUsersCount" style="color:#16a34a;">0</h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon icon-pending"><i class="fas fa-clock"></i></div>
+                <div class="stat-info">
+                    <h4>पेंडिंग UTR विनंत्या</h4>
+                    <h2 id="pendingRequestsCount" style="color:#d97706;">0</h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon icon-prints"><i class="fas fa-print"></i></div>
+                <div class="stat-info">
+                    <h4>आज काढलेल्या प्रिंट्स</h4>
+                    <h2 id="todayPrintsCount" style="color:#9333ea;">0</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- विभाग १: पेंडिंग UTR विनंत्या (Recharge Approvals) -->
+        <section class="admin-section">
+            <div class="section-header">
+                <h3><i class="fas fa-credit-card"></i> नवीन रिचार्ज व UTR विनंत्या (Pending Approvals)</h3>
+                <button onclick="loadPendingRecharges()" class="nav-btn btn-portal" style="font-size:12px;"><i class="fas fa-sync-alt"></i> रिफ्रेश</button>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>तारीख</th>
+                            <th>दुकानदार / नाव</th>
+                            <th>मोबाईल नंबर</th>
+                            <th>प्लॅन</th>
+                            <th>रक्कम</th>
+                            <th>१२ अंकी UTR नंबर</th>
+                            <th>ॲक्शन (मंजूर / रद्द)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendingRechargeTable">
+                        <tr><td colspan="7" style="text-align:center; color:#64748b;">तपासत आहे...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- विभाग २: सर्व युझर्स व व्यवस्थापन (Search & Edit Users) -->
+        <section class="admin-section">
+            <div class="section-header">
+                <h3><i class="fas fa-user-cog"></i> युझर मॅनेजमेंट आणि थेट रिचार्ज (Search & Control)</h3>
+            </div>
+
+            <div class="search-box-wrap">
+                <input type="text" id="userSearchInput" class="search-input" placeholder="मोबाईल नंबर, युझरचे नाव किंवा दुकान टाकून शोधा..." onkeyup="filterUsersTable()">
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>नाव</th>
+                            <th>सेंटर / दुकान</th>
+                            <th>मोबाईल नंबर</th>
+                            <th>प्लॅन स्टेटस</th>
+                            <th>उरलेले दिवस</th>
+                            <th>एक्सपायरी तारीख</th>
+                            <th>एकूण रिन्यू</th>
+                            <th>कंट्रोल</th>
+                        </tr>
+                    </thead>
+                    <tbody id="allUsersTable">
+                        <tr><td colspan="8" style="text-align:center; color:#64748b;">युझर्स लोड करत आहे...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- विभाग ३: सर्व ट्रॅन्झॅक्शन लेजर (Complete Transaction Ledger) -->
+        <section class="admin-section">
+            <div class="section-header">
+                <h3><i class="fas fa-file-invoice-dollar"></i> संपूर्ण ट्रॅन्झॅक्शन लेजर (All Transactions)</h3>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>तारीख</th>
+                            <th>युझर</th>
+                            <th>ॲक्शन</th>
+                            <th>रिमार्क</th>
+                            <th>प्लॅन सुरू</th>
+                            <th>एक्सपायरी</th>
+                            <th>स्टेटस</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsTable">
+                        <tr><td colspan="7" style="text-align:center; color:#64748b;">लेजर तपासत आहे...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- 🟢 युझर एडिट आणि रिचार्ज मोडल (User Action Popup) -->
+    <div class="modal" id="userEditModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>युझर व्यवस्थापन व रिचार्ज</h3>
+                <button class="modal-close" onclick="closeUserModal()">&times;</button>
+            </div>
+            
+            <form id="userActionForm" onsubmit="saveUserModifications(event)">
+                <input type="hidden" id="editUserId">
+
+                <div class="form-grid">
+                    <div class="field">
+                        <label>पूर्ण नाव</label>
+                        <input type="text" id="editFullName" required>
+                    </div>
+                    <div class="field">
+                        <label>शॉप / सेंटरचे नाव</label>
+                        <input type="text" id="editShopName">
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="field">
+                        <label>मोबाईल नंबर</label>
+                        <input type="text" id="editMobile" readonly style="background:#f1f5f9;">
+                    </div>
+                    <div class="field">
+                        <label>ईमेल आयडी</label>
+                        <input type="email" id="editEmail" readonly style="background:#f1f5f9;">
+                    </div>
+                </div>
+
+                <div style="background:#f8fbff; border:1.5px dashed #2563eb; border-radius:14px; padding:16px; margin-bottom:18px;">
+                    <h4 style="color:#123a8f; font-size:15px; font-weight:800; margin-bottom:10px;">
+                        <i class="fas fa-bolt"></i> थेट रिचार्ज व मुदत ॲडजस्टमेंट
+                    </h4>
+                    
+                    <div class="form-grid">
+                        <div class="field">
+                            <label>रिचार्जचा प्रकार</label>
+                            <select id="editRechargeType" onchange="handleRechargeTypeChange()">
+                                <option value="Custom Days">Custom Days (दिवस वाढवा)</option>
+                                <option value="Plan Renew">Plan Renew (प्लॅन रिन्यू)</option>
+                                <option value="Demo Plan">Demo Plan (डेमो द्या)</option>
+                                <option value="Reduce Days">Reduce Days (दिवस कमी करा)</option>
+                                <option value="Zero Days">Zero Days (प्लॅन संपवा)</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>दिवस (Days)</label>
+                            <input type="number" id="editDaysInput" value="30">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>रिमार्क (नोंद)</label>
+                        <input type="text" id="editRemark" placeholder="उदा. Admin Direct Recharge / GPay">
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="field">
+                        <label>अकाउंट स्टेटस</label>
+                        <select id="editStatusSelect" onchange="toggleBlockReason()">
+                            <option value="Active">Active (सुरू)</option>
+                            <option value="Inactive">Inactive (बंद)</option>
+                            <option value="Blocked">Blocked (ब्लॉक करा)</option>
+                        </select>
+                    </div>
+                    <div class="field" id="blockReasonField" style="display:none;">
+                        <label>ब्लॉक करण्याचे कारण</label>
+                        <input type="text" id="editBlockReason" placeholder="उदा. संशयास्पद वापर">
+                    </div>
+                </div>
+
+                <button type="submit" class="save-btn">
+                    <i class="fas fa-save"></i> बदल सेव्ह करा आणि प्लॅन अपडेट करा
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let allUsersData = [];
+
+        // १. ॲडमिन सुरक्षितता तपासणे (Admin Auth Guard)
+        document.addEventListener("DOMContentLoaded", async function() {
+            try {
+                const { data: { session } } = await _supabase.auth.getSession();
+                if (!session) {
+                    window.location.href = "login.html";
+                    return;
+                }
+
+                // ॲडमिन तपासणे (Email किंवा Username)
+                const userEmail = session.user.email.toLowerCase();
+                const isAdmin = userEmail.includes("admin") || userEmail === "saibabaaniaaibaba@gmail.com";
+
+                if (!isAdmin) {
+                    alert("अनधिकृत प्रवेश! फक्त ॲडमिन या पेजवर प्रवेश करू शकतात.");
+                    window.location.href = "home.html";
+                    return;
+                }
+
+                // सर्व डेटा लोड करणे
+                loadDashboardStats();
+                loadPendingRecharges();
+                loadAllUsers();
+                loadTransactions();
+
+            } catch (err) {
+                console.error(err);
+                window.location.href = "login.html";
+            }
+        });
+
+        // २. डॅशबोर्डवरील आकडे (Stats) मोजणे
+        async function loadDashboardStats() {
+            try {
+                // युझर्स संख्या
+                const { count: totalUsers } = await _supabase.from('user_profiles').select('*', { count: 'exact', head: true });
+                const { count: activeUsers } = await _supabase.from('user_profiles').select('*', { count: 'exact', head: true }).eq('plan_status', 'Active');
+                const { count: pendingReqs } = await _supabase.from('recharge_requests').select('*', { count: 'exact', head: true }).eq('status', 'Pending');
+                
+                // आजचे प्रिंट्स मोजणे
+                const today = new Date().toISOString().split('T')[0];
+                const { count: todayPrints } = await _supabase.from('service_logs').select('*', { count: 'exact', head: true }).gte('created_at', today);
+
+                document.getElementById('totalUsersCount').innerText = totalUsers || 0;
+                document.getElementById('activeUsersCount').innerText = activeUsers || 0;
+                document.getElementById('pendingRequestsCount').innerText = pendingReqs || 0;
+                document.getElementById('todayPrintsCount').innerText = todayPrints || 0;
+
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // ३. पेंडिंग UTR विनंत्या लोड करणे
+        async function loadPendingRecharges() {
+            const tbody = document.getElementById('pendingRechargeTable');
+            try {
+                const { data: requests, error } = await _supabase
+                    .from('recharge_requests')
+                    .select('*, user_profiles(full_name, mobile_number, shop_name)')
+                    .eq('status', 'Pending')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!requests || requests.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#16a34a; font-weight:700;">✅ कोणतीही पेंडिंग विनंती नाही. सर्व क्लिअर आहे!</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                requests.forEach(req => {
+                    const profile = req.user_profiles || {};
+                    const date = new Date(req.created_at).toLocaleDateString('mr-IN');
+
+                    html += `
+                        <tr>
+                            <td>${date}</td>
+                            <td><strong>${profile.full_name || 'युझर'}</strong><br><small style="color:#64748b;">${profile.shop_name || '-'}</small></td>
+                            <td>${profile.mobile_number || '-'}</td>
+                            <td><span class="badge badge-active">${req.plan_name || 'Plan'}</span></td>
+                            <td><strong>₹${req.recharge_amount}</strong></td>
+                            <td><span style="font-family:monospace; background:#e2e8f0; padding:3px 8px; border-radius:6px; font-weight:bold; font-size:14px;">${req.utr_number}</span></td>
+                            <td>
+                                <button class="btn-approve" onclick="approveRecharge(${req.id}, '${req.user_id}', '${req.plan_name}', ${req.recharge_amount})"><i class="fas fa-check"></i> Approve</button>
+                                <button class="btn-reject" onclick="rejectRecharge(${req.id})"><i class="fas fa-times"></i> Reject</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">लोड करताना त्रुटी: ${err.message}</td></tr>`;
+            }
+        }
+
+        // ४. UTR मंजूर करणे (Approve)
+        async function approveRecharge(requestId, userId, planName, amount) {
+            let daysToAdd = 30;
+            if (planName.includes("3") || planName.includes("३") || amount >= 399) daysToAdd = 90;
+            if (planName.includes("6") || planName.includes("६") || amount >= 699) daysToAdd = 180;
+            if (planName.includes("1 Year") || planName.includes("१ वर्ष") || amount >= 1199) daysToAdd = 365;
+
+            const confirmApprove = confirm(`तुम्हाला ही विनंती मंजूर करायची आहे का?\n\nयुझरच्या खात्यात ${daysToAdd} दिवस वाढवले जातील.`);
+            if (!confirmApprove) return;
+
+            try {
+                // १. admin_manage_recharge RPC चालवणे
+                const { data, error } = await _supabase.rpc('admin_manage_recharge', {
+                    p_user_id: userId,
+                    p_action_type: 'Plan Renew',
+                    p_days: daysToAdd,
+                    p_remark: `Approved UTR Recharge: ${planName} (₹${amount})`
+                });
+
+                if (error) throw error;
+
+                // २. रिक्वेस्ट टेबल अपडेट करणे
+                await _supabase.from('recharge_requests').update({ status: 'Approved' }).eq('id', requestId);
+
+                alert("अभिनंदन! प्लॅन यशस्वीरीत्या मंजूर करण्यात आला आहे.");
+                loadPendingRecharges();
+                loadDashboardStats();
+                loadAllUsers();
+                loadTransactions();
+
+            } catch (err) {
+                alert("मंजूर करताना त्रुटी: " + err.message);
+            }
+        }
+
+        // ५. UTR रद्द करणे (Reject)
+        async function rejectRecharge(requestId) {
+            const confirmReject = confirm("तुम्हाला ही विनंती रद्द (Cancel) करायची आहे का?");
+            if (!confirmReject) return;
+
+            try {
+                await _supabase.from('recharge_requests').update({ status: 'Cancelled' }).eq('id', requestId);
+                alert("विनंती रद्द करण्यात आली आहे.");
+                loadPendingRecharges();
+                loadDashboardStats();
+            } catch (err) {
+                alert("त्रुटी: " + err.message);
+            }
+        }
+
+        // ६. सर्व युझर्स लोड करणे
+        async function loadAllUsers() {
+            const tbody = document.getElementById('allUsersTable');
+            try {
+                const { data: users, error } = await _supabase
+                    .from('user_profiles')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                allUsersData = users || [];
+
+                renderUsersTable(allUsersData);
+
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="8" style="color:red; text-align:center;">लोड करताना त्रुटी: ${err.message}</td></tr>`;
+            }
+        }
+
+        function renderUsersTable(users) {
+            const tbody = document.getElementById('allUsersTable');
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#64748b;">एकही युझर सापडला नाही.</td></tr>';
+                return;
+            }
+
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            let html = '';
+            users.forEach(u => {
+                let remainingDays = 0;
+                if (u.expire_date) {
+                    const expDate = new Date(u.expire_date);
+                    expDate.setHours(0,0,0,0);
+                    remainingDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
+                    if (remainingDays < 0) remainingDays = 0;
+                }
+
+                let statusBadge = '<span class="badge badge-active">Active</span>';
+                if (u.plan_status === 'Blocked') {
+                    statusBadge = '<span class="badge badge-blocked">Blocked</span>';
+                } else if (remainingDays === 0 || u.plan_status === 'Expired') {
+                    statusBadge = '<span class="badge badge-expired">Expired</span>';
+                }
+
+                html += `
+                    <tr>
+                        <td><strong>${u.full_name || '-'}</strong></td>
+                        <td>${u.shop_name || '-'}</td>
+                        <td style="font-family:monospace; font-weight:bold;">${u.mobile_number || '-'}</td>
+                        <td>${statusBadge}</td>
+                        <td><strong style="color:${remainingDays > 5 ? '#16a34a' : '#ea580c'};">${remainingDays} दिवस</strong></td>
+                        <td>${u.expire_date || '-'}</td>
+                        <td>${u.total_renews || 0} वेळा</td>
+                        <td>
+                            <button onclick="openUserModal('${u.id}')" style="background:#2563eb; color:white; border:none; padding:5px 12px; border-radius:6px; font-weight:700; cursor:pointer;">
+                                <i class="fas fa-edit"></i> Manage
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // ७. युझर सर्च फिल्टर
+        function filterUsersTable() {
+            const q = document.getElementById('userSearchInput').value.toLowerCase().trim();
+            const filtered = allUsersData.filter(u => 
+                (u.full_name && u.full_name.toLowerCase().includes(q)) ||
+                (u.mobile_number && u.mobile_number.includes(q)) ||
+                (u.shop_name && u.shop_name.toLowerCase().includes(q))
+            );
+            renderUsersTable(filtered);
+        }
+
+        // ८. युझर मोडल उघडणे
+        function openUserModal(userId) {
+            const u = allUsersData.find(x => x.id === userId);
+            if (!u) return;
+
+            document.getElementById('editUserId').value = u.id;
+            document.getElementById('editFullName').value = u.full_name || '';
+            document.getElementById('editShopName').value = u.shop_name || '';
+            document.getElementById('editMobile').value = u.mobile_number || '';
+            document.getElementById('editEmail').value = u.email || '';
+            document.getElementById('editStatusSelect').value = u.plan_status || 'Active';
+            document.getElementById('editBlockReason').value = u.block_reason || '';
+            
+            toggleBlockReason();
+            document.getElementById('userEditModal').classList.add('open');
+        }
+
+        function closeUserModal() {
+            document.getElementById('userEditModal').classList.remove('open');
+        }
+
+        function toggleBlockReason() {
+            const status = document.getElementById('editStatusSelect').value;
+            document.getElementById('blockReasonField').style.display = (status === 'Blocked') ? 'block' : 'none';
+        }
+
+        function handleRechargeTypeChange() {
+            const type = document.getElementById('editRechargeType').value;
+            const daysInput = document.getElementById('editDaysInput');
+            if (type === 'Zero Days') {
+                daysInput.value = 0;
+                daysInput.disabled = true;
+            } else {
+                daysInput.disabled = false;
+                if (daysInput.value == 0) daysInput.value = 30;
+            }
+        }
+
+        // ९. बदल सेव्ह करणे (Profile Update + Recharge)
+        async function saveUserModifications(e) {
+            e.preventDefault();
+            const userId = document.getElementById('editUserId').value;
+            const fullName = document.getElementById('editFullName').value.trim();
+            const shopName = document.getElementById('editShopName').value.trim();
+            const status = document.getElementById('editStatusSelect').value;
+            const blockReason = document.getElementById('editBlockReason').value.trim();
+            
+            const rechType = document.getElementById('editRechargeType').value;
+            const days = parseInt(document.getElementById('editDaysInput').value) || 0;
+            const remark = document.getElementById('editRemark').value.trim() || `Admin Action: ${rechType}`;
+
+            try {
+                // १. नाव व स्टेटस अपडेट करणे
+                await _supabase.from('user_profiles').update({
+                    full_name: fullName,
+                    shop_name: shopName,
+                    plan_status: status,
+                    block_reason: (status === 'Blocked') ? blockReason : null
+                }).eq('id', userId);
+
+                // २. जर रिचार्ज किंवा दिवस बदलले असतील तर RPC कॉल
+                if (days > 0 || rechType === 'Zero Days') {
+                    const { error: rpcErr } = await _supabase.rpc('admin_manage_recharge', {
+                        p_user_id: userId,
+                        p_action_type: rechType,
+                        p_days: days,
+                        p_remark: remark
+                    });
+                    if (rpcErr) throw rpcErr;
+                }
+
+                alert("बदल यशस्वीरीत्या सेव्ह झाले आहेत!");
+                closeUserModal();
+                loadAllUsers();
+                loadTransactions();
+                loadDashboardStats();
+
+            } catch (err) {
+                alert("अपडेट करताना त्रुटी: " + err.message);
+            }
+        }
+
+        // १०. सर्व ट्रॅन्झॅक्शन्स लोड करणे
+        async function loadTransactions() {
+            const tbody = document.getElementById('transactionsTable');
+            try {
+                const { data: trans, error } = await _supabase
+                    .from('transactions')
+                    .select('*, user_profiles(full_name, mobile_number)')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+
+                if (error) throw error;
+
+                if (!trans || trans.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#64748b;">एकही ट्रॅन्झॅक्शन सापडले नाही.</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                trans.forEach(t => {
+                    const u = t.user_profiles || {};
+                    const date = new Date(t.created_at).toLocaleDateString('mr-IN');
+                    html += `
+                        <tr>
+                            <td>${date}</td>
+                            <td><strong>${u.full_name || 'User'}</strong> (${u.mobile_number || '-'})</td>
+                            <td><span class="badge badge-active">${t.action}</span></td>
+                            <td>${t.remark || '-'}</td>
+                            <td>${t.start_date || '-'}</td>
+                            <td>${t.expiry_date || '-'}</td>
+                            <td><span class="badge badge-active">${t.status}</span></td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">लोड करताना त्रुटी: ${err.message}</td></tr>`;
+            }
+        }
+
+        // ११. लॉगआउट
+        async function logoutAdmin() {
+            await _supabase.auth.signOut();
+            sessionStorage.clear();
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>
