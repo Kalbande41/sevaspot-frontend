@@ -22,56 +22,55 @@
     <script>
         const MY_RECHARGE_PLANS = [
             { 
-                visible: true,                     // 👈 दाखवण्यासाठी true | लपवण्यासाठी false
+                visible: true,
                 name: "१ महिना प्लॅन", 
-                amount: 199,                       // 👈 किंमत (रुपये)
-                days: 30,                          // 👈 मुदत (दिवस)
+                amount: 199,
+                days: 30,
                 tag: "", 
                 desc: "सर्व प्रिंट आणि घोषणापत्र सेवा",
                 popular: false
             },
             { 
-                visible: true,                     // 👈 दाखवण्यासाठी true | लपवण्यासाठी false
+                visible: true,
                 name: "2 महिना प्लॅन", 
-                amount: 349,                       // 👈 किंमत (रुपये)
-                days: 60,                          // 👈 मुदत (दिवस)
+                amount: 349,
+                days: 60,
                 tag: "", 
                 desc: "सर्व प्रिंट आणि घोषणापत्र सेवा",
                 popular: false
             },
             { 
-                visible: true,                     // 👈 दाखवण्यासाठी true | लपवण्यासाठी false
+                visible: true,
                 name: "३ महिने प्लॅन", 
-                amount: 499,                       // 👈 किंमत (रुपये)
-                days: 90,                          // 👈 मुदत (दिवस)
+                amount: 499,
+                days: 90,
                 tag: "सर्वाधिक लोकप्रिय", 
                 desc: "फायदेशीर आणि सोयीस्कर",
-                popular: true                      // 👈 हा प्लॅन सुरुवातीला आपोआप सिलेक्ट राहील
+                popular: true
             },
             { 
-                visible: false,                    // 👈 🔴 हा प्लॅन सध्या बंद (लपवला) आहे
+                visible: false,
                 name: "६ महिने प्लॅन", 
-                amount: 699,                       // 👈 किंमत (रुपये)
-                days: 180,                         // 👈 मुदत (दिवस)
+                amount: 699,
+                days: 180,
                 tag: "", 
                 desc: "दीर्घकालीन बचत प्लॅन",
                 popular: false
             },
             { 
-                visible: false,                     // 👈 दाखवण्यासाठी true | लपवण्यासाठी false
+                visible: false,
                 name: "१ वर्ष प्लॅन", 
-                amount: 1199,                      // 👈 किंमत (रुपये)
-                days: 365,                         // 👈 मुदत (दिवस)
+                amount: 1199,
+                days: 365,
                 tag: "सर्वोत्कृष्ट बचत", 
                 desc: "वर्षभर निश्चिंत वापर",
                 popular: false
             }
         ];
 
-        // WhatsApp सपोर्ट नंबर (बदलायचा असल्यास फक्त इथे बदला)
+        // WhatsApp सपोर्ट नंबर
         const MY_WHATSAPP_NUMBER = "919403901395";
     </script>
-    <!-- ============================================================================== -->
 
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Mukta',sans-serif; }
@@ -94,7 +93,6 @@
             padding-bottom: 70px;
         }
 
-        /* Navbar */
         .header { 
             background: #ffffff; height: 74px; padding: 8px 6%; 
             display: flex; align-items: center; justify-content: space-between; 
@@ -120,7 +118,6 @@
         .heading h2 { color: #123a8f; font-size: 32px; margin-top: 8px; font-weight: 800; }
         .heading p { color: #64748b; font-size: 14px; }
 
-        /* Current Status Box */
         .status-box { 
             background: #ffffff; border: 1px solid #cfe0ff; border-radius: 20px; 
             padding: 18px 30px; margin-bottom: 25px; display: flex; 
@@ -133,7 +130,6 @@
         .status-val.highlight { color: #f97316; }
         .status-divider { width: 1px; height: 42px; background: #e2e8f0; }
 
-        /* Dynamic Plans Grid */
         .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 15px; margin-bottom: 28px; }
         .plan-card {
             background: white; border: 2px solid #e1e8f2; border-radius: 18px;
@@ -157,17 +153,14 @@
         .plan-desc { font-size: 12px; color: #475569; font-weight: 600; margin-bottom: 8px; }
         .plan-features { font-size: 11px; color: #166534; background: #f0fdf4; padding: 4px; border-radius: 6px; font-weight: 700; }
 
-        /* Payment Card & Grid */
         .recharge-card { background: #ffffff; border: 1px solid #e1e8f2; border-radius: 24px; padding: 28px; box-shadow: 0 15px 40px rgba(18,58,143,.08); margin-bottom: 30px; }
         .payment-grid { display: grid; grid-template-columns: 310px 1fr; gap: 28px; }
 
-        /* QR Section */
         .qr-section { background: #f8fbff; border: 1px solid #e0e8f4; border-radius: 20px; padding: 22px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .qr-title { color: #123a8f; font-size: 17px; font-weight: 800; margin-bottom: 12px; }
         .qr-box { width: 230px; height: 230px; background: white; padding: 10px; border-radius: 16px; border: 1px solid #dbe4ef; box-shadow: 0 6px 18px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .qr-box img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* Form Section */
         .form-section { padding: 4px; }
         .form-title { color: #123a8f; font-size: 20px; font-weight: 800; margin-bottom: 14px; }
         .field { margin-bottom: 14px; text-align: left; }
@@ -176,14 +169,12 @@
         .field input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
         .field input[readonly] { background: #f1f5f9; color: #475569; cursor: not-allowed; }
 
-        /* Process Steps */
         .process { margin: 16px 0; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; }
         .process h3 { color: #123a8f; font-size: 15px; font-weight: 800; margin-bottom: 8px; }
         .step { display: flex; gap: 9px; margin: 6px 0; align-items: center; }
         .step-number { width: 22px; height: 22px; border-radius: 50%; background: #edf4ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; flex: none; }
         .step-text { font-size: 13px; color: #475569; font-weight: 600; }
 
-        /* Single Smart Action Button */
         .single-action-btn { 
             width: 100%; height: 50px; border: none; border-radius: 14px; 
             background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; 
@@ -196,7 +187,6 @@
 
         .info { margin-top: 18px; padding: 12px 16px; background: #fff9e6; border: 1px solid #f4df91; border-radius: 12px; color: #8a6200; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
         
-        /* History Box */
         .history-box { background: white; border-radius: 20px; padding: 24px; border: 1px solid var(--border); box-shadow: 0 6px 20px rgba(0,0,0,0.04); margin-top: 30px; }
         .history-box h3 { font-size: 18px; font-weight: 800; color: var(--primary); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
         .table-responsive { width: 100%; overflow-x: auto; }
@@ -245,7 +235,6 @@
             <p>तुमच्या QuickIDPrint खात्याची मुदत (Validity) सोप्या पद्धतीने वाढवा.</p>
         </div>
 
-        <!-- Current Status Box -->
         <div class="status-box">
             <div class="status-item">
                 <div class="status-title">सध्याचे उरलेले दिवस</div>
@@ -265,10 +254,8 @@
             </div>
         </div>
 
-        <!-- प्लॅन्सची यादी (शून्य सेकंदात आपोआप तयार होईल) -->
         <div class="plans-grid" id="plansContainer"></div>
 
-        <!-- मुख्य पेमेंट कार्ड -->
         <section class="recharge-card">
             <div class="payment-grid">
 
@@ -326,7 +313,6 @@
             </div>
         </section>
 
-        <!-- मागील रिचार्ज हिस्ट्री -->
         <div class="history-box">
             <h3><i class="fas fa-history"></i> माझी मागील रिचार्ज हिस्ट्री</h3>
             <div class="table-responsive">
@@ -361,12 +347,10 @@
         let selectedAmount = 0;
         let selectedDays = 0;
 
-        // १. वर दिलेल्या MY_RECHARGE_PLANS मधून थेट प्लॅन्स बनवणे
         function renderPlansDirectly() {
             const container = document.getElementById('plansContainer');
             if (!container) return;
 
-            // फक्त visible: true असणारेच प्लॅन्स दाखवणे
             const activePlans = MY_RECHARGE_PLANS.filter(p => p.visible === true);
 
             let html = '';
@@ -423,10 +407,8 @@
             if (amountDisplay) amountDisplay.value = selectedAmount;
         }
 
-        // २. पेज उघडताच १ सेकंदात प्लॅन्स दाखवणे
         renderPlansDirectly();
 
-        // ३. युझर माहिती आणणे
         document.addEventListener("DOMContentLoaded", async function() {
             try {
                 if (typeof _supabase === 'undefined') return;
@@ -494,7 +476,6 @@
             submitBtn.disabled = true;
 
             try {
-                // १. आधी UTR वापरला आहे का तपासणे
                 const { data: existingUtr } = await _supabase
                     .from('recharge_requests')
                     .select('id')
@@ -505,11 +486,13 @@
                     throw new Error("हा UTR नंबर आधीच नोंदवला गेला आहे. कृपया नवीन पेमेंटचा UTR टाका.");
                 }
 
-                // २. Supabase मध्ये नोंद
+                // 🟢 येथे नाव आणि मोबाईल नंबर डेटाबेसमध्ये पाठवण्यासाठी बदल केला आहे
                 const { error: insertError } = await _supabase
                     .from('recharge_requests')
                     .insert([{
                         user_id: currentUserId,
+                        full_name: name,           // 👈 नवीन ॲड केलेले
+                        mobile_number: userId,     // 👈 नवीन ॲड केलेले
                         recharge_amount: parseInt(amount),
                         utr_number: utr,
                         plan_name: selectedPlan,
@@ -520,7 +503,6 @@
 
                 loadRechargeHistory();
 
-                // ३. WhatsApp मेसेज पाठवणे
                 const message = 
 `*PLAN RENEWAL REQUEST* ⚡
 ------------------------------------
@@ -547,7 +529,6 @@
             }
         }
 
-        // ५. मागील रिचार्ज हिस्ट्री
         async function loadRechargeHistory() {
             const tbody = document.getElementById('historyTableBody');
 
