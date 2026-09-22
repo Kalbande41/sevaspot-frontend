@@ -95,7 +95,7 @@
         .register-link{text-align:center;margin-top:18px;font-size:14px;color:#64748b}
         .register-link a{color:var(--orange);font-weight:700;text-decoration:none}
         
-        /* Modal (पासवर्ड विसरलात? चा पॉपअप बॉक्स) */
+        /* Modal Box */
         .modal-backdrop{
             position:fixed;top:0;left:0;width:100%;height:100%;
             background:rgba(15,23,42,0.65);backdrop-filter:blur(4px);
@@ -132,7 +132,7 @@
     <div class="login-container">
         <!-- डावा ब्रँडिंग पॅनेल -->
         <section class="brand-panel">
-            <img src="logo.png" alt="QuickIDPrint Logo" class="panel-logo">
+            <img src="logo.png" alt="QuickIDPrint Logo" class="panel-logo" onerror="this.style.display='none'">
             <div class="panel-brand"><span class="q-blue">Quick</span><span class="q-orange">ID</span><span class="q-blue">Print</span></div>
             <div class="panel-tag">जलद • सोपे • विश्वासनीय</div>
             <div class="panel-title">आपल्या डिजिटल सेवांचे स्वागत आहे</div>
@@ -153,27 +153,23 @@
             </div>
 
             <form id="loginForm">
-                <!-- ईमेल किंवा मोबाईल नंबर किंवा ॲडमिन Username -->
                 <div class="input-group">
                     <label>नोंदणीकृत ईमेल किंवा मोबाईल नंबर</label>
                     <i class="fas fa-envelope"></i>
                     <input type="text" id="loginIdentifier" placeholder="उदा. नाव@gmail.com किंवा मोबाईल" required autocomplete="username">
                 </div>
 
-                <!-- पासवर्ड -->
                 <div class="input-group">
                     <label>पासवर्ड</label>
                     <i class="fas fa-lock"></i>
                     <input type="password" id="loginPassword" placeholder="तुमचा पासवर्ड टाका" required autocomplete="current-password">
                 </div>
 
-                <!-- पर्याय: पासवर्ड विसरलात -->
                 <div class="form-options">
                     <span></span>
                     <a class="forgot-link" onclick="openForgotModal()">पासवर्ड विसरलात?</a>
                 </div>
 
-                <!-- लॉगिन बटण -->
                 <button type="submit" class="login-btn" id="loginBtn">लॉगिन करा</button>
             </form>
 
@@ -183,7 +179,7 @@
         </section>
     </div>
 
-    <!-- 🟢 पासवर्ड विसरलात? (Mobile Number + Email द्वारे थेट पासवर्ड बदलणारा पॉपअप) -->
+    <!-- पासवर्ड विसरलात? पॉपअप बॉक्स -->
     <div class="modal-backdrop" id="forgotModal">
         <div class="modal-box">
             <button class="modal-close" onclick="closeForgotModal()">&times;</button>
@@ -223,7 +219,7 @@
 
     <script>
         // ==========================================
-        // १. लॉगिन, ॲडमिन चेक आणि व्हॅलिडिटी लॉजिक
+        // १. लॉगिन आणि ॲडमिन चेक
         // ==========================================
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -236,124 +232,74 @@
             const password = document.getElementById('loginPassword').value.trim();
 
             try {
-                // ========================================================
                 // 🔒 पायरी १: सर्वात आधी Supabase मधील admin_users टेबल तपासणे
-                // ========================================================
                 const { data: adminData } = await _supabase
                     .from('admin_users')
                     .select('*')
                     .eq('username', identifier)
                     .eq('password', password)
-                    .eq('is_active', true)
-                    .maybeSingle();
+                    .maybeSingle(); // .eq('is_active', true) काढले आहे जेणेकरून एरर येणार नाही
 
-                // जर ॲडमिन असेल, तर थेट admin.html कडे पाठवणे!
                 if (adminData) {
-                    console.log("Master Admin Authenticated!");
                     sessionStorage.setItem('QUICKID_ADMIN_SESSION', JSON.stringify({
                         id: adminData.id,
                         username: adminData.username,
-                        name: adminData.admin_name,
-                        role: 'admin',
-                        loginTime: new Date().getTime()
+                        role: 'admin'
                     }));
-
                     window.location.href = "admin.html";
                     return;
                 }
 
-                // ========================================================
-                // 👤 पायरी २: जर ॲडमिन नसेल, तर सामान्य युझर/दुकानदार लॉगिन
-                // ========================================================
+                // 👤 पायरी २: जर ॲडमिन नसेल, तर सामान्य युझर लॉगिन
                 let userEmail = identifier;
 
-                // 🟢 जर युजरने मोबाईल नंबर टाकला असेल तर दोन्ही प्रकारे (Text व Number) शोधणे
                 if (!identifier.includes('@')) {
-                    const cleanMobile = identifier.replace(/\D/g, ''); // फक्त अंक ठेवणे
-
-                    // प्रथम Text किंवा Numeric दोन्ही जुळवून पाहणे
-                    let { data: userProfile, error: searchError } = await _supabase
+                    const cleanMobile = identifier.replace(/\D/g, ''); 
+                    
+                    const { data: userProfile } = await _supabase
                         .from('user_profiles')
                         .select('email')
                         .eq('mobile_number', cleanMobile)
                         .maybeSingle();
 
-                    // जर Number मुळे न सापडल्यास Number(cleanMobile) ने प्रयत्न
-                    if (!userProfile && cleanMobile.length === 10) {
-                        const numTry = await _supabase
-                            .from('user_profiles')
-                            .select('email')
-                            .eq('mobile_number', Number(cleanMobile))
-                            .maybeSingle();
-                        if (numTry.data) {
-                            userProfile = numTry.data;
-                        }
-                    }
-
                     if (!userProfile) {
-                        throw new Error("हा मोबाईल नंबर नोंदणीकृत नाही. कृपया बरोबर नंबर टाका किंवा नोंदणी करा.");
+                        throw new Error("हा मोबाईल नंबर नोंदणीकृत नाही. कृपया अचूक नंबर टाका.");
                     }
                     userEmail = userProfile.email;
                 }
 
-                // Supabase Auth द्वारे सुरक्षित लॉगिन
+                // Supabase Auth लॉगिन
                 const { data: authData, error: authError } = await _supabase.auth.signInWithPassword({
                     email: userEmail,
                     password: password
                 });
 
                 if (authError) {
-                    throw new Error("ईमेल/मोबाईल नंबर किंवा पासवर्ड चुकीचा आहे. कृपया पुन्हा तपासा.");
+                    throw new Error("ईमेल/मोबाईल नंबर किंवा पासवर्ड चुकीचा आहे.");
                 }
 
                 const userId = authData.user.id;
 
-                // युजरच्या प्रोफाइलमधून व्हॅलिडिटी डिटेल्स आणणे
-                const { data: profile, error: profileError } = await _supabase
-                    .from('user_profiles')
-                    .select('*')
-                    .eq('id', userId)
-                    .single();
+                // पायथन बॅकएंडवरून व्हॅलिडिटी चेक
+                const response = await fetch(`${BACKEND_URL}/check-validity`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: userId })
+                });
 
-                if (profileError || !profile) {
-                    throw new Error("प्रोफाईल माहिती मिळू शकली नाही.");
+                const result = await response.json();
+
+                if (!response.ok || result.error) {
+                    await _supabase.auth.signOut();
+                    throw new Error(result.error || "प्लॅन तपासताना त्रुटी आली.");
                 }
 
-                // 🟢 व्हॅलिडिटी आणि शिल्लक दिवसांचे अचूक गणित
-                let planStatus = profile.plan_status || 'Inactive';
-                let remainingDays = 0;
-                const today = new Date();
-                today.setHours(0,0,0,0);
-
-                if (profile.expire_date && planStatus === 'Active') {
-                    const expireDate = new Date(profile.expire_date);
-                    expireDate.setHours(0,0,0,0);
-                    const diffTime = expireDate - today;
-                    remainingDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                    if (remainingDays <= 0) {
-                        planStatus = 'Expired';
-                        remainingDays = 0;
-                        await _supabase.from('user_profiles').update({ plan_status: 'Expired' }).eq('id', userId);
-                    }
-                } else {
-                    planStatus = 'Inactive';
-                    remainingDays = 0;
+                if (result.is_active) {
+                    sessionStorage.setItem('userId', userId);
+                    sessionStorage.setItem('username', userEmail);
+                    sessionStorage.setItem('expireDate', result.expire_date || "");
+                    window.location.href = "home.html";
                 }
-
-                // सेशनमध्ये माहिती सेव्ह करणे
-                sessionStorage.setItem('userId', userId);
-                sessionStorage.setItem('username', profile.mobile_number);
-                sessionStorage.setItem('userEmail', profile.email);
-                sessionStorage.setItem('userFullName', profile.full_name || "युजर");
-                sessionStorage.setItem('shopName', profile.shop_name || "");
-                sessionStorage.setItem('planStatus', planStatus);
-                sessionStorage.setItem('startDate', profile.start_date || "");
-                sessionStorage.setItem('expireDate', profile.expire_date || "");
-                sessionStorage.setItem('remainingDays', remainingDays);
-
-                // दुकानदाराला मुख्य डॅशबोर्डकडे पाठवणे
-                window.location.href = "home.html";
 
             } catch (err) {
                 alert("लॉगिन अयशस्वी: \n" + (err.message || "कृपया माहिती तपासा."));
@@ -363,7 +309,7 @@
         });
 
         // ==========================================
-        // २. थेट पासवर्ड रीसेट (Supabase RPC)
+        // २. थेट पासवर्ड रीसेट (Python API द्वारे)
         // ==========================================
         function openForgotModal() {
             document.getElementById('forgotModal').style.display = 'flex';
@@ -384,24 +330,38 @@
             const newPassword = document.getElementById('resetNewPassword').value.trim();
 
             try {
-                // 🟢 थेट Supabase PostgreSQL RPC फंक्शन कॉल करणे
-                const { data: resData, error: rpcError } = await _supabase.rpc('reset_user_password', {
-                    p_mobile: mobile,
-                    p_email: email,
-                    p_new_password: newPassword
-                });
+                // सर्वात आधी युजरचा ID डेटाबेसमधून शोधणे
+                const { data: prof } = await _supabase
+                    .from('user_profiles')
+                    .select('id')
+                    .eq('mobile_number', mobile)
+                    .eq('email', email)
+                    .maybeSingle();
 
-                if (rpcError) {
-                    console.error("RPC Error:", rpcError);
-                    throw new Error(rpcError.message || "डेटाबेसशी संपर्क होऊ शकला नाही.");
+                if (!prof) {
+                    throw new Error("मोबाईल नंबर आणि ईमेल जुळत नाहीत. कृपया अचूक माहिती टाका.");
                 }
 
-                if (resData && resData.success) {
+                // Python Backend कडे पासवर्ड बदलण्यासाठी रिक्वेस्ट पाठवणे
+                const response = await fetch(`${BACKEND_URL}/reset-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        userId: prof.id, 
+                        email: email, 
+                        mobile: mobile, 
+                        newPassword: newPassword 
+                    })
+                });
+
+                const resData = await response.json();
+
+                if (resData.status === 'success') {
                     alert("अभिनंदन! तुमचा पासवर्ड यशस्वीरीत्या बदलला आहे.\nकृपया आता नवीन पासवर्ड वापरून लॉगिन करा.");
                     closeForgotModal();
                     document.getElementById('loginPassword').value = newPassword;
                 } else {
-                    throw new Error(resData ? resData.message : "माहिती जुळली नाही.");
+                    throw new Error(resData.message || "सर्व्हर एरर.");
                 }
 
             } catch (err) {
