@@ -14,13 +14,12 @@
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Mukta',sans-serif; }
         body { min-height: 100vh; background: #f1f5f9; color: #0f172a; padding-bottom: 60px; }
-
+        
         .navbar { background: #123a8f; padding: 12px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         .logo-area { display: flex; align-items: center; gap: 10px; text-decoration: none; color: white; }
         .logo-icon { width: 42px; height: 42px; border-radius: 10px; background: #fff; display: flex; align-items: center; justify-content: center; color: #123a8f; font-size: 20px; }
         .logo-text h1 { font-size: 22px; line-height: 1; font-weight: 800; }
         .logo-text span { color: #f97316; }
-        .nav-actions { display: flex; gap: 12px; }
         .btn-logout { background: #ef4444; color: white; padding: 7px 16px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; }
 
         .container { max-width: 1200px; margin: 25px auto; padding: 0 20px; }
@@ -36,72 +35,36 @@
         .stat-info h2 { font-size: 26px; font-weight: 900; margin-top: 2px; }
 
         .tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; background: white; padding: 10px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .tab-btn { flex: 1; min-width: 150px; padding: 12px; border: none; background: #f8fafc; color: #64748b; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .tab-btn:hover { background: #e2e8f0; }
+        .tab-btn { flex: 1; min-width: 150px; padding: 12px; border: none; background: #f8fafc; color: #64748b; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
         .tab-btn.active { background: #123a8f; color: white; }
         
         .section-content { display: none; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; }
         .section-content.active { display: block; }
         .section-title { font-size: 20px; font-weight: 800; color: #123a8f; margin-bottom: 18px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
 
-        .table-responsive { width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
         th { background: #f8fafc; padding: 12px 14px; font-weight: 800; color: #475569; border-bottom: 2px solid #e2e8f0; }
-        td { padding: 13px 14px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-weight: 600; vertical-align: middle; }
-        
-        .badge { padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; }
-        .badge-active { background: #dcfce7; color: #15803d; }
-        .badge-expired { background: #fee2e2; color: #b91c1c; }
-        .badge-info { background: #eff6ff; color: #1e3a8a; }
+        td { padding: 13px 14px; border-bottom: 1px solid #f1f5f9; font-weight: 600; }
+        .badge-active { background: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 999px; font-size: 12px; }
+        .badge-expired { background: #fee2e2; color: #b91c1c; padding: 4px 10px; border-radius: 999px; font-size: 12px; }
         
         .btn-approve { background: #16a34a; color: white; padding: 6px 14px; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; font-size: 12px; }
         .btn-reject { background: #dc2626; color: white; padding: 6px 14px; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; font-size: 12px; margin-left: 6px; }
         .btn-blue { background: #2563eb; color: white; padding: 6px 14px; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; }
-        .btn-green { background: #16a34a; color: white; padding: 10px 20px; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; margin-top: 15px; }
-        
-        .search-box-wrap { display: flex; gap: 10px; margin-bottom: 18px; }
-        .search-input { flex: 1; height: 44px; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 8px 16px; font-size: 15px; outline: none; font-weight: 600; }
-        
+        .btn-green { background: #16a34a; color: white; padding: 10px 20px; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; margin-top: 15px; width:100%; }
+
+        .search-input { width: 100%; height: 44px; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 8px 16px; font-size: 15px; outline: none; font-weight: 600; margin-bottom:15px; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         .field label { display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 5px; }
         .field input, .field select { width: 100%; height: 42px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 12px; font-size: 14px; outline: none; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
         .modal.open { display: flex; }
-        .modal-content { background: white; border-radius: 20px; padding: 26px; width: 100%; max-width: 600px; box-shadow: 0 15px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: white; border-radius: 20px; padding: 26px; width: 100%; max-width: 650px; max-height: 90vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
         .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b; }
-
-        #printAreaWrapper { display: none; margin-top: 30px; overflow-x: auto; }
-        .pdf-container { width: 730px; min-width: 730px; margin: 0 auto; background: white; padding: 10px 20px; border: 1px solid #cbd5e1; box-sizing: border-box; }
-        .pdf-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #123a8f; padding-bottom: 10px; margin-bottom: 15px; }
-        .pdf-logo { width: 100px; text-align: center; color: #f97316; font-weight: bold; font-size: 12px; }
-        .pdf-title-box { text-align: center; flex: 1; }
-        .pdf-title-box h1 { color: #123a8f; font-size: 26px; margin: 0; font-weight: 900; }
-        .pdf-badge { background: #123a8f; color: white; display: inline-block; padding: 3px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; margin-top: 5px; }
-        .pdf-features { font-size: 12px; font-weight: bold; color: #123a8f; line-height: 1.6; }
         
-        .pdf-info-grid { display: flex; border: 2px solid #123a8f; border-radius: 6px; margin-bottom: 15px; position: relative; }
-        .pdf-info-left { width: 50%; padding: 10px 15px; border-right: 2px solid #123a8f; }
-        .pdf-info-right { width: 50%; padding: 10px 15px; text-align: center; }
-        .info-row { display: flex; margin-bottom: 5px; font-size: 13px; color: #000; font-weight: bold; }
-        .pill-title { position: absolute; top: -10px; left: 10px; background: #123a8f; color: white; padding: 2px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }
-        
-        .pdf-table-wrapper { border: 2px solid #123a8f; border-radius: 6px; padding-top: 15px; margin-bottom: 15px; position: relative; }
-        .pdf-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .pdf-table th { background: #123a8f; color: white; border: 1px solid #cbd5e1; padding: 6px; text-align: center; }
-        .pdf-table td { border: 1px solid #cbd5e1; padding: 6px; text-align: center; color: #000; }
-        
-        .pdf-footer { background: #123a8f; color: white; text-align: center; padding: 10px; border-radius: 4px; font-size: 13px; margin-top: 10px; }
-
-        @media print {
-            body { background-color: white !important; }
-            .navbar, .tabs, .stats-grid, .section-content, .btn-red { display: none !important; }
-            body * { visibility: hidden; }
-            #printAreaWrapper, #printAreaWrapper * { visibility: visible; }
-            #printAreaWrapper { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
-            .pdf-container { width: 100% !important; border: none !important; }
-        }
+        .reset-box { background: #fff5f5; border: 1px dashed #ef4444; padding: 15px; border-radius: 10px; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -117,49 +80,26 @@
     </nav>
 
     <div class="container">
-        
-        <!-- वरचा डॅशबोर्ड (Stats) -->
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon icon-users"><i class="fas fa-users"></i></div>
-                <div class="stat-info"><h4>एकूण युझर्स</h4><h2 id="totalUsersCount">0</h2></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon icon-active"><i class="fas fa-user-check"></i></div>
-                <div class="stat-info"><h4>ॲक्टिव्ह युझर्स</h4><h2 id="activeUsersCount" style="color:#16a34a;">0</h2></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon icon-pending"><i class="fas fa-clock"></i></div>
-                <div class="stat-info"><h4>पेंडिंग विनंत्या</h4><h2 id="pendingRequestsCount" style="color:#d97706;">0</h2></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon icon-prints"><i class="fas fa-print"></i></div>
-                <div class="stat-info"><h4>आजच्या प्रिंट्स</h4><h2 id="todayPrintsCount" style="color:#9333ea;">0</h2></div>
-            </div>
+            <div class="stat-card"><div class="stat-icon icon-users"><i class="fas fa-users"></i></div><div class="stat-info"><h4>एकूण युझर्स</h4><h2 id="totalUsersCount">0</h2></div></div>
+            <div class="stat-card"><div class="stat-icon icon-active"><i class="fas fa-user-check"></i></div><div class="stat-info"><h4>ॲक्टिव्ह युझर्स</h4><h2 id="activeUsersCount" style="color:#16a34a;">0</h2></div></div>
+            <div class="stat-card"><div class="stat-icon icon-pending"><i class="fas fa-clock"></i></div><div class="stat-info"><h4>पेंडिंग विनंत्या</h4><h2 id="pendingRequestsCount" style="color:#d97706;">0</h2></div></div>
+            <div class="stat-card"><div class="stat-icon icon-prints"><i class="fas fa-print"></i></div><div class="stat-info"><h4>आजच्या प्रिंट्स</h4><h2 id="todayPrintsCount" style="color:#9333ea;">0</h2></div></div>
         </div>
 
-        <!-- Tabs -->
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('pendingTab')"><i class="fas fa-credit-card"></i> पेंडिंग UTR विनंत्या</button>
-            <button class="tab-btn" onclick="switchTab('manageTab')"><i class="fas fa-user-cog"></i> युझर मॅनेजमेंट (Edit/Renew)</button>
+            <button class="tab-btn" onclick="switchTab('manageTab')"><i class="fas fa-user-cog"></i> युझर मॅनेजमेंट व पासवर्ड</button>
             <button class="tab-btn" onclick="switchTab('statementTab')"><i class="fas fa-file-invoice"></i> स्टेटमेंट (PDF)</button>
         </div>
 
-        <!-- Tab 1: Pending UTRs -->
+        <!-- Pending Tab -->
         <div id="pendingTab" class="section-content active">
             <h3 class="section-title"><i class="fas fa-clock"></i> नवीन रिचार्ज विनंत्या</h3>
-            <div class="table-responsive">
+            <div style="overflow-x: auto;">
                 <table>
                     <thead>
-                        <tr>
-                            <th>तारीख</th>
-                            <th>दुकानदार / नाव</th>
-                            <th>मोबाईल नंबर</th>
-                            <th>प्लॅन</th>
-                            <th>UTR नंबर</th>
-                            <th>रक्कम</th>
-                            <th>ॲक्शन</th>
-                        </tr>
+                        <tr><th>तारीख</th><th>दुकानदार / नाव</th><th>मोबाईल नंबर</th><th>प्लॅन</th><th>UTR नंबर</th><th>रक्कम</th><th>ॲक्शन</th></tr>
                     </thead>
                     <tbody id="pendingRechargeTable">
                         <tr><td colspan="7" style="text-align:center;">लोड करत आहे...</td></tr>
@@ -168,158 +108,98 @@
             </div>
         </div>
 
-        <!-- Tab 2: Manage Users (Edit & Renew) -->
+        <!-- Manage Tab -->
         <div id="manageTab" class="section-content">
-            <h3 class="section-title"><i class="fas fa-users"></i> सर्व युझर्स, प्रोफाईल एडिट आणि प्लॅन रिन्यू</h3>
-            <div class="search-box-wrap">
-                <input type="text" id="userSearchInput" class="search-input" placeholder="मोबाईल नंबर किंवा नाव शोधा..." onkeyup="filterUsersTable()">
-            </div>
-            <div class="table-responsive">
+            <h3 class="section-title"><i class="fas fa-users"></i> सर्व युझर्स कंट्रोल (Edit, Renew, Password)</h3>
+            <input type="text" id="userSearchInput" class="search-input" placeholder="मोबाईल नंबर किंवा नाव शोधा..." onkeyup="filterUsersTable()">
+            <div style="overflow-x: auto;">
                 <table>
                     <thead>
-                        <tr>
-                            <th>नाव</th>
-                            <th>सेंटर</th>
-                            <th>मोबाईल नंबर</th>
-                            <th>स्टेटस</th>
-                            <th>उरलेले दिवस</th>
-                            <th>एक्सपायरी</th>
-                            <th>एकूण रिन्यू</th>
-                            <th>मॅनेज</th>
-                        </tr>
+                        <tr><th>नाव</th><th>सेंटर</th><th>मोबाईल नंबर</th><th>स्टेटस</th><th>उरलेले दिवस</th><th>मॅनेज (कंट्रोल)</th></tr>
                     </thead>
                     <tbody id="allUsersTable">
-                        <tr><td colspan="8" style="text-align:center;">युझर्स लोड करत आहे...</td></tr>
+                        <tr><td colspan="6" style="text-align:center;">युझर्स लोड करत आहे...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Tab 3: Statement & PDF -->
+        <!-- Statement Tab -->
         <div id="statementTab" class="section-content">
             <h3 class="section-title"><i class="fas fa-file-pdf"></i> युझर स्टेटमेंट जनरेटर</h3>
+            <p style="color:#64748b; font-size:14px; margin-bottom:15px;">युझरचा मोबाईल नंबर टाकून व्यवहार पहा.</p>
             <div class="form-grid">
-                <div class="field">
-                    <label>युझर शोधा (मोबाईल नंबर):</label>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="stmtSearch" placeholder="मोबाईल नंबर टाका">
-                        <button class="btn-blue" onclick="searchUserForStatement()" style="padding:10px;">शोधा</button>
-                    </div>
-                </div>
-                <div class="field">
-                    <label>निवडलेला युझर:</label>
-                    <input type="text" id="stmtSelectedUser" readonly style="background:#f1f5f9; color:#ea580c; font-weight:bold;">
-                    <input type="hidden" id="stmtUserId">
-                </div>
+                <div class="field"><label>मोबाईल नंबर:</label><input type="text" id="stmtSearch" placeholder="मोबाईल नंबर टाका"></div>
+                <div class="field"><label style="visibility:hidden;">.</label><button class="btn-blue" onclick="searchUserForStatement()" style="width:100%; height:42px;">युझर शोधा</button></div>
             </div>
-            <div class="form-grid">
-                <div class="field"><label>कुठून (From Date):</label><input type="date" id="stmtFrom"></div>
-                <div class="field"><label>कुठपर्यंत (To Date):</label><input type="date" id="stmtTo"></div>
-            </div>
-            <button class="btn-green" onclick="generateStatement()" style="margin-top:0;"><i class="fas fa-sync-alt"></i> स्टेटमेंट जनरेट करा</button>
-
-            <!-- PDF PRINT AREA -->
-            <div id="printAreaWrapper">
-                <div class="pdf-container">
-                    <div class="pdf-header">
-                        <div class="pdf-logo">
-                            <i class="fas fa-id-card" style="font-size: 40px; color:#123a8f;"></i><br>QuickID<br>Print
-                        </div>
-                        <div class="pdf-title-box">
-                            <h1>QUICK ID PRINT</h1>
-                            <div class="pdf-badge">USER ACCOUNT STATEMENT</div>
-                        </div>
-                        <div class="pdf-features">
-                            <i class="far fa-check-circle"></i> विश्वास<br>
-                            <i class="fas fa-award"></i> पारदर्शकता
-                        </div>
-                    </div>
-
-                    <div class="pdf-info-grid">
-                        <div class="pill-title">STATEMENT PERIOD</div>
-                        <div class="pdf-info-left">
-                            <div class="info-row"><span style="width:90px;">नाव:</span> <span id="pdfName">-</span></div>
-                            <div class="info-row"><span style="width:90px;">शॉप नाव:</span> <span id="pdfShop">-</span></div>
-                            <div class="info-row"><span style="width:90px;">मोबाईल:</span> <span id="pdfMobile">-</span></div>
-                            <div class="info-row"><span style="width:90px;">स्टेटस:</span> <span id="pdfStatus">-</span></div>
-                        </div>
-                        <div class="pdf-info-right">
-                            <div style="margin-top:10px; font-size:14px; font-weight:bold;">
-                                <div style="margin-bottom:8px;">कालावधी: <span id="pdfFrom"></span> ते <span id="pdfTo"></span></div>
-                                <div>स्टेटमेंट दिनांक: <span id="pdfGenDate"></span></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pdf-table-wrapper">
-                        <div class="pill-title" style="left:50%; transform:translateX(-50%);">TRANSACTION DETAILS</div>
-                        <table class="pdf-table">
-                            <thead>
-                                <tr>
-                                    <th>अ.क्र.</th>
-                                    <th>दिनांक</th>
-                                    <th>कृती (Action)</th>
-                                    <th>शेरा (Remark)</th>
-                                    <th>प्लॅन सुरू</th>
-                                    <th>प्लॅन एक्सपायरी</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="pdfTableBody"></tbody>
-                        </table>
-                    </div>
-
-                    <div class="pdf-footer">
-                        <i class="fab fa-whatsapp"></i> कोणत्याही मदतीसाठी <b>9403901395</b> या नंबरवर WhatsApp करा.
-                    </div>
+            <div id="stmtResult" style="display:none; background:#f8fafc; padding:15px; border-radius:10px; border:1px solid #cbd5e1; margin-top:15px;">
+                <h4 style="color:#123a8f; margin-bottom:10px;" id="stmtNameDisp"></h4>
+                <div class="form-grid">
+                    <div class="field"><label>From Date:</label><input type="date" id="stmtFrom"></div>
+                    <div class="field"><label>To Date:</label><input type="date" id="stmtTo"></div>
                 </div>
-                <button class="btn-blue" onclick="window.print()" style="margin-top:20px; width:100%; background:#ef4444; padding:12px;"><i class="fas fa-print"></i> PDF प्रिंट / सेव्ह करा</button>
+                <button class="btn-green" onclick="generateStatement()">स्टेटमेंट पहा</button>
+            </div>
+            <div id="printArea" style="display:none; margin-top:20px;">
+                <table style="width:100%; border:1px solid #cbd5e1;">
+                    <thead style="background:#123a8f; color:white;">
+                        <tr><th style="color:white;">तारीख</th><th style="color:white;">ॲक्शन</th><th style="color:white;">रिमार्क</th><th style="color:white;">प्लॅन एक्सपायरी</th></tr>
+                    </thead>
+                    <tbody id="stmtTableBody"></tbody>
+                </table>
             </div>
         </div>
     </div>
 
-    <!-- User Edit & Direct Recharge Modal -->
+    <!-- Management Modal -->
     <div class="modal" id="userEditModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 style="color:#123a8f; font-weight:800;">युझर मॅनेजमेंट (Edit & Renew)</h3>
+                <h3 style="color:#123a8f; font-weight:800;">संपूर्ण युझर कंट्रोल</h3>
                 <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <form onsubmit="saveUserUpdates(event)">
                 <input type="hidden" id="editUserId">
+                <input type="hidden" id="editUserEmail">
+                <input type="hidden" id="editUserMobile">
+                
                 <div class="form-grid">
                     <div class="field"><label>नाव:</label><input type="text" id="edName" required></div>
                     <div class="field"><label>शॉपचे नाव:</label><input type="text" id="edShop"></div>
                 </div>
-                <div class="form-grid">
-                    <div class="field"><label>अकाउंट स्टेटस:</label>
-                        <select id="edStatus">
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                            <option value="Blocked">Blocked</option>
-                        </select>
-                    </div>
+                <div class="field"><label>अकाउंट स्टेटस (ब्लॉक/सुरू):</label>
+                    <select id="edStatus">
+                        <option value="Active">Active (सुरू)</option>
+                        <option value="Inactive">Inactive (बंद)</option>
+                        <option value="Blocked">Blocked (ब्लॉक करा)</option>
+                    </select>
                 </div>
                 
-                <!-- Direct Recharge Box -->
-                <div style="background:#f8fbff; border:1px dashed #2563eb; padding:15px; border-radius:10px; margin-bottom:15px;">
-                    <label style="font-weight:bold; color:#123a8f; margin-bottom:10px; display:block;"><i class="fas fa-bolt"></i> थेट रिचार्ज / प्लॅन ॲडजस्टमेंट</label>
+                <div style="background:#f8fbff; border:1px dashed #2563eb; padding:15px; border-radius:10px; margin-top:15px;">
+                    <label style="font-weight:bold; color:#123a8f; margin-bottom:10px; display:block;"><i class="fas fa-bolt"></i> प्लॅन ॲडजस्टमेंट</label>
                     <div class="form-grid">
                         <div class="field">
-                            <label>ॲक्शन निवडा:</label>
+                            <label>ॲक्शन:</label>
                             <select id="edAction">
-                                <option value="None">काहीही करू नका (फक्त प्रोफाईल सेव्ह करा)</option>
-                                <option value="Plan Renew">प्लॅन रिन्यू (Actual Renew - दिवस वाढवा)</option>
-                                <option value="Demo Plan">डेमो प्लॅन द्या (Free Promotion - दिवस वाढवा)</option>
-                                <option value="Reduce Days">दिवस कमी करा</option>
+                                <option value="None">काहीही बदलू नका</option>
+                                <option value="Plan Renew">प्लॅन रिन्यू (Actual Renew)</option>
+                                <option value="Demo Plan">डेमो प्लॅन (Free Promotion)</option>
                                 <option value="Zero Days">प्लॅन संपवा (० दिवस)</option>
                             </select>
                         </div>
                         <div class="field"><label>दिवस (Days):</label><input type="number" id="edDays" value="30"></div>
                     </div>
-                    <p style="font-size:12px; color:#64748b; margin-top:5px;"><b>टीप:</b> 'Plan Renew' केल्यास युजरचा एकूण रिन्यू काउंट वाढेल. 'Demo Plan' ने फक्त दिवस वाढतील.</p>
                 </div>
-                <button type="submit" class="btn-green" style="width:100%; margin-top:5px;">बदल सेव्ह करा</button>
+
+                <div class="reset-box">
+                    <label style="font-weight:bold; color:#ef4444; margin-bottom:10px; display:block;"><i class="fas fa-key"></i> पासवर्ड रिसेट करा (पर्यायी)</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="newPasswordInput" placeholder="नवीन पासवर्ड टाका (किमान ६ अक्षरे)" style="flex:1; padding:8px; border:1px solid #fca5a5; border-radius:6px; outline:none;">
+                        <button type="button" class="btn-blue" onclick="resetUserPassword()" style="background:#dc2626;">पासवर्ड बदला</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-green">सर्व बदल सेव्ह करा</button>
             </form>
         </div>
     </div>
@@ -328,27 +208,13 @@
         let allUsersData = [];
 
         document.addEventListener("DOMContentLoaded", async function() {
-            // 🟢 १. जुनी ॲडमिन सिक्युरिटी (Session Storage) पुन्हा ॲक्टिव्हेट केली आहे
             const adminSessionRaw = sessionStorage.getItem('QUICKID_ADMIN_SESSION');
-            
             if (!adminSessionRaw) {
-                alert("अनधिकृत प्रवेश! कृपया ॲडमिन आयडीने लॉगिन करा.");
-                window.location.href = "login.html";
-                return;
+                window.location.href = "login.html"; return;
             }
-
-            try {
-                const admin = JSON.parse(adminSessionRaw);
-                if (admin.role !== 'admin') throw new Error("Invalid Role");
-
-                loadDashboardStats();
-                loadPendingRecharges();
-                loadAllUsers();
-            } catch (e) {
-                console.error(e);
-                sessionStorage.removeItem('QUICKID_ADMIN_SESSION');
-                window.location.href = "login.html";
-            }
+            loadDashboardStats();
+            loadPendingRecharges();
+            loadAllUsers();
         });
 
         function switchTab(tabId) {
@@ -363,112 +229,76 @@
                 const { count: totalUsers } = await _supabase.from('user_profiles').select('*', { count: 'exact', head: true });
                 const { count: activeUsers } = await _supabase.from('user_profiles').select('*', { count: 'exact', head: true }).eq('plan_status', 'Active');
                 const { count: pendingReqs } = await _supabase.from('recharge_requests').select('*', { count: 'exact', head: true }).eq('status', 'Pending');
-                const today = new Date().toISOString().split('T')[0];
-                const { count: todayPrints } = await _supabase.from('service_logs').select('*', { count: 'exact', head: true }).gte('created_at', today);
-
+                
                 document.getElementById('totalUsersCount').innerText = totalUsers || 0;
                 document.getElementById('activeUsersCount').innerText = activeUsers || 0;
                 document.getElementById('pendingRequestsCount').innerText = pendingReqs || 0;
-                document.getElementById('todayPrintsCount').innerText = todayPrints || 0;
-            } catch (e) { console.error(e); }
+            } catch (e) {}
         }
 
         async function loadPendingRecharges() {
             const tbody = document.getElementById('pendingRechargeTable');
             try {
-                const { data: requests, error } = await _supabase
-                    .from('recharge_requests')
-                    .select('*, user_profiles(full_name, mobile_number, shop_name)')
-                    .eq('status', 'Pending')
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-                if (!requests || requests.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#16a34a; font-weight:700;">✅ कोणतीही पेंडिंग विनंती नाही.</td></tr>';
-                    return;
-                }
+                const { data: requests } = await _supabase.from('recharge_requests').select('*, user_profiles(full_name, mobile_number, shop_name)').eq('status', 'Pending').order('created_at', { ascending: false });
+                if (!requests || requests.length === 0) return tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">कोणतीही विनंती नाही.</td></tr>';
 
                 let html = '';
                 requests.forEach(req => {
-                    const profile = req.user_profiles || {};
-                    const date = new Date(req.created_at).toLocaleDateString('mr-IN');
-                    html += `
-                        <tr>
-                            <td>${date}</td>
-                            <td><strong>${profile.full_name || 'युझर'}</strong><br><small>${profile.shop_name || '-'}</small></td>
-                            <td>${profile.mobile_number || '-'}</td>
-                            <td><span class="badge badge-active">${req.plan_name}</span></td>
-                            <td style="font-family:monospace; font-weight:bold;">${req.utr_number}</td>
-                            <td><strong>₹${req.recharge_amount}</strong></td>
-                            <td>
-                                <button class="btn-approve" onclick="approveRecharge(${req.id}, '${req.user_id}', '${req.plan_name}', ${req.recharge_amount}, this)">Approve</button>
-                                <button class="btn-reject" onclick="rejectRecharge(${req.id}, this)">Reject</button>
-                            </td>
-                        </tr>
-                    `;
+                    const prof = req.user_profiles || {};
+                    html += `<tr>
+                        <td>${new Date(req.created_at).toLocaleDateString()}</td>
+                        <td><strong>${prof.full_name||'-'}</strong><br><small>${prof.shop_name||'-'}</small></td>
+                        <td>${prof.mobile_number||'-'}</td>
+                        <td><span class="badge-active">${req.plan_name}</span></td>
+                        <td>${req.utr_number}</td>
+                        <td>₹${req.recharge_amount}</td>
+                        <td>
+                            <button class="btn-approve" onclick="approveRecharge(${req.id}, '${req.user_id}', '${req.plan_name}', this)">Approve</button>
+                            <button class="btn-reject" onclick="rejectRecharge(${req.id}, this)">Reject</button>
+                        </td>
+                    </tr>`;
                 });
                 tbody.innerHTML = html;
-            } catch (err) { console.error(err); }
+            } catch (err) { }
         }
 
-        async function approveRecharge(requestId, userId, planName, amount, btnElement) {
-            let daysToAdd = 30;
-            if (planName.includes("3") || amount >= 399) daysToAdd = 90;
-            if (planName.includes("6") || amount >= 699) daysToAdd = 180;
-            if (planName.includes("1") || amount >= 1199) daysToAdd = 365;
-
-            if (!confirm(`ही विनंती मंजूर करायची आहे का?\nयुझरला ${daysToAdd} दिवस मिळतील.`)) return;
-            btnElement.innerText = "Processing...";
-
+        async function approveRecharge(requestId, userId, planName, btnElement) {
+            let daysToAdd = planName.includes("3") ? 90 : (planName.includes("6") ? 180 : (planName.includes("1") ? 365 : 30));
+            if (!confirm("ही विनंती मंजूर करायची आहे का?")) return;
+            btnElement.innerText = "...";
             try {
                 const response = await fetch(`${BACKEND_URL}/approve-recharge`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ requestId, userId, planDays: daysToAdd })
                 });
                 const result = await response.json();
-                
                 if (result.success) {
                     const u = allUsersData.find(x => x.id === userId);
-                    if (u) {
-                        await _supabase.from('user_profiles').update({ total_renews: (u.total_renews || 0) + 1 }).eq('id', userId);
-                    }
-
+                    if (u) await _supabase.from('user_profiles').update({ total_renews: (u.total_renews || 0) + 1 }).eq('id', userId);
                     btnElement.closest('tr').remove();
                     let countEl = document.getElementById('pendingRequestsCount');
                     countEl.innerText = Math.max(0, parseInt(countEl.innerText) - 1);
-                    
-                    alert("प्लॅन यशस्वीरीत्या मंजूर झाला!");
                     loadAllUsers();
-                } else {
-                    alert("त्रुटी: " + result.error);
-                }
-            } catch (err) { alert("सर्व्हर त्रुटी: " + err.message); }
+                } else { alert("त्रुटी: " + result.error); }
+            } catch (err) { alert(err.message); }
         }
 
         async function rejectRecharge(requestId, btnElement) {
             if (!confirm("ही विनंती रद्द करायची आहे का?")) return;
-            try {
-                await _supabase.from('recharge_requests').update({ status: 'Cancelled' }).eq('id', requestId);
-                btnElement.closest('tr').remove();
-                let countEl = document.getElementById('pendingRequestsCount');
-                countEl.innerText = Math.max(0, parseInt(countEl.innerText) - 1);
-            } catch (err) { alert(err.message); }
+            await _supabase.from('recharge_requests').update({ status: 'Cancelled' }).eq('id', requestId);
+            btnElement.closest('tr').remove();
         }
 
         async function loadAllUsers() {
             try {
-                const { data: users, error } = await _supabase.from('user_profiles').select('*').order('created_at', { ascending: false });
-                if (error) throw error;
+                const { data: users } = await _supabase.from('user_profiles').select('*').order('created_at', { ascending: false });
                 allUsersData = users || [];
                 renderUsersTable(allUsersData);
-            } catch (err) { console.error(err); }
+            } catch (err) {}
         }
 
         function renderUsersTable(users) {
             const tbody = document.getElementById('allUsersTable');
-            if (users.length === 0) return tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">युझर सापडला नाही.</td></tr>';
-            
             const today = new Date(); today.setHours(0,0,0,0);
             let html = '';
             users.forEach(u => {
@@ -477,20 +307,14 @@
                     const exp = new Date(u.expire_date); exp.setHours(0,0,0,0);
                     remDays = Math.max(0, Math.ceil((exp - today) / 86400000));
                 }
-                let st = u.plan_status === 'Active' && remDays > 0 ? '<span class="badge badge-active">Active</span>' : '<span class="badge badge-expired">Inactive/Expired</span>';
-                
-                html += `
-                    <tr>
-                        <td><strong>${u.full_name || '-'}</strong></td>
-                        <td>${u.shop_name || '-'}</td>
-                        <td>${u.mobile_number || '-'}</td>
-                        <td>${st}</td>
-                        <td style="color:${remDays>0?'#16a34a':'#dc2626'}; font-weight:bold;">${remDays} दिवस</td>
-                        <td>${u.expire_date || '-'}</td>
-                        <td><span class="badge badge-info">${u.total_renews || 0} वेळा</span></td>
-                        <td><button class="btn-blue" onclick="openModal('${u.id}')">Manage</button></td>
-                    </tr>
-                `;
+                html += `<tr>
+                    <td><strong>${u.full_name||'-'}</strong></td>
+                    <td>${u.shop_name||'-'}</td>
+                    <td>${u.mobile_number||'-'}</td>
+                    <td>${u.plan_status === 'Active' && remDays > 0 ? '<span class="badge-active">Active</span>' : '<span class="badge-expired">Inactive</span>'}</td>
+                    <td style="color:${remDays>0?'green':'red'}; font-weight:bold;">${remDays} दिवस</td>
+                    <td><button class="btn-blue" onclick="openModal('${u.id}')">Manage</button></td>
+                </tr>`;
             });
             tbody.innerHTML = html;
         }
@@ -505,10 +329,13 @@
             const u = allUsersData.find(x => x.id === id);
             if(!u) return;
             document.getElementById('editUserId').value = u.id;
+            document.getElementById('editUserEmail').value = u.email;
+            document.getElementById('editUserMobile').value = u.mobile_number;
             document.getElementById('edName').value = u.full_name || '';
             document.getElementById('edShop').value = u.shop_name || '';
             document.getElementById('edStatus').value = u.plan_status || 'Active';
             document.getElementById('edAction').value = 'None';
+            document.getElementById('newPasswordInput').value = '';
             document.getElementById('userEditModal').classList.add('open');
         }
         function closeModal() { document.getElementById('userEditModal').classList.remove('open'); }
@@ -521,106 +348,75 @@
 
             try {
                 const u = allUsersData.find(x => x.id === userId);
-                
-                let updateData = {
-                    full_name: document.getElementById('edName').value,
-                    shop_name: document.getElementById('edShop').value,
-                    plan_status: document.getElementById('edStatus').value
-                };
+                let updateData = { full_name: document.getElementById('edName').value, shop_name: document.getElementById('edShop').value, plan_status: document.getElementById('edStatus').value };
 
                 if (action !== 'None') {
                     let currentExp = u.expire_date ? new Date(u.expire_date) : new Date();
                     let newExp = new Date();
-                    
-                    if (action === 'Zero Days') { 
-                        newExp.setDate(newExp.getDate() - 1); 
-                        updateData.plan_status = 'Expired'; 
-                    }
-                    else if (action === 'Reduce Days') { 
-                        newExp = currentExp; 
-                        newExp.setDate(newExp.getDate() - days); 
-                    }
-                    else { 
-                        if (currentExp > newExp) newExp = currentExp; 
-                        newExp.setDate(newExp.getDate() + days); 
-                        updateData.plan_status = 'Active'; 
-                    }
+                    if (action === 'Zero Days') { newExp.setDate(newExp.getDate() - 1); updateData.plan_status = 'Expired'; }
+                    else { if (currentExp > newExp) newExp = currentExp; newExp.setDate(newExp.getDate() + days); updateData.plan_status = 'Active'; }
                     
                     updateData.expire_date = newExp.toISOString().split('T')[0];
-
-                    let remarkText = "Admin Manual Adjustment";
-                    if (action === 'Plan Renew') {
-                        updateData.total_renews = (u.total_renews || 0) + 1;
-                        remarkText = "Admin Direct Plan Renew";
-                    } else if (action === 'Demo Plan') {
-                        updateData.total_renews = u.total_renews || 0;
-                        remarkText = "Free Promotional Demo Plan";
-                    }
-
-                    await _supabase.from('transactions').insert([{ user_id: userId, action: action, remark: remarkText, status: 'Success' }]);
+                    if (action === 'Plan Renew') updateData.total_renews = (u.total_renews || 0) + 1;
+                    await _supabase.from('transactions').insert([{ user_id: userId, action: action, remark: "Admin Setup", status: 'Success' }]);
                 }
 
                 await _supabase.from('user_profiles').update(updateData).eq('id', userId);
-                alert("प्रोफाईल आणि प्लॅन यशस्वीरीत्या अपडेट झाले!");
-                closeModal();
-                loadAllUsers();
-                loadDashboardStats();
+                alert("प्रोफाईल अपडेट झाली!");
+                closeModal(); loadAllUsers();
             } catch (err) { alert(err.message); }
+        }
+
+        // 🟢 थेट पासवर्ड बदलण्याची API कॉल
+        async function resetUserPassword() {
+            const newPass = document.getElementById('newPasswordInput').value.trim();
+            const uid = document.getElementById('editUserId').value;
+            const uemail = document.getElementById('editUserEmail').value;
+            const umob = document.getElementById('editUserMobile').value;
+
+            if(newPass.length < 6) return alert("पासवर्ड किमान ६ अक्षरांचा असावा.");
+            
+            if(!confirm("खात्री आहे का? युझरचा पासवर्ड लगेच बदलला जाईल.")) return;
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/reset-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: uid, email: uemail, mobile: umob, newPassword: newPass })
+                });
+                const data = await res.json();
+                if(data.status === 'success') {
+                    alert("पासवर्ड यशस्वीरीत्या बदलण्यात आला आहे!");
+                    document.getElementById('newPasswordInput').value = '';
+                } else {
+                    alert("एरर: " + data.message);
+                }
+            } catch (e) { alert("सर्व्हर एरर: " + e.message); }
         }
 
         async function searchUserForStatement() {
             const num = document.getElementById('stmtSearch').value.trim();
-            if(!num) return alert("मोबाईल नंबर टाका.");
             const u = allUsersData.find(x => x.mobile_number === num);
             if(u) {
                 document.getElementById('stmtUserId').value = u.id;
-                document.getElementById('stmtSelectedUser').value = `${u.full_name} (${u.shop_name})`;
-                
-                document.getElementById('pdfName').innerText = u.full_name;
-                document.getElementById('pdfShop').innerText = u.shop_name;
-                document.getElementById('pdfMobile').innerText = u.mobile_number;
-                document.getElementById('pdfStatus').innerText = u.plan_status;
+                document.getElementById('stmtNameDisp').innerText = `${u.full_name} (${u.shop_name})`;
+                document.getElementById('stmtResult').style.display = 'block';
             } else { alert("युझर सापडला नाही."); }
         }
 
         async function generateStatement() {
             const uid = document.getElementById('stmtUserId').value;
-            const fromD = document.getElementById('stmtFrom').value;
-            const toD = document.getElementById('stmtTo').value;
-
-            if(!uid || !fromD || !toD) return alert("युझर निवडा आणि तारखा टाका.");
-
-            const { data: trans } = await _supabase.from('transactions').select('*')
-                .eq('user_id', uid).gte('created_at', fromD).lte('created_at', toD + ' 23:59:59').order('created_at', { ascending: true });
-
-            const tbody = document.getElementById('pdfTableBody');
+            const { data: trans } = await _supabase.from('transactions').select('*').eq('user_id', uid).order('created_at', { ascending: true });
+            
+            const tbody = document.getElementById('stmtTableBody');
             tbody.innerHTML = '';
-
-            if(!trans || trans.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7">कोणतेही ट्रॅन्झॅक्शन सापडले नाही.</td></tr>';
-            } else {
-                trans.forEach((tx, i) => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${i+1}</td>
-                            <td>${new Date(tx.created_at).toLocaleDateString('mr-IN')}</td>
-                            <td>${tx.action}</td>
-                            <td>${tx.remark}</td>
-                            <td>${tx.start_date || '-'}</td>
-                            <td>${tx.expiry_date || '-'}</td>
-                            <td>${tx.status}</td>
-                        </tr>
-                    `;
-                });
-            }
-
-            document.getElementById('pdfFrom').innerText = fromD.split('-').reverse().join('-');
-            document.getElementById('pdfTo').innerText = toD.split('-').reverse().join('-');
-            document.getElementById('pdfGenDate').innerText = new Date().toLocaleDateString('mr-IN');
-            document.getElementById('printAreaWrapper').style.display = 'block';
+            trans.forEach(tx => {
+                tbody.innerHTML += `<tr><td style="padding:8px; border:1px solid #cbd5e1;">${new Date(tx.created_at).toLocaleDateString()}</td><td style="padding:8px; border:1px solid #cbd5e1;">${tx.action}</td><td style="padding:8px; border:1px solid #cbd5e1;">${tx.remark}</td><td style="padding:8px; border:1px solid #cbd5e1;">${tx.expiry_date||'-'}</td></tr>`;
+            });
+            document.getElementById('printArea').style.display = 'block';
         }
 
-        async function logoutAdmin() { sessionStorage.removeItem('QUICKID_ADMIN_SESSION'); window.location.href = "login.html"; }
+        function logoutAdmin() { sessionStorage.removeItem('QUICKID_ADMIN_SESSION'); window.location.href = "login.html"; }
     </script>
 </body>
 </html>
