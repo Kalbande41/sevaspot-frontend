@@ -8,9 +8,61 @@
     <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
-    <!-- Supabase Library & Config (बाकी पानांप्रमाणे एकदम साधे) -->
+    <!-- Supabase JS Library & Config -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
+
+    <!-- ==============================================================================
+    🟢 🟢 [येथे प्लॅन्स बदला - अतिशय सोपे आणि स्पष्ट] 🟢 🟢
+    👉 प्लॅन दाखवायचा असेल तर: visible: true
+    👉 प्लॅन लपवायचा (बंद करायचा) असेल तर: visible: false
+    👉 किंमत बदलायची असेल तर amount च्या पुढचा आकडा बदला.
+    👉 दिवस बदलायचे असल्यास days च्या पुढचा आकडा बदला.
+    ============================================================================== -->
+    <script>
+        const MY_RECHARGE_PLANS = [
+            { 
+                visible: true,                     // 👈 दाखवण्यासाठी true | लपवण्यासाठी false
+                name: "१ महिना प्लॅन", 
+                amount: 199,                       // 👈 किंमत (रुपये)
+                days: 30,                          // 👈 मुदत (दिवस)
+                tag: "", 
+                desc: "सर्व प्रिंट आणि घोषणापत्र सेवा",
+                popular: false
+            },
+            { 
+                visible: true,                     // 👈 दाखवण्यासाठी true | लपवण्यासाठी false
+                name: "३ महिने प्लॅन", 
+                amount: 499,                       // 👈 किंमत (रुपये)
+                days: 90,                          // 👈 मुदत (दिवस)
+                tag: "सर्वाधिक लोकप्रिय", 
+                desc: "फायदेशीर आणि सोयीस्कर",
+                popular: true                      // 👈 हा प्लॅन सुरुवातीला आपोआप सिलेक्ट राहील
+            },
+            { 
+                visible: false,                    // 👈 🔴 हा प्लॅन सध्या बंद (लपवला) आहे
+                name: "६ महिने प्लॅन", 
+                amount: 699,                       // 👈 किंमत (रुपये)
+                days: 180,                         // 👈 मुदत (दिवस)
+                tag: "", 
+                desc: "दीर्घकालीन बचत प्लॅन",
+                popular: false
+            },
+            { 
+                visible: true,                     // 👈 दाखवण्यासाठी true | लपवण्यासाठी false
+                name: "१ वर्ष प्लॅन", 
+                amount: 1199,                      // 👈 किंमत (रुपये)
+                days: 365,                         // 👈 मुदत (दिवस)
+                tag: "सर्वोत्कृष्ट बचत", 
+                desc: "वर्षभर निश्चिंत वापर",
+                popular: false
+            }
+        ];
+
+        // WhatsApp सपोर्ट नंबर (बदलायचा असल्यास फक्त इथे बदला)
+        const MY_WHATSAPP_NUMBER = "919403901395";
+    </script>
+    <!-- ============================================================================== -->
 
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Mukta',sans-serif; }
@@ -33,7 +85,7 @@
             padding-bottom: 70px;
         }
 
-        /* Header */
+        /* Navbar */
         .header { 
             background: #ffffff; height: 74px; padding: 8px 6%; 
             display: flex; align-items: center; justify-content: space-between; 
@@ -59,7 +111,7 @@
         .heading h2 { color: #123a8f; font-size: 32px; margin-top: 8px; font-weight: 800; }
         .heading p { color: #64748b; font-size: 14px; }
 
-        /* Status Box */
+        /* Current Status Box */
         .status-box { 
             background: #ffffff; border: 1px solid #cfe0ff; border-radius: 20px; 
             padding: 18px 30px; margin-bottom: 25px; display: flex; 
@@ -72,7 +124,7 @@
         .status-val.highlight { color: #f97316; }
         .status-divider { width: 1px; height: 42px; background: #e2e8f0; }
 
-        /* Plans Grid */
+        /* Dynamic Plans Grid */
         .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 15px; margin-bottom: 28px; }
         .plan-card {
             background: white; border: 2px solid #e1e8f2; border-radius: 18px;
@@ -96,7 +148,7 @@
         .plan-desc { font-size: 12px; color: #475569; font-weight: 600; margin-bottom: 8px; }
         .plan-features { font-size: 11px; color: #166534; background: #f0fdf4; padding: 4px; border-radius: 6px; font-weight: 700; }
 
-        /* Payment Card */
+        /* Payment Card & Grid */
         .recharge-card { background: #ffffff; border: 1px solid #e1e8f2; border-radius: 24px; padding: 28px; box-shadow: 0 15px 40px rgba(18,58,143,.08); margin-bottom: 30px; }
         .payment-grid { display: grid; grid-template-columns: 310px 1fr; gap: 28px; }
 
@@ -115,6 +167,7 @@
         .field input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
         .field input[readonly] { background: #f1f5f9; color: #475569; cursor: not-allowed; }
 
+        /* Process Steps */
         .process { margin: 16px 0; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; }
         .process h3 { color: #123a8f; font-size: 15px; font-weight: 800; margin-bottom: 8px; }
         .step { display: flex; gap: 9px; margin: 6px 0; align-items: center; }
@@ -129,7 +182,7 @@
             box-shadow: 0 8px 24px rgba(22,163,74,.25); transition: 0.25s; 
             display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .single-action-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(22,163,74,.35); }
+        .single-action-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(22,163,74,.35); background: linear-gradient(135deg, #15803d, #16a34a); }
         .single-action-btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
 
         .info { margin-top: 18px; padding: 12px 16px; background: #fff9e6; border: 1px solid #f4df91; border-radius: 12px; color: #8a6200; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
@@ -203,10 +256,8 @@
             </div>
         </div>
 
-        <!-- प्लॅन्सची यादी (लगेच आपोआप लोड होईल) -->
-        <div class="plans-grid" id="plansContainer">
-            <!-- Cards लोड होत आहेत -->
-        </div>
+        <!-- प्लॅन्सची यादी (शून्य सेकंदात आपोआप तयार होईल) -->
+        <div class="plans-grid" id="plansContainer"></div>
 
         <!-- मुख्य पेमेंट कार्ड -->
         <section class="recharge-card">
@@ -301,26 +352,13 @@
         let selectedAmount = 0;
         let selectedDays = 0;
 
-        // १. डीफॉल्ट प्लॅन्सची खात्रीशीर यादी (कधीही रिकामे दिसणार नाही!)
-        function getSafePlans() {
-            if (typeof RECHARGE_PLANS !== 'undefined' && Array.isArray(RECHARGE_PLANS) && RECHARGE_PLANS.length > 0) {
-                return RECHARGE_PLANS;
-            }
-            return [
-                { visible: true, name: "१ महिना प्लॅन", amount: 199, days: 30, tag: "", desc: "सर्व प्रिंट व सेवा", popular: false },
-                { visible: true, name: "३ महिने प्लॅन", amount: 499, days: 90, tag: "सर्वाधिक लोकप्रिय", desc: "फायदेशीर व सोयीस्कर", popular: true },
-                { visible: true, name: "१ वर्ष प्लॅन", amount: 1199, days: 365, tag: "सर्वोत्कृष्ट बचत", desc: "वर्षभर निश्चिंत वापर", popular: false }
-            ];
-        }
-
-        // २. प्लॅन्स लगेच दाखवणे
-        function renderPlans() {
+        // १. वर दिलेल्या MY_RECHARGE_PLANS मधून थेट प्लॅन्स बनवणे
+        function renderPlansDirectly() {
             const container = document.getElementById('plansContainer');
             if (!container) return;
 
-            const allPlans = getSafePlans();
-            // फक्त visible: true असणारे प्लॅन्स
-            const activePlans = allPlans.filter(p => p.visible === true || p.visible === undefined);
+            // फक्त visible: true असणारेच प्लॅन्स दाखवणे
+            const activePlans = MY_RECHARGE_PLANS.filter(p => p.visible === true);
 
             let html = '';
             let defaultSet = false;
@@ -376,13 +414,11 @@
             if (amountDisplay) amountDisplay.value = selectedAmount;
         }
 
-        // ३. पेज सुरू होताच तत्काळ प्लॅन्स दाखवणे
-        renderPlans();
+        // २. पेज उघडताच १ सेकंदात प्लॅन्स दाखवणे
+        renderPlansDirectly();
 
-        // युझर डेटा Supabase मधून आणणे
+        // ३. युझर माहिती आणणे
         document.addEventListener("DOMContentLoaded", async function() {
-            renderPlans(); // पुन्हा खात्रीसाठी
-
             try {
                 if (typeof _supabase === 'undefined') return;
 
@@ -431,7 +467,7 @@
             }
         });
 
-        // ४. UTR सेव्ह + WhatsApp उघडणे
+        // ४. UTR डेटाबेसमध्ये नोंदवून थेट WhatsApp उघडणे
         async function submitRechargeBoth() {
             const utr = document.getElementById('utrNumber').value.trim();
             const amount = document.getElementById('amount').value.trim();
@@ -449,6 +485,7 @@
             submitBtn.disabled = true;
 
             try {
+                // १. आधी UTR वापरला आहे का तपासणे
                 const { data: existingUtr } = await _supabase
                     .from('recharge_requests')
                     .select('id')
@@ -459,6 +496,7 @@
                     throw new Error("हा UTR नंबर आधीच नोंदवला गेला आहे. कृपया नवीन पेमेंटचा UTR टाका.");
                 }
 
+                // २. Supabase मध्ये नोंद
                 const { error: insertError } = await _supabase
                     .from('recharge_requests')
                     .insert([{
@@ -473,7 +511,7 @@
 
                 loadRechargeHistory();
 
-                const waNumber = (typeof SUPPORT_WHATSAPP_NUMBER !== 'undefined') ? SUPPORT_WHATSAPP_NUMBER : "919403901395";
+                // ३. WhatsApp मेसेज पाठवणे
                 const message = 
 `*PLAN RENEWAL REQUEST* ⚡
 ------------------------------------
@@ -485,7 +523,7 @@
 ------------------------------------
 मी पेमेंट केले असून UTR पोर्टलवर नोंदवला आहे. कृपया खात्री करून माझ्या खात्याची मुदत (Validity) वाढवून द्या. धन्यवाद! 🙏`;
 
-                const url = "https://wa.me/" + waNumber + "?text=" + encodeURIComponent(message);
+                const url = "https://wa.me/" + MY_WHATSAPP_NUMBER + "?text=" + encodeURIComponent(message);
                 
                 alert("अभिनंदन! तुमची विनंती पोर्टलवर यशस्वीरीत्या सेव्ह झाली आहे.\nआता WhatsApp वर मेसेज पाठवण्यासाठी OK दाबा.");
                 
@@ -500,7 +538,7 @@
             }
         }
 
-        // ५. मागील हिस्ट्री
+        // ५. मागील रिचार्ज हिस्ट्री
         async function loadRechargeHistory() {
             const tbody = document.getElementById('historyTableBody');
 
