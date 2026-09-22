@@ -1,9 +1,15 @@
 // ==========================================
 // 🚀 SUPABASE CONFIGURATION
 // ==========================================
-const SUPABASE_URL = "https://hzbxgnfbsflpqxoqtpkw.supabase.co"; // 👈 तुमचा खरा URL टाका
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6YnhnbmZic2ZscHF4b3F0cGt3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4MzIzNjQsImV4cCI6MjEwNTQwODM2NH0.3gXVvXz5xoLSwZn6fAqMh7CEM7aviFRBbjg_2gOKpEY";             // 👈 तुमची खरी Anon Key टाका
+const SUPABASE_URL = "https://hzbxgnfbsflpqxoqtpkw.supabase.co"; // 👈 तुमचा खरा Supabase URL टाका
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6YnhnbmZic2ZscHF4b3F0cGt3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4MzIzNjQsImV4cCI6MjEwNTQwODM2NH0.3gXVvXz5xoLSwZn6fAqMh7CEM7aviFRBbjg_2gOKpEY";       // 👈 तुमची खरी Supabase Anon Key टाका
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ==========================================
+// 🌐 PYTHON BACKEND CONFIGURATION (अतिशय महत्त्वाचे)
+// ==========================================
+// 👇 या लिंकमुळे तुमचा 'पासवर्ड रिसेट' आणि 'रिचार्ज अप्रूव्हल' काम करेल
+const BACKEND_URL = "https://sevaspot-backend.onrender.com"; // 👈 तुमचा खरा Render URL टाका
 
 // ==========================================
 // 🟢 SERVICE LOGGER HELPER (प्रिंट नोंदीसाठी)
