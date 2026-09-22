@@ -26,11 +26,11 @@ async function logServicePrint(serviceCategory, serviceDetails = '') {
 
 // ==============================================================================
 // 🚀 QUICKIDPRINT प्लॅन्स कॉन्फिगरेशन
-// (प्लॅन दाखवायचा असेल तर visible: true ठेवा, लपवायचा असेल तर visible: false करा!)
+// (दाखवायचा असल्यास visible: true | लपवायचा असल्यास visible: false)
 // ==============================================================================
-const RECHARGE_PLANS = [
+var RECHARGE_PLANS = [
     { 
-        visible: true,                     // 👈 दाखवायचा असेल तर true, बंद करायचा असेल तर false
+        visible: true,                     // 👈 दाखवण्यासाठी true | लपवण्यासाठी false
         name: "१ महिना प्लॅन", 
         amount: 199, 
         days: 30, 
@@ -39,25 +39,16 @@ const RECHARGE_PLANS = [
         popular: false
     },
     { 
-        visible: true,                     // 👈 दाखवायचा असेल तर true, बंद करायचा असेल तर false
-        name: "2 महिना प्लॅन", 
-        amount: 349, 
-        days: 60, 
-        tag: "", 
-        desc: "सर्व प्रिंट आणि घोषणापत्र सेवा",
-        popular: false
-    },
-    { 
-        visible: true,                     // 👈 दाखवायचा असेल तर true, बंद करायचा असेल तर false
+        visible: true,                     // 👈 दाखवण्यासाठी true | लपवण्यासाठी false
         name: "३ महिने प्लॅन", 
         amount: 499, 
         days: 90, 
         tag: "सर्वाधिक लोकप्रिय", 
         desc: "फायदेशीर आणि सोयीस्कर",
-        popular: true                      // हा प्लॅन सुरुवातीला सिलेक्ट राहील
+        popular: true                      // हा सुरुवातीला निवडलेला राहील
     },
     { 
-        visible: false,                     // 👈 दाखवायचा असेल तर true, बंद करायचा असेल तर false
+        visible: false,                    // 👈 🔴 हा प्लॅन आता लपवला आहे (वेबसाईटवर दिसणार नाही)
         name: "६ महिने प्लॅन", 
         amount: 699, 
         days: 180, 
@@ -66,7 +57,7 @@ const RECHARGE_PLANS = [
         popular: false
     },
     { 
-        visible: false,                     // 👈 दाखवायचा असेल तर true, बंद करायचा असेल तर false
+        visible: true,                     // 👈 दाखवण्यासाठी true | लपवण्यासाठी false
         name: "१ वर्ष प्लॅन", 
         amount: 1199, 
         days: 365, 
@@ -77,4 +68,4 @@ const RECHARGE_PLANS = [
 ];
 
 // WhatsApp सपोर्ट नंबर
-const SUPPORT_WHATSAPP_NUMBER = "919403901395";
+var SUPPORT_WHATSAPP_NUMBER = "919403901395";
