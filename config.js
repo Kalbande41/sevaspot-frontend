@@ -1,9 +1,13 @@
-// तुमची आधीची Supabase Config अशी असेल:
-const SUPABASE_URL = "https://hzbxgnfbsflpqxoqtpkw.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6YnhnbmZic2ZscHF4b3F0cGt3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4MzIzNjQsImV4cCI6MjEwNTQwODM2NH0.3gXVvXz5xoLSwZn6fAqMh7CEM7aviFRBbjg_2gOKpEY";
+// ==========================================
+// 🚀 SUPABASE CONFIGURATION
+// ==========================================
+const SUPABASE_URL = "https://hzbxgnfbsflpqxoqtpkw.supabase.co"; // तुमचा खरा URL ठेवा
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6YnhnbmZic2ZscHF4b3F0cGt3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4MzIzNjQsImV4cCI6MjEwNTQwODM2NH0.3gXVvXz5xoLSwZn6fAqMh7CEM7aviFRBbjg_2gOKpEY";             // तुमची खरी Key ठेवा
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 🟢 याच्या खाली हे Service Logger Helper जोडा:
+// ==========================================
+// 🟢 SERVICE LOGGER HELPER (प्रिंट लॉग्स नोंदवण्यासाठी)
+// ==========================================
 async function logServicePrint(serviceCategory, serviceDetails = '') {
     try {
         const userId = sessionStorage.getItem('userId');
@@ -18,7 +22,9 @@ async function logServicePrint(serviceCategory, serviceDetails = '') {
     } catch (e) {
         console.error("लॉग नोंदवताना अडचण:", e);
     }
-    // ==========================================
+} // 👈 हा कंस इथेच बरोबर बंद झाला!
+
+// ==========================================
 // 🚀 QUICKIDPRINT प्लॅन्स कॉन्फिगरेशन
 // (भविष्यात किंमत किंवा दिवस बदलायचे असल्यास फक्त येथे बदला!)
 // ==========================================
@@ -30,7 +36,7 @@ const RECHARGE_PLANS = [
         days: 30, 
         tag: "", 
         desc: "सर्व प्रिंट आणि घोषणापत्र सेवा",
-        popular: true
+        popular: false
     },
     { 
         id: "3m", 
@@ -39,7 +45,7 @@ const RECHARGE_PLANS = [
         days: 90, 
         tag: "सर्वाधिक लोकप्रिय", 
         desc: "फायदेशीर आणि सोयीस्कर",
-        popular: true // हा प्लॅन सुरुवातीला सिलेक्ट राहील
+        popular: true // 🟢 हा प्लॅन सुरुवातीला सिलेक्ट राहील
     },
     { 
         id: "6m", 
@@ -61,6 +67,5 @@ const RECHARGE_PLANS = [
     }
 ];
 
-// WhatsApp सपोर्ट नंबर (भविष्यात नंबर बदलल्यास फक्त इथे बदला!)
-const SUPPORT_WHATSAPP_NUMBER = "9403901395";
-}
+// WhatsApp सपोर्ट नंबर
+const SUPPORT_WHATSAPP_NUMBER = "919403901395";
