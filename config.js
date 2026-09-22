@@ -39,7 +39,7 @@ var RECHARGE_PLANS = [
         popular: false
     },
     { 
-        visible: false,                     // 👈 दाखवण्यासाठी true | लपवण्यासाठी false
+        visible: true,                     // 👈 दाखवण्यासाठी true | लपवण्यासाठी false
         name: "2 महिना प्लॅन", 
         amount: 349, 
         days: 60, 
