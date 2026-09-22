@@ -40,6 +40,15 @@ var RECHARGE_PLANS = [
     },
     { 
         visible: true,                     // 👈 दाखवण्यासाठी true | लपवण्यासाठी false
+        name: "2 महिना प्लॅन", 
+        amount: 349, 
+        days: 60, 
+        tag: "", 
+        desc: "सर्व प्रिंट आणि घोषणापत्र सेवा",
+        popular: false
+    },
+    { 
+        visible: true,                     // 👈 दाखवण्यासाठी true | लपवण्यासाठी false
         name: "३ महिने प्लॅन", 
         amount: 499, 
         days: 90, 
@@ -57,7 +66,7 @@ var RECHARGE_PLANS = [
         popular: false
     },
     { 
-        visible: true,                     // 👈 दाखवण्यासाठी true | लपवण्यासाठी false
+        visible: false,                     // 👈 दाखवण्यासाठी true | लपवण्यासाठी false
         name: "१ वर्ष प्लॅन", 
         amount: 1199, 
         days: 365, 
