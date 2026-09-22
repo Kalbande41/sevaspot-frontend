@@ -103,7 +103,6 @@
         .badge-active { background: #dcfce7; color: #15803d; }
         .badge-expired { background: #fee2e2; color: #b91c1c; }
         .badge-blocked { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
-        .badge-pending { background: #fef3c7; color: #92400e; }
 
         /* Action Buttons */
         .btn-approve { background: #16a34a; color: white; padding: 6px 14px; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; font-size: 12px; transition: 0.2s; }
@@ -115,7 +114,6 @@
         .search-box-wrap { display: flex; gap: 10px; margin-bottom: 18px; }
         .search-input { flex: 1; height: 46px; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 8px 16px; font-size: 15px; outline: none; font-weight: 600; }
         .search-input:focus { border-color: #2563eb; }
-        .search-btn { background: #123a8f; color: white; border: none; border-radius: 12px; padding: 0 22px; font-weight: 800; font-size: 15px; cursor: pointer; }
 
         /* User Edit Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
@@ -281,7 +279,7 @@
 
     </div>
 
-    <!-- 🟢 युझर एडिट आणि रिचार्ज मोडल (User Action Popup) -->
+    <!-- युझर एडिट आणि रिचार्ज मोडल (User Action Popup) -->
     <div class="modal" id="userEditModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -367,33 +365,29 @@
     <script>
         let allUsersData = [];
 
-        // १. ॲडमिन सुरक्षितता तपासणे (Admin Auth Guard)
+        // 🔒 १. Supabase Admin Session Guard (केवळ अधिकृत ॲडमिनसाठीच दार उघडेल)
         document.addEventListener("DOMContentLoaded", async function() {
+            const adminSessionRaw = sessionStorage.getItem('QUICKID_ADMIN_SESSION');
+            
+            // जर कुणी थेट URL वरून admin.html उघडण्याचा प्रयत्न केला, तर त्याला login.html वर पाठवणे
+            if (!adminSessionRaw) {
+                alert("अनधिकृत प्रवेश! कृपया मुख्य लॉगिन पेजवरून ॲडमिन लॉगिन करा.");
+                window.location.href = "login.html";
+                return;
+            }
+
             try {
-                const { data: { session } } = await _supabase.auth.getSession();
-                if (!session) {
-                    window.location.href = "login.html";
-                    return;
-                }
+                const admin = JSON.parse(adminSessionRaw);
+                if (admin.role !== 'admin') throw new Error("Invalid Session");
 
-                // ॲडमिन तपासणे (Email किंवा Username)
-                const userEmail = session.user.email.toLowerCase();
-                const isAdmin = userEmail.includes("admin") || userEmail === "saibabaaniaaibaba@gmail.com";
-
-                if (!isAdmin) {
-                    alert("अनधिकृत प्रवेश! फक्त ॲडमिन या पेजवर प्रवेश करू शकतात.");
-                    window.location.href = "home.html";
-                    return;
-                }
-
-                // सर्व डेटा लोड करणे
+                // डॅशबोर्ड डेटा लोड करणे
                 loadDashboardStats();
                 loadPendingRecharges();
                 loadAllUsers();
                 loadTransactions();
 
-            } catch (err) {
-                console.error(err);
+            } catch (e) {
+                sessionStorage.removeItem('QUICKID_ADMIN_SESSION');
                 window.location.href = "login.html";
             }
         });
@@ -401,12 +395,10 @@
         // २. डॅशबोर्डवरील आकडे (Stats) मोजणे
         async function loadDashboardStats() {
             try {
-                // युझर्स संख्या
                 const { count: totalUsers } = await _supabase.from('user_profiles').select('*', { count: 'exact', head: true });
                 const { count: activeUsers } = await _supabase.from('user_profiles').select('*', { count: 'exact', head: true }).eq('plan_status', 'Active');
                 const { count: pendingReqs } = await _supabase.from('recharge_requests').select('*', { count: 'exact', head: true }).eq('status', 'Pending');
                 
-                // आजचे प्रिंट्स मोजणे
                 const today = new Date().toISOString().split('T')[0];
                 const { count: todayPrints } = await _supabase.from('service_logs').select('*', { count: 'exact', head: true }).gte('created_at', today);
 
@@ -475,8 +467,7 @@
             if (!confirmApprove) return;
 
             try {
-                // १. admin_manage_recharge RPC चालवणे
-                const { data, error } = await _supabase.rpc('admin_manage_recharge', {
+                const { error } = await _supabase.rpc('admin_manage_recharge', {
                     p_user_id: userId,
                     p_action_type: 'Plan Renew',
                     p_days: daysToAdd,
@@ -485,7 +476,6 @@
 
                 if (error) throw error;
 
-                // २. रिक्वेस्ट टेबल अपडेट करणे
                 await _supabase.from('recharge_requests').update({ status: 'Approved' }).eq('id', requestId);
 
                 alert("अभिनंदन! प्लॅन यशस्वीरीत्या मंजूर करण्यात आला आहे.");
@@ -580,7 +570,7 @@
             tbody.innerHTML = html;
         }
 
-        // ७. युझर सर्च फिल्टर
+        // ७. युझर शोधणे (Search)
         function filterUsersTable() {
             const q = document.getElementById('userSearchInput').value.toLowerCase().trim();
             const filtered = allUsersData.filter(u => 
@@ -629,7 +619,7 @@
             }
         }
 
-        // ९. बदल सेव्ह करणे (Profile Update + Recharge)
+        // ९. बदल सेव्ह करणे
         async function saveUserModifications(e) {
             e.preventDefault();
             const userId = document.getElementById('editUserId').value;
@@ -643,7 +633,6 @@
             const remark = document.getElementById('editRemark').value.trim() || `Admin Action: ${rechType}`;
 
             try {
-                // १. नाव व स्टेटस अपडेट करणे
                 await _supabase.from('user_profiles').update({
                     full_name: fullName,
                     shop_name: shopName,
@@ -651,7 +640,6 @@
                     block_reason: (status === 'Blocked') ? blockReason : null
                 }).eq('id', userId);
 
-                // २. जर रिचार्ज किंवा दिवस बदलले असतील तर RPC कॉल
                 if (days > 0 || rechType === 'Zero Days') {
                     const { error: rpcErr } = await _supabase.rpc('admin_manage_recharge', {
                         p_user_id: userId,
@@ -714,9 +702,8 @@
         }
 
         // ११. लॉगआउट
-        async function logoutAdmin() {
-            await _supabase.auth.signOut();
-            sessionStorage.clear();
+        function logoutAdmin() {
+            sessionStorage.removeItem('QUICKID_ADMIN_SESSION');
             window.location.href = "login.html";
         }
     </script>
