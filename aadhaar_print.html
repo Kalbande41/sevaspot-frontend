@@ -8,15 +8,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Supabase JS Library, Config and Security -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
+    <script src="auth-guard.js"></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Mukta', sans-serif; }
         body { background-color: #f1f5f9; color: #1e293b; padding: 20px; text-align: center; }
         
-        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-width: 650px; margin: auto; position: relative; padding-bottom: 30px; }
+        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-width: 800px; margin: auto; position: relative; padding-bottom: 30px; }
         .back-link { position: absolute; top: 20px; right: 20px; color: #2563eb; text-decoration: none; font-weight: 600; font-size: 15px; }
         .back-link:hover { text-decoration: underline; }
 
@@ -25,26 +25,30 @@
         .form-group { margin-bottom: 15px; text-align: left; }
         .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #334155; }
         .form-group input, .form-group select { width: 100%; padding: 12px; font-size: 16px; border-radius: 6px; border: 1px solid #cbd5e1; background: #f8fafc; outline: none; }
-        .form-group input:focus, .form-group select:focus { border-color: #2563eb; }
         
         .btn-process { background-color: #2563eb; color: white; border: none; padding: 14px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-process:hover { background-color: #1d4ed8; }
-        .btn-process:disabled { background-color: #94a3b8; cursor: not-allowed; }
         
-        .error { color: #dc2626; font-weight: bold; display: none; margin-top: 15px; background: #fee2e2; padding: 10px; border-radius: 6px; border: 1px solid #fecaca; }
+        .error { color: #dc2626; font-weight: bold; display: none; margin-top: 15px; background: #fee2e2; padding: 10px; border-radius: 6px; }
 
-        /* Result Panel & Editing */
-        #resultPanel { display: none; margin-top: 25px; border-top: 2px dashed #cbd5e1; padding-top: 20px; }
-        .preview-box { text-align: center; margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0; }
+        /* 🟢 Side-by-Side Result Panel Layout */
+        #resultPanel { display: none; margin-top: 25px; border-top: 2px dashed #cbd5e1; padding-top: 20px; text-align: left; }
+        .result-flex { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; }
+        
+        .preview-box { flex: 1; min-width: 260px; text-align: center; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0; }
         .preview-box img { max-width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         
-        .edit-control { text-align: left; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
-        .edit-control label { display: flex; justify-content: space-between; font-weight: 600; font-size: 14px; margin-bottom: 4px; color: #475569; }
-        .edit-control input[type=range] { width: 100%; cursor: pointer; height: 8px; -webkit-appearance: none; background: #cbd5e1; border-radius: 5px; margin-bottom: 10px; outline: none; }
-        .edit-control input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: #ea580c; cursor: pointer; }
+        .edit-controls-box { flex: 1; min-width: 260px; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .edit-control { margin-bottom: 12px; }
+        .edit-control label { display: flex; justify-content: space-between; font-weight: 600; font-size: 13px; margin-bottom: 3px; color: #475569; }
+        .edit-control input[type=range] { width: 100%; cursor: pointer; height: 6px; -webkit-appearance: none; background: #cbd5e1; border-radius: 5px; outline: none; }
+        .edit-control input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #ea580c; cursor: pointer; }
         
-        .btn-download { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; border: none; padding: 14px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
-        .btn-download:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-reprocess { background: #f97316; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-reprocess:hover { background: #ea580c; }
+        
+        .btn-download { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; border: none; padding: 14px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 20px; transition: 0.3s; }
+        .btn-download:hover { opacity: 0.9; }
     </style>
 </head>
 <body>
@@ -55,7 +59,6 @@
         <h2><i class="fas fa-fingerprint"></i> स्मार्ट आधार प्रिंट</h2>
         
         <form id="cardForm" onsubmit="submitToBackend(event)">
-            
             <div class="form-group">
                 <label>पेपरची साईझ निवडा:</label>
                 <select id="printSize">
@@ -80,24 +83,47 @@
             <p id="errorMsg" class="error"></p>
         </form>
 
+        <!-- 🟢 Side-by-Side Result & Editing Panel -->
         <div id="resultPanel">
-            <h3 style="color:#334155; margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
-                <i class="fas fa-image"></i> तयार झालेले आधार कार्ड
+            <h3 style="color:#334155; margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:8px; text-align: center;">
+                <i class="fas fa-image"></i> कार्ड प्रिव्ह्यू आणि फोटो एडिटिंग
             </h3>
             
-            <div class="preview-box">
-                <img id="frontPreview" src="" alt="Aadhaar Front Preview">
-                <p style="font-size:12px; color:#16a34a; font-weight:bold; margin-top:8px;">
-                    <i class="fas fa-check-circle"></i> AI ने फोटो आपोआप क्लिअर केला आहे.
-                </p>
-            </div>
+            <div class="result-flex">
+                <!-- Left Side: Preview -->
+                <div class="preview-box">
+                    <img id="frontPreview" src="" alt="Aadhaar Front Preview">
+                    <p style="font-size:11px; color:#16a34a; font-weight:bold; margin-top:6px;">
+                        <i class="fas fa-check-circle"></i> बॉर्डर आणि फोटो अपडेटेड
+                    </p>
+                </div>
 
-            <div class="edit-control">
-                <label>जर फोटो काळपट वाटत असेल, तर ब्राइटनेस वाढवा: <span id="valBright">110%</span></label>
-                <input type="range" id="rangeBrightness" min="50" max="150" value="110" oninput="document.getElementById('valBright').innerText = this.value + '%'">
-                <button type="button" onclick="submitToBackend(new Event('submit'))" style="background:#f97316; color:white; border:none; padding:10px; border-radius:6px; cursor:pointer; width:100%; font-weight:bold; margin-top:5px; transition:0.3s;">
-                    <i class="fas fa-sync"></i> ब्राइटनेस लागू करा (Re-process)
-                </button>
+                <!-- Right Side: 4 Sliders Editing Panel -->
+                <div class="edit-controls-box">
+                    <div class="edit-control">
+                        <label>प्रकाशन (Brightness): <span id="valBright">100%</span></label>
+                        <input type="range" id="rangeBrightness" min="50" max="150" value="100" oninput="document.getElementById('valBright').innerText = this.value + '%'">
+                    </div>
+                    
+                    <div class="edit-control">
+                        <label>कॉन्ट्रास्ट (Contrast): <span id="valContrast">100%</span></label>
+                        <input type="range" id="rangeContrast" min="50" max="150" value="100" oninput="document.getElementById('valContrast').innerText = this.value + '%'">
+                    </div>
+
+                    <div class="edit-control">
+                        <label>रंग (Saturation): <span id="valSaturation">100%</span></label>
+                        <input type="range" id="rangeSaturation" min="0" max="200" value="100" oninput="document.getElementById('valSaturation').innerText = this.value + '%'">
+                    </div>
+
+                    <div class="edit-control">
+                        <label>ब्लॅक अँड व्हाईट (B & W): <span id="valGray">0%</span></label>
+                        <input type="range" id="rangeGray" min="0" max="100" value="0" oninput="document.getElementById('valGray').innerText = this.value + '%'">
+                    </div>
+
+                    <button type="button" class="btn-reprocess" onclick="submitToBackend(new Event('submit'))">
+                        <i class="fas fa-sync"></i> बदल लागू करा (Re-process)
+                    </button>
+                </div>
             </div>
 
             <button class="btn-download" onclick="downloadPDF()">
@@ -109,84 +135,29 @@
     <script>
         let finalPdfBase64 = "";
 
-        // 🟢 अचूक तारीख मोजणारे फंक्शन (सर्व फॉरमॅटसाठी)
-        function checkDaysRemaining(expireDateStr) {
-            if (!expireDateStr) return 0;
-            let expDate;
-            if (expireDateStr.includes('/') || (expireDateStr.includes('-') && expireDateStr.split('-')[0].length === 2)) {
-                const parts = expireDateStr.split(/[-/]/);
-                expDate = new Date(parts[2], parts[1] - 1, parts[0]);
-            } else {
-                const parts = expireDateStr.split('T')[0].split('-');
-                expDate = new Date(parts[0], parts[1] - 1, parts[2]);
-            }
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            expDate.setHours(0,0,0,0);
-            return Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
-        }
-
         async function submitToBackend(e) {
             e.preventDefault();
             
+            let userId = sessionStorage.getItem('userId');
             const btn = document.getElementById('btnProcess');
             const errorMsg = document.getElementById('errorMsg');
             const resultPanel = document.getElementById('resultPanel');
             
-            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> व्हॅलिडिटी तपासत आहे...";
+            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> सर्व्हरवर प्रोसेस चालू आहे...";
             btn.disabled = true;
             errorMsg.style.display = 'none';
-
-            let userId = sessionStorage.getItem('userId');
-
-            // 🟢 थेट Supabase कडून खात्री करणे (sessionStorage वर अवलंबून न राहता)
-            try {
-                if (typeof _supabase !== 'undefined') {
-                    const { data: { session } } = await _supabase.auth.getSession();
-                    if (session && session.user) {
-                        userId = session.user.id;
-                    }
-
-                    if (!userId) {
-                        alert("अनधिकृत प्रवेश! कृपया आधी लॉगिन करा.");
-                        window.location.href = "login.html";
-                        return;
-                    }
-
-                    // थेट प्रोफाइल तपासणे
-                    const { data: profile } = await _supabase
-                        .from('user_profiles')
-                        .select('plan_status, expire_date')
-                        .eq('id', userId)
-                        .maybeSingle();
-
-                    if (profile) {
-                        const daysLeft = checkDaysRemaining(profile.expire_date);
-                        const isPlanActive = (profile.plan_status === 'Active' || daysLeft > 0);
-
-                        if (!isPlanActive) {
-                            alert("तुमच्या प्लॅनची मुदत संपली आहे. कृपया रिचार्ज करा.");
-                            window.location.href = "recharge.html";
-                            return;
-                        }
-
-                        // सेशन्स ताजे करणे
-                        sessionStorage.setItem('remainingDays', daysLeft);
-                        sessionStorage.setItem('planStatus', 'Active');
-                    }
-                }
-            } catch (authErr) {
-                console.warn("Validation warning:", authErr);
-            }
-
-            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> सर्व्हरवर कार्ड तयार होत आहे...";
 
             const formData = new FormData();
             formData.append('pdfFile', document.getElementById('pdfFile').files[0]);
             formData.append('password', document.getElementById('pdfPassword').value.trim());
             formData.append('size', document.getElementById('printSize').value);
             formData.append('cardName', 'Aadhaar'); 
+            
+            // 4 parameters sending to backend
             formData.append('brightness', document.getElementById('rangeBrightness').value);
+            formData.append('contrast', document.getElementById('rangeContrast').value);
+            formData.append('saturation', document.getElementById('rangeSaturation').value);
+            formData.append('grayscale', document.getElementById('rangeGray').value);
             formData.append('userId', userId);
 
             try {
@@ -197,19 +168,17 @@
 
                 if(response.ok) {
                     const data = await response.json();
-                    
                     document.getElementById('frontPreview').src = "data:image/jpeg;base64," + data.preview_base64;
                     finalPdfBase64 = data.pdf_base64;
-                    
                     resultPanel.style.display = 'block';
                     resultPanel.scrollIntoView({ behavior: 'smooth' });
                 } else {
                     const errData = await response.json();
-                    errorMsg.innerText = "त्रुटी: " + (errData.error || "प्रोसेसिंग पूर्ण होऊ शकले नाही.");
+                    errorMsg.innerText = "Truti: " + (errData.error || "Processing complete hovu shakle nahi.");
                     errorMsg.style.display = 'block';
                 }
             } catch (err) {
-                errorMsg.innerText = "नेटवर्क एरर! सर्व्हरशी संपर्क होऊ शकला नाही.";
+                errorMsg.innerText = "Network error! Server shi sampark hou shakla nahi.";
                 errorMsg.style.display = 'block';
             } finally {
                 btn.innerHTML = "<i class='fas fa-magic'></i> कार्ड प्रोसेस करा";
@@ -221,33 +190,27 @@
             if(!finalPdfBase64) return;
             
             const btn = document.querySelector('.btn-download');
-            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> डाऊनलोड होत आहे...";
+            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Download hot ahe...";
             
             const size = document.getElementById('printSize').value;
-            
             const linkSource = `data:application/pdf;base64,${finalPdfBase64}`;
             const downloadLink = document.createElement("a");
             downloadLink.href = linkSource;
             downloadLink.download = `QuickIDPrint_Aadhaar_${size}_${Date.now()}.pdf`;
             downloadLink.click();
             
-            // सेव्ह लॉग (Service Logger)
-            if (typeof logServicePrint === 'function') {
-                logServicePrint('Aadhaar Print', size + ' Size + Smart Crop');
-            } else {
-                fetch(`${BACKEND_URL}/log-service`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        userId: sessionStorage.getItem('userId'),
-                        serviceCategory: 'Aadhaar Print',
-                        serviceDetails: size + ' Size + Smart Crop'
-                    })
-                }).catch(() => {});
-            }
+            fetch(`${BACKEND_URL}/log-service`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: sessionStorage.getItem('userId'),
+                    serviceCategory: 'Aadhaar Print',
+                    serviceDetails: size + ' Size + 4-Way Smart Edit'
+                })
+            }).catch(() => {});
 
             setTimeout(() => {
-                btn.innerHTML = "<i class='fas fa-check'></i> डाऊनलोड पूर्ण झाले";
+                btn.innerHTML = "<i class='fas fa-check'></i> Download purna zale";
                 setTimeout(() => { window.location.href = "home.html"; }, 1500);
             }, 500);
         }
