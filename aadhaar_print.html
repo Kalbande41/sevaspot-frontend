@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aadhaar Card Service - QuickIDPrint</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Config and Security -->
+    <script src="config.js"></script>
+    <script src="auth-guard.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Mukta', sans-serif; }
+        body { background-color: #f1f5f9; color: #1e293b; padding: 20px; text-align: center; }
+        
+        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-width: 650px; margin: auto; position: relative; padding-bottom: 30px; }
+        .back-link { position: absolute; top: 20px; right: 20px; color: #2563eb; text-decoration: none; font-weight: 600; font-size: 15px; }
+        .back-link:hover { text-decoration: underline; }
+
+        h2 { color: #2563eb; margin-bottom: 25px; border-bottom: 2px solid #2563eb; padding-bottom: 10px; display: inline-block; font-size: 24px; }
+        
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #334155; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; font-size: 16px; border-radius: 6px; border: 1px solid #cbd5e1; background: #f8fafc; outline: none; }
+        .form-group input:focus, .form-group select:focus { border-color: #2563eb; }
+        
+        .btn-process { background-color: #2563eb; color: white; border: none; padding: 14px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-process:hover { background-color: #1d4ed8; }
+        .btn-process:disabled { background-color: #94a3b8; cursor: not-allowed; }
+        
+        .error { color: #dc2626; font-weight: bold; display: none; margin-top: 15px; background: #fee2e2; padding: 10px; border-radius: 6px; border: 1px solid #fecaca; }
+
+        /* 🟢 Result Panel & Editing */
+        #resultPanel { display: none; margin-top: 25px; border-top: 2px dashed #cbd5e1; padding-top: 20px; }
+        .preview-box { text-align: center; margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0; }
+        .preview-box img { max-width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        
+        .edit-control { text-align: left; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
+        .edit-control label { display: flex; justify-content: space-between; font-weight: 600; font-size: 14px; margin-bottom: 4px; color: #475569; }
+        .edit-control input[type=range] { width: 100%; cursor: pointer; height: 8px; -webkit-appearance: none; background: #cbd5e1; border-radius: 5px; margin-bottom: 10px; outline: none; }
+        .edit-control input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: #ea580c; cursor: pointer; }
+        
+        .btn-download { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; border: none; padding: 14px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
+        .btn-download:hover { opacity: 0.9; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="home.html" class="back-link"><i class="fas fa-arrow-left"></i> डॅशबोर्ड</a>
+
+        <h2><i class="fas fa-fingerprint"></i> स्मार्ट आधार प्रिंट</h2>
+        
+        <form id="cardForm" onsubmit="submitToBackend(event)">
+            
+            <div class="form-group">
+                <label>पेपरची साईझ निवडा:</label>
+                <select id="printSize">
+                    <option value="4x6">4x6 Photo Paper (Smart Crop)</option>
+                    <option value="A4">A4 Full Size Paper</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>आधारची PDF फाईल निवडा:</label>
+                <input type="file" id="pdfFile" accept="application/pdf" required>
+            </div>
+
+            <div class="form-group">
+                <label>PDF पासवर्ड (असल्यास):</label>
+                <input type="password" id="pdfPassword" placeholder="उदा. नाव 4 अक्षर + जन्मवर्ष">
+            </div>
+
+            <button type="submit" id="btnProcess" class="btn-process">
+                <i class="fas fa-magic"></i> कार्ड प्रोसेस करा
+            </button>
+            <p id="errorMsg" class="error"></p>
+        </form>
+
+        <div id="resultPanel">
+            <h3 style="color:#334155; margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
+                <i class="fas fa-image"></i> तयार झालेले आधार कार्ड
+            </h3>
+            
+            <div class="preview-box">
+                <img id="frontPreview" src="" alt="Aadhaar Front Preview">
+                <p style="font-size:12px; color:#16a34a; font-weight:bold; margin-top:8px;">
+                    <i class="fas fa-check-circle"></i> AI ने फोटो आपोआप क्लिअर केला आहे.
+                </p>
+            </div>
+
+            <div class="edit-control">
+                <label>जर फोटो काळपट वाटत असेल, तर ब्राइटनेस वाढवा: <span id="valBright">110%</span></label>
+                <input type="range" id="rangeBrightness" min="50" max="150" value="110" oninput="document.getElementById('valBright').innerText = this.value + '%'">
+                <button type="button" onclick="submitToBackend(new Event('submit'))" style="background:#f97316; color:white; border:none; padding:10px; border-radius:6px; cursor:pointer; width:100%; font-weight:bold; margin-top:5px; transition:0.3s;">
+                    <i class="fas fa-sync"></i> ब्राइटनेस लागू करा (Re-process)
+                </button>
+            </div>
+
+            <button class="btn-download" onclick="downloadPDF()">
+                <i class="fas fa-download"></i> फायनल HD PDF डाऊनलोड करा
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let finalPdfBase64 = "";
+
+        async function submitToBackend(e) {
+            e.preventDefault();
+            
+            const userId = sessionStorage.getItem('userId');
+            const remainingDays = parseInt(sessionStorage.getItem('remainingDays')) || 0;
+            const planStatus = sessionStorage.getItem('planStatus');
+            
+            if(!userId) {
+                alert("अनधिकृत प्रवेश! कृपया आधी लॉगिन करा.");
+                window.location.href = "login.html";
+                return;
+            }
+            if(remainingDays <= 0 || planStatus !== 'Active') {
+                alert("तुमच्या प्लॅनची मुदत संपली आहे. कृपया रिन्यू करा.");
+                return;
+            }
+
+            const btn = document.getElementById('btnProcess');
+            const errorMsg = document.getElementById('errorMsg');
+            const resultPanel = document.getElementById('resultPanel');
+            
+            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> सर्व्हरवर कार्ड तयार होत आहे...";
+            btn.disabled = true;
+            errorMsg.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('pdfFile', document.getElementById('pdfFile').files[0]);
+            formData.append('password', document.getElementById('pdfPassword').value.trim());
+            formData.append('size', document.getElementById('printSize').value);
+            
+            // 🟢 हार्डकोडेड व्हॅल्यू: युनिव्हर्सल API ला सांगण्यासाठी की हे आधार कार्ड आहे
+            formData.append('cardName', 'Aadhaar'); 
+            
+            formData.append('brightness', document.getElementById('rangeBrightness').value);
+            formData.append('userId', userId);
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/services/process-card`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if(response.ok) {
+                    const data = await response.json();
+                    
+                    document.getElementById('frontPreview').src = "data:image/jpeg;base64," + data.preview_base64;
+                    finalPdfBase64 = data.pdf_base64;
+                    
+                    resultPanel.style.display = 'block';
+                    resultPanel.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    const errData = await response.json();
+                    errorMsg.innerText = "त्रुटी: " + (errData.error || "प्रोसेसिंग पूर्ण होऊ शकले नाही.");
+                    errorMsg.style.display = 'block';
+                }
+            } catch (err) {
+                errorMsg.innerText = "नेटवर्क एरर! सर्व्हरशी संपर्क होऊ शकला नाही.";
+                errorMsg.style.display = 'block';
+            } finally {
+                btn.innerHTML = "<i class='fas fa-magic'></i> कार्ड प्रोसेस करा";
+                btn.disabled = false;
+            }
+        }
+
+        function downloadPDF() {
+            if(!finalPdfBase64) return;
+            
+            const btn = document.querySelector('.btn-download');
+            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> डाऊनलोड होत आहे...";
+            
+            const size = document.getElementById('printSize').value;
+            
+            const linkSource = `data:application/pdf;base64,${finalPdfBase64}`;
+            const downloadLink = document.createElement("a");
+            downloadLink.href = linkSource;
+            downloadLink.download = `QuickIDPrint_Aadhaar_${size}_${Date.now()}.pdf`;
+            downloadLink.click();
+            
+            fetch(`${BACKEND_URL}/log-service`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: sessionStorage.getItem('userId'),
+                    serviceCategory: 'Aadhaar Print',
+                    serviceDetails: size + ' Size + Smart Crop'
+                })
+            }).then(() => {
+                setTimeout(() => {
+                    btn.innerHTML = "<i class='fas fa-check'></i> डाऊनलोड पूर्ण झाले";
+                    setTimeout(() => { window.location.href = "home.html"; }, 1500);
+                }, 500);
+            });
+        }
+    </script>
+</body>
+</html>
