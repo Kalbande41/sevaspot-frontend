@@ -8,9 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Config and Security -->
+    <!-- Supabase JS Library, Config and Security -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
-    <script src="auth-guard.js"></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Mukta', sans-serif; }
@@ -33,7 +33,7 @@
         
         .error { color: #dc2626; font-weight: bold; display: none; margin-top: 15px; background: #fee2e2; padding: 10px; border-radius: 6px; border: 1px solid #fecaca; }
 
-        /* 🟢 Result Panel & Editing */
+        /* Result Panel & Editing */
         #resultPanel { display: none; margin-top: 25px; border-top: 2px dashed #cbd5e1; padding-top: 20px; }
         .preview-box { text-align: center; margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0; }
         .preview-box img { max-width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -109,39 +109,83 @@
     <script>
         let finalPdfBase64 = "";
 
+        // 🟢 अचूक तारीख मोजणारे फंक्शन (सर्व फॉरमॅटसाठी)
+        function checkDaysRemaining(expireDateStr) {
+            if (!expireDateStr) return 0;
+            let expDate;
+            if (expireDateStr.includes('/') || (expireDateStr.includes('-') && expireDateStr.split('-')[0].length === 2)) {
+                const parts = expireDateStr.split(/[-/]/);
+                expDate = new Date(parts[2], parts[1] - 1, parts[0]);
+            } else {
+                const parts = expireDateStr.split('T')[0].split('-');
+                expDate = new Date(parts[0], parts[1] - 1, parts[2]);
+            }
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            expDate.setHours(0,0,0,0);
+            return Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
+        }
+
         async function submitToBackend(e) {
             e.preventDefault();
             
-            const userId = sessionStorage.getItem('userId');
-            const remainingDays = parseInt(sessionStorage.getItem('remainingDays')) || 0;
-            const planStatus = sessionStorage.getItem('planStatus');
-            
-            if(!userId) {
-                alert("अनधिकृत प्रवेश! कृपया आधी लॉगिन करा.");
-                window.location.href = "login.html";
-                return;
-            }
-            if(remainingDays <= 0 || planStatus !== 'Active') {
-                alert("तुमच्या प्लॅनची मुदत संपली आहे. कृपया रिन्यू करा.");
-                return;
-            }
-
             const btn = document.getElementById('btnProcess');
             const errorMsg = document.getElementById('errorMsg');
             const resultPanel = document.getElementById('resultPanel');
             
-            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> सर्व्हरवर कार्ड तयार होत आहे...";
+            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> व्हॅलिडिटी तपासत आहे...";
             btn.disabled = true;
             errorMsg.style.display = 'none';
+
+            let userId = sessionStorage.getItem('userId');
+
+            // 🟢 थेट Supabase कडून खात्री करणे (sessionStorage वर अवलंबून न राहता)
+            try {
+                if (typeof _supabase !== 'undefined') {
+                    const { data: { session } } = await _supabase.auth.getSession();
+                    if (session && session.user) {
+                        userId = session.user.id;
+                    }
+
+                    if (!userId) {
+                        alert("अनधिकृत प्रवेश! कृपया आधी लॉगिन करा.");
+                        window.location.href = "login.html";
+                        return;
+                    }
+
+                    // थेट प्रोफाइल तपासणे
+                    const { data: profile } = await _supabase
+                        .from('user_profiles')
+                        .select('plan_status, expire_date')
+                        .eq('id', userId)
+                        .maybeSingle();
+
+                    if (profile) {
+                        const daysLeft = checkDaysRemaining(profile.expire_date);
+                        const isPlanActive = (profile.plan_status === 'Active' || daysLeft > 0);
+
+                        if (!isPlanActive) {
+                            alert("तुमच्या प्लॅनची मुदत संपली आहे. कृपया रिचार्ज करा.");
+                            window.location.href = "recharge.html";
+                            return;
+                        }
+
+                        // सेशन्स ताजे करणे
+                        sessionStorage.setItem('remainingDays', daysLeft);
+                        sessionStorage.setItem('planStatus', 'Active');
+                    }
+                }
+            } catch (authErr) {
+                console.warn("Validation warning:", authErr);
+            }
+
+            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> सर्व्हरवर कार्ड तयार होत आहे...";
 
             const formData = new FormData();
             formData.append('pdfFile', document.getElementById('pdfFile').files[0]);
             formData.append('password', document.getElementById('pdfPassword').value.trim());
             formData.append('size', document.getElementById('printSize').value);
-            
-            // 🟢 हार्डकोडेड व्हॅल्यू: युनिव्हर्सल API ला सांगण्यासाठी की हे आधार कार्ड आहे
             formData.append('cardName', 'Aadhaar'); 
-            
             formData.append('brightness', document.getElementById('rangeBrightness').value);
             formData.append('userId', userId);
 
@@ -187,20 +231,25 @@
             downloadLink.download = `QuickIDPrint_Aadhaar_${size}_${Date.now()}.pdf`;
             downloadLink.click();
             
-            fetch(`${BACKEND_URL}/log-service`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    userId: sessionStorage.getItem('userId'),
-                    serviceCategory: 'Aadhaar Print',
-                    serviceDetails: size + ' Size + Smart Crop'
-                })
-            }).then(() => {
-                setTimeout(() => {
-                    btn.innerHTML = "<i class='fas fa-check'></i> डाऊनलोड पूर्ण झाले";
-                    setTimeout(() => { window.location.href = "home.html"; }, 1500);
-                }, 500);
-            });
+            // सेव्ह लॉग (Service Logger)
+            if (typeof logServicePrint === 'function') {
+                logServicePrint('Aadhaar Print', size + ' Size + Smart Crop');
+            } else {
+                fetch(`${BACKEND_URL}/log-service`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: sessionStorage.getItem('userId'),
+                        serviceCategory: 'Aadhaar Print',
+                        serviceDetails: size + ' Size + Smart Crop'
+                    })
+                }).catch(() => {});
+            }
+
+            setTimeout(() => {
+                btn.innerHTML = "<i class='fas fa-check'></i> डाऊनलोड पूर्ण झाले";
+                setTimeout(() => { window.location.href = "home.html"; }, 1500);
+            }, 500);
         }
     </script>
 </body>
