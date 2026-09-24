@@ -79,19 +79,6 @@
     </div>
 
     <script>
-        // 🟢 Local Validity Check On Page Load
-        document.addEventListener("DOMContentLoaded", () => {
-            const daysLeft = parseInt(sessionStorage.getItem('remainingDays')) || 0;
-            const status = sessionStorage.getItem('planStatus');
-            
-            if (daysLeft <= 0 || status !== 'Active') {
-                document.getElementById('mainContent').style.display = 'none';
-                const errMsg = document.getElementById('errorMsg');
-                errMsg.innerHTML = "⚠️ तुमचा प्लॅन संपला आहे. सेवा वापरण्यासाठी कृपया रिचार्ज करा.";
-                errMsg.style.display = 'block';
-            }
-        });
-
         async function submitToBackend(e) {
             e.preventDefault();
             
