@@ -31,8 +31,12 @@
         .btn-process:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,0.3); }
         .btn-process:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
         
-        .error { color: #dc2626; font-weight: bold; display: none; margin-top: 20px; background: #fee2e2; padding: 15px; border-radius: 8px; border: 1px solid #fecaca; font-size: 16px; text-align: center; }
+        .error { color: #dc2626; font-weight: bold; display: none; margin-top: 20px; background: #fee2e2; padding: 15px; border-radius: 8px; border: 1px solid #fecaca; font-size: 15px; text-align: left; word-break: break-all; }
         
+        .server-status { font-size: 13px; font-weight: bold; padding: 6px 12px; border-radius: 20px; margin-bottom: 15px; display: inline-block; }
+        .status-ready { background: #dcfce7; color: #15803d; }
+        .status-waking { background: #fef9c3; color: #a16207; }
+
         .feature-list { text-align: left; background: #eff6ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; color: #1e3a8a; border: 1px dashed #bfdbfe; }
         .feature-list i { color: #2563eb; margin-right: 6px; }
     </style>
@@ -44,6 +48,10 @@
 
         <h2><i class="fas fa-id-card"></i> स्मार्ट व्होटर कार्ड प्रिंट</h2>
         
+        <div id="serverBadge" class="server-status status-waking">
+            <i class="fas fa-sync fa-spin"></i> सर्व्हरशी संपर्क साधत आहे...
+        </div>
+
         <p id="errorMsg" class="error"></p>
 
         <div id="mainContent">
@@ -74,10 +82,29 @@
     </div>
 
     <script>
+        const cleanBaseUrl = (typeof BACKEND_URL !== 'undefined' ? BACKEND_URL : '').replace(/\/+$/, '');
+
+        // 🟢 १. पेज लोड होताच सर्व्हरला Wake-Up (Ping) करणे
+        window.addEventListener('DOMContentLoaded', async () => {
+            const badge = document.getElementById('serverBadge');
+            try {
+                const pingRes = await fetch(`${cleanBaseUrl}/`, { method: 'GET' });
+                if (pingRes.ok) {
+                    badge.className = "server-status status-ready";
+                    badge.innerHTML = "<i class='fas fa-check-circle'></i> सर्व्हर ऑनलाईन व तयार आहे";
+                } else {
+                    throw new Error("Server not ready");
+                }
+            } catch(e) {
+                badge.className = "server-status status-waking";
+                badge.innerHTML = "<i class='fas fa-coffee'></i> सर्व्हर सुरू होत आहे (काही सेकंद लागू शकतात)...";
+            }
+        });
+
+        // 🟢 २. सबमिट करणे
         async function submitToBackend(e) {
             e.preventDefault();
             
-            // 🟢 सर्व संभाव्य कीजमधून सुरक्षितपणे User ID शोधणे
             let userId = sessionStorage.getItem('userId') || 
                          localStorage.getItem('userId') || 
                          sessionStorage.getItem('user_id') ||
@@ -97,9 +124,7 @@
             formData.append('cardName', 'Voter'); 
             formData.append('userId', userId);
 
-            // 🟢 URL मधील स्लॅश (Double Slash) चूक दुरुस्त करणे
-            const baseUrl = (typeof BACKEND_URL !== 'undefined' ? BACKEND_URL : '').replace(/\/+$/, '');
-            const targetEndpoint = `${baseUrl}/api/services/process-voter`;
+            const targetEndpoint = `${cleanBaseUrl}/api/services/process-voter`;
 
             try {
                 const response = await fetch(targetEndpoint, {
@@ -126,23 +151,28 @@
                         btn.innerHTML = "<i class='fas fa-download'></i> कार्ड प्रोसेस आणि डाऊनलोड करा";
                         btn.style.background = ""; 
                         btn.disabled = false;
-                    }, 1000);
+                    }, 1200);
                 } else {
                     let errMsgText = "प्रोसेसिंग पूर्ण होऊ शकले नाही.";
                     try {
                         const errData = await response.json();
                         errMsgText = errData.error || errMsgText;
                     } catch(jsonErr) {
-                        errMsgText = `सर्व्हर त्रुटी (Status: ${response.status})`;
+                        errMsgText = `सर्व्हर एरर कोड: ${response.status} (${response.statusText})`;
                     }
-                    errorMsg.innerText = "त्रुटी: " + errMsgText;
+                    errorMsg.innerHTML = `<b>त्रुटी:</b> ${errMsgText}`;
                     errorMsg.style.display = 'block';
                     btn.innerHTML = "<i class='fas fa-download'></i> कार्ड प्रोसेस आणि डाऊनलोड करा";
                     btn.disabled = false;
                 }
             } catch (err) {
                 console.error("Fetch Error:", err);
-                errorMsg.innerText = "नेटवर्क एरर! सर्व्हरशी संपर्क होऊ शकला नाही. (" + (err.message || "तपासा") + ")";
+                errorMsg.innerHTML = `
+                    <b>⚠️ संपर्क त्रुटी (Connection Error):</b><br>
+                    सर्व्हरशी संपर्क झाला नाही (${err.message}).<br>
+                    <small>तपासणी: Target URL: <code>${targetEndpoint}</code></small><br>
+                    <small>कृपया ५-१० सेकंद थांबा (Render Cold Start) आणि पुन्हा बटण दाबा.</small>
+                `;
                 errorMsg.style.display = 'block';
                 btn.innerHTML = "<i class='fas fa-download'></i> कार्ड प्रोसेस आणि डाऊनलोड करा";
                 btn.disabled = false;
