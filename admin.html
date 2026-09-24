@@ -3,674 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuickIDPrint | Master Admin Dashboard</title>
+    <title>Aadhaar Card Service - QuickIDPrint</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
+    <script src="auth-guard.js"></script>
 
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Mukta',sans-serif; }
-        body { min-height: 100vh; background: #f1f5f9; color: #0f172a; padding-bottom: 60px; }
-
-        /* Navbar */
-        .navbar { background: #123a8f; padding: 12px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
-        .logo-area { display: flex; align-items: center; gap: 10px; text-decoration: none; color: white; }
-        .logo-icon { width: 42px; height: 42px; border-radius: 10px; background: #fff; display: flex; align-items: center; justify-content: center; color: #123a8f; font-size: 20px; }
-        .logo-text h1 { font-size: 22px; line-height: 1; font-weight: 800; }
-        .logo-text span { color: #f97316; }
-        .nav-actions { display: flex; gap: 12px; }
-        .btn-logout { background: #ef4444; color: white; padding: 7px 16px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-
-        .container { max-width: 1200px; margin: 25px auto; padding: 0 20px; }
-
-        /* Stats Cards */
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 25px; }
-        .stat-card { background: white; border-radius: 18px; padding: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 16px; }
-        .stat-icon { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex: none; }
-        .icon-users { background: #eff6ff; color: #2563eb; }
-        .icon-active { background: #f0fdf4; color: #16a34a; }
-        .icon-pending { background: #fffbeb; color: #d97706; }
-        .icon-prints { background: #faf5ff; color: #9333ea; }
-        .stat-info h4 { font-size: 13px; color: #64748b; font-weight: 700; }
-        .stat-info h2 { font-size: 26px; font-weight: 900; margin-top: 2px; }
-
-        /* Tabs System */
-        .tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; background: white; padding: 10px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .tab-btn { flex: 1; min-width: 150px; padding: 12px; border: none; background: #f8fafc; color: #64748b; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .tab-btn:hover { background: #e2e8f0; }
-        .tab-btn.active { background: #123a8f; color: white; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Mukta', sans-serif; }
+        body { background-color: #f1f5f9; color: #1e293b; padding: 20px; text-align: center; }
         
-        .section-content { display: none; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; }
-        .section-content.active { display: block; }
-        .section-title { font-size: 20px; font-weight: 800; color: #123a8f; margin-bottom: 18px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-width: 550px; margin: auto; position: relative; padding-bottom: 30px; }
+        .back-link { position: absolute; top: 20px; right: 20px; color: #2563eb; text-decoration: none; font-weight: 600; font-size: 15px; }
+        .back-link:hover { text-decoration: underline; }
 
-        /* Tables & Forms */
-        .table-responsive { width: 100%; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
-        th { background: #f8fafc; padding: 12px 14px; font-weight: 800; color: #475569; border-bottom: 2px solid #e2e8f0; }
-        td { padding: 13px 14px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-weight: 600; vertical-align: middle; }
+        h2 { color: #2563eb; margin-bottom: 25px; border-bottom: 2px solid #2563eb; padding-bottom: 10px; display: inline-block; font-size: 24px; }
         
-        .badge { padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; }
-        .badge-active { background: #dcfce7; color: #15803d; }
-        .badge-expired { background: #fee2e2; color: #b91c1c; }
-        .badge-info { background: #eff6ff; color: #1e3a8a; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #334155; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; font-size: 16px; border-radius: 6px; border: 1px solid #cbd5e1; background: #f8fafc; outline: none; }
         
-        .btn-approve { background: #16a34a; color: white; padding: 6px 14px; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; font-size: 12px; }
-        .btn-reject { background: #dc2626; color: white; padding: 6px 14px; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; font-size: 12px; margin-left: 6px; }
-        .btn-blue { background: #2563eb; color: white; padding: 10px 20px; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; }
-        .btn-green { background: #16a34a; color: white; padding: 10px 20px; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; }
+        /* सिम्पल ब्राइटनेस कंट्रोल */
+        .slider-group { background: #fff7ed; border: 1px solid #fed7aa; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: left; }
+        .slider-group label { display: flex; justify-content: space-between; font-weight: bold; color: #ea580c; font-size: 14px; margin-bottom: 8px; }
+        .slider-group input[type=range] { width: 100%; cursor: pointer; height: 6px; -webkit-appearance: none; background: #cbd5e1; border-radius: 5px; outline: none; }
+        .slider-group input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #ea580c; cursor: pointer; }
         
-        .search-box-wrap { display: flex; gap: 10px; margin-bottom: 18px; }
-        .search-input { flex: 1; height: 44px; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 8px 16px; font-size: 15px; outline: none; font-weight: 600; }
+        .btn-process { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; border: none; padding: 15px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-process:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(22, 163, 74, 0.3); }
         
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        .field label { display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 5px; }
-        .field input, .field select { width: 100%; height: 42px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 12px; font-size: 14px; outline: none; }
-
-        /* User Edit Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
-        .modal.open { display: flex; }
-        .modal-content { background: white; border-radius: 20px; padding: 26px; width: 100%; max-width: 600px; box-shadow: 0 15px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
-        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b; }
-
-        /* PDF Statement Design */
-        #printAreaWrapper { display: none; margin-top: 30px; overflow-x: auto; }
-        .pdf-container { width: 730px; min-width: 730px; margin: 0 auto; background: white; padding: 10px 20px; border: 1px solid #cbd5e1; box-sizing: border-box; }
-        .pdf-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #123a8f; padding-bottom: 10px; margin-bottom: 15px; }
-        .pdf-logo { width: 100px; text-align: center; color: #f97316; font-weight: bold; font-size: 12px; }
-        .pdf-title-box { text-align: center; flex: 1; }
-        .pdf-title-box h1 { color: #123a8f; font-size: 26px; margin: 0; font-weight: 900; }
-        .pdf-badge { background: #123a8f; color: white; display: inline-block; padding: 3px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; margin-top: 5px; }
-        .pdf-features { font-size: 12px; font-weight: bold; color: #123a8f; line-height: 1.6; }
-        
-        .pdf-info-grid { display: flex; border: 2px solid #123a8f; border-radius: 6px; margin-bottom: 15px; position: relative; }
-        .pdf-info-left { width: 50%; padding: 10px 15px; border-right: 2px solid #123a8f; }
-        .pdf-info-right { width: 50%; padding: 10px 15px; text-align: center; }
-        .info-row { display: flex; margin-bottom: 5px; font-size: 13px; color: #000; font-weight: bold; }
-        .pill-title { position: absolute; top: -10px; left: 10px; background: #123a8f; color: white; padding: 2px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }
-        
-        .pdf-table-wrapper { border: 2px solid #123a8f; border-radius: 6px; padding-top: 15px; margin-bottom: 15px; position: relative; }
-        .pdf-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .pdf-table th { background: #123a8f; color: white; border: 1px solid #cbd5e1; padding: 6px; text-align: center; }
-        .pdf-table td { border: 1px solid #cbd5e1; padding: 6px; text-align: center; color: #000; }
-        
-        .pdf-footer { background: #123a8f; color: white; text-align: center; padding: 10px; border-radius: 4px; font-size: 13px; margin-top: 10px; }
-
-        @media print {
-            body { background-color: white !important; }
-            .navbar, .tabs, .stats-grid, .section-content { display: none !important; }
-            body * { visibility: hidden; }
-            #printAreaWrapper, #printAreaWrapper * { visibility: visible; }
-            #printAreaWrapper { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
-            .pdf-container { width: 100% !important; border: none !important; }
-        }
+        .error { color: #dc2626; font-weight: bold; display: none; margin-top: 15px; background: #fee2e2; padding: 10px; border-radius: 6px; }
+        .success { color: #166534; font-weight: bold; display: none; margin-top: 15px; background: #dcfce7; padding: 10px; border-radius: 6px; border: 1px solid #22c55e; }
     </style>
 </head>
 <body>
 
-    <nav class="navbar">
-        <a href="admin.html" class="logo-area">
-            <div class="logo-icon"><i class="fas fa-shield-alt"></i></div>
-            <div class="logo-text"><h1>Quick<span>ID</span>Print</h1></div>
-        </a>
-        <div class="nav-actions">
-            <button onclick="logoutAdmin()" class="btn-logout"><i class="fas fa-sign-out-alt"></i> लॉगआउट</button>
-        </div>
-    </nav>
-
     <div class="container">
+        <a href="home.html" class="back-link"><i class="fas fa-arrow-left"></i> डॅशबोर्ड</a>
+
+        <h2><i class="fas fa-fingerprint"></i> स्मार्ट आधार प्रिंट</h2>
         
-        <!-- Stats -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon icon-users"><i class="fas fa-users"></i></div>
-                <div class="stat-info"><h4>एकूण युझर्स</h4><h2 id="totalUsersCount">0</h2></div>
+        <form id="cardForm" onsubmit="processAndDownload(event)">
+            <div class="form-group">
+                <label>पेपरची साईझ निवडा:</label>
+                <select id="printSize">
+                    <option value="4x6">4x6 Photo Paper (Smart Crop)</option>
+                    <option value="A4">A4 Full Size Paper</option>
+                </select>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon icon-active"><i class="fas fa-user-check"></i></div>
-                <div class="stat-info"><h4>ॲक्टिव्ह युझर्स</h4><h2 id="activeUsersCount" style="color:#16a34a;">0</h2></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon icon-pending"><i class="fas fa-clock"></i></div>
-                <div class="stat-info"><h4>पेंडिंग विनंत्या</h4><h2 id="pendingRequestsCount" style="color:#d97706;">0</h2></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon icon-prints"><i class="fas fa-print"></i></div>
-                <div class="stat-info"><h4>आजच्या प्रिंट्स</h4><h2 id="todayPrintsCount" style="color:#9333ea;">0</h2></div>
-            </div>
-        </div>
 
-        <!-- Tabs -->
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('pendingTab')"><i class="fas fa-credit-card"></i> पेंडिंग UTR</button>
-            <button class="tab-btn" onclick="switchTab('manageTab')"><i class="fas fa-user-cog"></i> युझर मॅनेजमेंट</button>
-            <button class="tab-btn" onclick="switchTab('statementTab')"><i class="fas fa-file-invoice"></i> स्टेटमेंट (PDF)</button>
-        </div>
-
-        <!-- Tab 1: Pending UTRs -->
-        <div id="pendingTab" class="section-content active">
-            <h3 class="section-title"><i class="fas fa-clock"></i> नवीन रिचार्ज विनंत्या</h3>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>तारीख</th>
-                            <th>दुकानदार / नाव</th>
-                            <th>मोबाईल नंबर</th>
-                            <th>प्लॅन</th>
-                            <th>UTR नंबर</th>
-                            <th>रक्कम</th>
-                            <th>ॲक्शन</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pendingRechargeTable">
-                        <tr><td colspan="7" style="text-align:center;">लोड करत आहे...</td></tr>
-                    </tbody>
-                </table>
+            <div class="form-group">
+                <label>आधारची PDF फाईल निवडा:</label>
+                <input type="file" id="pdfFile" accept="application/pdf" required>
             </div>
-        </div>
 
-        <!-- 🟢 Tab 2: Manage Users (Bandwidth Saved) -->
-        <div id="manageTab" class="section-content">
-            <h3 class="section-title"><i class="fas fa-users"></i> सर्व युझर्स, प्रोफाईल एडिट आणि प्लॅन रिन्यू</h3>
+            <div class="form-group">
+                <label>PDF पासवर्ड (असल्यास):</label>
+                <input type="password" id="pdfPassword" placeholder="उदा. नाव 4 अक्षर + जन्मवर्ष">
+            </div>
+
+            <!-- थेट फॉर्ममध्येच ब्राइटनेस सेट करण्याची सुविधा -->
+            <div class="slider-group">
+                <label>फोटो ब्राइटनेस (Auto Clear): <span id="valBright">110%</span></label>
+                <input type="range" id="rangeBrightness" min="80" max="150" value="110" oninput="document.getElementById('valBright').innerText = this.value + '%'">
+                <small style="color:#64748b; font-size:12px; display:block; margin-top:5px;">(फोटो खूपच काळपट असल्यास थोडे वाढवा, अन्यथा असेच राहू द्या.)</small>
+            </div>
+
+            <button type="submit" id="btnProcess" class="btn-process">
+                <i class="fas fa-download"></i> प्रोसेस आणि डाऊनलोड करा
+            </button>
             
-            <div class="search-box-wrap">
-                <input type="text" id="userSearchInput" class="search-input" placeholder="मोबाईल नंबर टाकून शोधा...">
-                <button class="btn-blue" onclick="searchUserDB()">शोध</button>
-                <button class="btn-green" onclick="loadAllUsersDB()">सर्व युझर्स पहा</button>
-            </div>
-            <p style="font-size:12px; color:#64748b; margin-bottom:15px;">टीप: डेटाबेसचा वेग (Bandwidth) वाचवण्यासाठी पेज लोड होताना सर्व युजर्स दिसत नाहीत. विशिष्ट युजर शोधण्यासाठी त्याचा नंबर टाकून 'शोध' वर क्लिक करा.</p>
-            
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>नाव</th>
-                            <th>सेंटर</th>
-                            <th>मोबाईल नंबर</th>
-                            <th>स्टेटस</th>
-                            <th>उरलेले दिवस</th>
-                            <th>एक्सपायरी</th>
-                            <th>एकूण रिन्यू</th>
-                            <th>मॅनेज</th>
-                        </tr>
-                    </thead>
-                    <tbody id="allUsersTable">
-                        <tr><td colspan="8" style="text-align:center; color:#64748b;">युझर्स शोधण्यासाठी वर मोबाईल नंबर टाका किंवा 'सर्व युझर्स पहा' वर क्लिक करा.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- 🟢 Tab 3: Statement & PDF (Direct DB Search) -->
-        <div id="statementTab" class="section-content">
-            <h3 class="section-title"><i class="fas fa-file-pdf"></i> युझर स्टेटमेंट जनरेटर</h3>
-            <div class="form-grid">
-                <div class="field">
-                    <label>युझर शोधा (मोबाईल नंबर):</label>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="stmtSearch" placeholder="मोबाईल नंबर टाका">
-                        <button class="btn-blue" onclick="searchUserForStatementDB()" style="padding:10px;">शोधा</button>
-                    </div>
-                </div>
-                <div class="field">
-                    <label>निवडलेला युझर:</label>
-                    <input type="text" id="stmtSelectedUser" readonly style="background:#f1f5f9; color:#ea580c; font-weight:bold;">
-                    <input type="hidden" id="stmtUserId">
-                </div>
-            </div>
-            <div class="form-grid">
-                <div class="field"><label>कुठून (From Date):</label><input type="date" id="stmtFrom"></div>
-                <div class="field"><label>कुठपर्यंत (To Date):</label><input type="date" id="stmtTo"></div>
-            </div>
-            <button class="btn-green" onclick="generateStatement()" style="margin-top:0;"><i class="fas fa-sync-alt"></i> स्टेटमेंट जनरेट करा</button>
-
-            <!-- PDF PRINT AREA -->
-            <div id="printAreaWrapper">
-                <div class="pdf-container">
-                    <div class="pdf-header">
-                        <div class="pdf-logo">
-                            <i class="fas fa-id-card" style="font-size: 40px; color:#123a8f;"></i><br>QuickID<br>Print
-                        </div>
-                        <div class="pdf-title-box">
-                            <h1>QUICK ID PRINT</h1>
-                            <div class="pdf-badge">USER ACCOUNT STATEMENT</div>
-                        </div>
-                        <div class="pdf-features">
-                            <i class="far fa-check-circle"></i> विश्वास<br>
-                            <i class="fas fa-award"></i> पारदर्शकता
-                        </div>
-                    </div>
-
-                    <div class="pdf-info-grid">
-                        <div class="pill-title">STATEMENT PERIOD</div>
-                        <div class="pdf-info-left">
-                            <div class="info-row"><span style="width:90px;">नाव:</span> <span id="pdfName">-</span></div>
-                            <div class="info-row"><span style="width:90px;">शॉप नाव:</span> <span id="pdfShop">-</span></div>
-                            <div class="info-row"><span style="width:90px;">मोबाईल:</span> <span id="pdfMobile">-</span></div>
-                            <div class="info-row"><span style="width:90px;">स्टेटस:</span> <span id="pdfStatus">-</span></div>
-                        </div>
-                        <div class="pdf-info-right">
-                            <div style="margin-top:10px; font-size:14px; font-weight:bold;">
-                                <div style="margin-bottom:8px;">कालावधी: <span id="pdfFrom"></span> ते <span id="pdfTo"></span></div>
-                                <div>स्टेटमेंट दिनांक: <span id="pdfGenDate"></span></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pdf-table-wrapper">
-                        <div class="pill-title" style="left:50%; transform:translateX(-50%);">TRANSACTION DETAILS</div>
-                        <table class="pdf-table">
-                            <thead>
-                                <tr>
-                                    <th>अ.क्र.</th>
-                                    <th>दिनांक</th>
-                                    <th>कृती (Action)</th>
-                                    <th>शेरा (Remark)</th>
-                                    <th>प्लॅन सुरू</th>
-                                    <th>प्लॅन एक्सपायरी</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="pdfTableBody"></tbody>
-                        </table>
-                    </div>
-
-                    <div class="pdf-footer">
-                        <i class="fab fa-whatsapp"></i> कोणत्याही मदतीसाठी <b>9403901395</b> या नंबरवर WhatsApp करा.
-                    </div>
-                </div>
-                <button class="btn-blue" onclick="window.print()" style="margin-top:20px; width:100%; background:#ef4444; padding:12px;"><i class="fas fa-print"></i> PDF प्रिंट / सेव्ह करा</button>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- User Edit & Direct Recharge Modal -->
-    <div class="modal" id="userEditModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 style="color:#123a8f; font-weight:800;">युझर मॅनेजमेंट (Edit & Renew)</h3>
-                <button class="modal-close" onclick="closeModal()">&times;</button>
-            </div>
-            <form onsubmit="saveUserUpdates(event)">
-                <input type="hidden" id="editUserId">
-                <div class="form-grid">
-                    <div class="field"><label>नाव:</label><input type="text" id="edName" required></div>
-                    <div class="field"><label>शॉपचे नाव:</label><input type="text" id="edShop"></div>
-                </div>
-                <div class="form-grid">
-                    <div class="field"><label>अकाउंट स्टेटस:</label>
-                        <select id="edStatus">
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                            <option value="Blocked">Blocked</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div style="background:#f8fbff; border:1px dashed #2563eb; padding:15px; border-radius:10px; margin-bottom:15px;">
-                    <label style="font-weight:bold; color:#123a8f; margin-bottom:10px; display:block;"><i class="fas fa-bolt"></i> थेट रिचार्ज / प्लॅन ॲडजस्टमेंट</label>
-                    <div class="form-grid">
-                        <div class="field">
-                            <label>ॲक्शन निवडा:</label>
-                            <select id="edAction">
-                                <option value="None">काहीही करू नका (फक्त प्रोफाईल सेव्ह करा)</option>
-                                <option value="Plan Renew">प्लॅन रिन्यू (Actual Renew - दिवस वाढवा)</option>
-                                <option value="Demo Plan">डेमो प्लॅन द्या (Free Promotion - दिवस वाढवा)</option>
-                                <option value="Reduce Days">दिवस कमी करा</option>
-                                <option value="Zero Days">प्लॅन संपवा (० दिवस)</option>
-                            </select>
-                        </div>
-                        <div class="field"><label>दिवस (Days):</label><input type="number" id="edDays" value="30"></div>
-                    </div>
-                </div>
-                <button type="submit" class="btn-green" style="width:100%; margin-top:5px;">बदल सेव्ह करा</button>
-            </form>
-        </div>
+            <p id="errorMsg" class="error"></p>
+            <p id="successMsg" class="success"><i class="fas fa-check-circle"></i> PDF यशस्वीरीत्या डाऊनलोड झाली!</p>
+        </form>
     </div>
 
     <script>
-        let allUsersData = [];
-
-        document.addEventListener("DOMContentLoaded", async function() {
-            const adminSessionRaw = sessionStorage.getItem('QUICKID_ADMIN_SESSION');
-            if (!adminSessionRaw) {
-                window.location.href = "login.html"; return;
-            }
-            // फक्त डॅशबोर्ड स्टॅट्स आणि पेंडिंग लिस्ट लोड करा (Bandwidth वाचवण्यासाठी All Users लोड करू नका)
-            loadDashboardStats();
-            loadPendingRecharges();
-        });
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
-        }
-
-        async function loadDashboardStats() {
-            try {
-                const { count: totalUsers } = await _supabase.from('user_profiles').select('*', { count: 'exact', head: true });
-                const { count: activeUsers } = await _supabase.from('user_profiles').select('*', { count: 'exact', head: true }).eq('plan_status', 'Active');
-                const { count: pendingReqs } = await _supabase.from('recharge_requests').select('*', { count: 'exact', head: true }).eq('status', 'Pending');
-                const today = new Date().toISOString().split('T')[0];
-                const { count: todayPrints } = await _supabase.from('service_logs').select('*', { count: 'exact', head: true }).gte('created_at', today);
-
-                document.getElementById('totalUsersCount').innerText = totalUsers || 0;
-                document.getElementById('activeUsersCount').innerText = activeUsers || 0;
-                document.getElementById('pendingRequestsCount').innerText = pendingReqs || 0;
-                document.getElementById('todayPrintsCount').innerText = todayPrints || 0;
-            } catch (e) { console.error(e); }
-        }
-
-        async function loadPendingRecharges() {
-            const tbody = document.getElementById('pendingRechargeTable');
-            try {
-                const { data: requests, error } = await _supabase
-                    .from('recharge_requests')
-                    .select('*, user_profiles(full_name, mobile_number, shop_name)')
-                    .eq('status', 'Pending')
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-                if (!requests || requests.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#16a34a; font-weight:700;">✅ कोणतीही पेंडिंग विनंती नाही.</td></tr>';
-                    return;
-                }
-
-                let html = '';
-                requests.forEach(req => {
-                    const profile = req.user_profiles || {};
-                    const date = new Date(req.created_at).toLocaleDateString('mr-IN');
-                    // जर टेबलमध्ये थेट नाव असेल तर ते वापरा, अन्यथा प्रोफाईल मधून
-                    const finalName = req.full_name || profile.full_name || 'युझर';
-                    const finalMobile = req.mobile_number || profile.mobile_number || '-';
-                    
-                    html += `
-                        <tr>
-                            <td>${date}</td>
-                            <td><strong>${finalName}</strong><br><small>${profile.shop_name || '-'}</small></td>
-                            <td>${finalMobile}</td>
-                            <td><span class="badge badge-active">${req.plan_name}</span></td>
-                            <td style="font-family:monospace; font-weight:bold;">${req.utr_number}</td>
-                            <td><strong>₹${req.recharge_amount}</strong></td>
-                            <td>
-                                <button class="btn-approve" onclick="approveRecharge(${req.id}, '${req.user_id}', '${req.plan_name}', ${req.recharge_amount}, this)">Approve</button>
-                                <button class="btn-reject" onclick="rejectRecharge(${req.id}, this)">Reject</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                tbody.innerHTML = html;
-            } catch (err) { console.error(err); }
-        }
-
-        async function approveRecharge(requestId, userId, planName, amount, btnElement) {
-            let daysToAdd = 30;
-            if (planName.includes("3") || amount >= 399) daysToAdd = 90;
-            if (planName.includes("6") || amount >= 699) daysToAdd = 180;
-            if (planName.includes("1") || amount >= 1199) daysToAdd = 365;
-
-            if (!confirm(`ही विनंती मंजूर करायची आहे का?\nयुझरला ${daysToAdd} दिवस मिळतील.`)) return;
-            btnElement.innerText = "Processing...";
-
-            try {
-                const response = await fetch(`${BACKEND_URL}/approve-recharge`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ requestId, userId, planDays: daysToAdd })
-                });
-                const result = await response.json();
-                
-                if (result.success) {
-                    btnElement.closest('tr').remove();
-                    let countEl = document.getElementById('pendingRequestsCount');
-                    countEl.innerText = Math.max(0, parseInt(countEl.innerText) - 1);
-                    alert("प्लॅन यशस्वीरीत्या मंजूर झाला!");
-                    
-                    // जर Manage Users टॅबमध्ये डेटा असेल तर तो रिफ्रेश करा
-                    if(allUsersData.length > 0) loadAllUsersDB(); 
-                } else {
-                    alert("त्रुटी: " + result.error);
-                }
-            } catch (err) { alert("सर्व्हर त्रुटी: " + err.message); }
-        }
-
-        async function rejectRecharge(requestId, btnElement) {
-            if (!confirm("ही विनंती रद्द करायची आहे का?")) return;
-            try {
-                await _supabase.from('recharge_requests').update({ status: 'Cancelled' }).eq('id', requestId);
-                btnElement.closest('tr').remove();
-                let countEl = document.getElementById('pendingRequestsCount');
-                countEl.innerText = Math.max(0, parseInt(countEl.innerText) - 1);
-            } catch (err) { alert(err.message); }
-        }
-
-        // 🟢 डेटाबेस मधून थेट सर्च करणे (Bandwidth वाचवण्यासाठी)
-        async function searchUserDB() {
-            const num = document.getElementById('userSearchInput').value.trim();
-            if(!num) return alert("कृपया मोबाईल नंबर टाका.");
-            
-            const tbody = document.getElementById('allUsersTable');
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">शोधत आहे...</td></tr>';
-            
-            try {
-                const { data: users, error } = await _supabase.from('user_profiles').select('*').eq('mobile_number', num);
-                if(error) throw error;
-                allUsersData = users || [];
-                renderUsersTable(allUsersData);
-            } catch(e) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:red;">एरर आला.</td></tr>';
-            }
-        }
-
-        // 🟢 सर्व युजर्स मॅन्युअली लोड करणे
-        async function loadAllUsersDB() {
-            const tbody = document.getElementById('allUsersTable');
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">सर्व युझर्स लोड करत आहे (कृपया थांबा)...</td></tr>';
-            try {
-                const { data: users, error } = await _supabase.from('user_profiles').select('*').order('created_at', { ascending: false });
-                if (error) throw error;
-                allUsersData = users || [];
-                renderUsersTable(allUsersData);
-            } catch (err) { console.error(err); }
-        }
-
-        function renderUsersTable(users) {
-            const tbody = document.getElementById('allUsersTable');
-            if (users.length === 0) return tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">युझर सापडला नाही.</td></tr>';
-            
-            const today = new Date(); today.setHours(0,0,0,0);
-            let html = '';
-            users.forEach(u => {
-                let remDays = 0;
-                if (u.expire_date) {
-                    const exp = new Date(u.expire_date); exp.setHours(0,0,0,0);
-                    remDays = Math.max(0, Math.ceil((exp - today) / 86400000));
-                }
-                let st = u.plan_status === 'Active' && remDays > 0 ? '<span class="badge badge-active">Active</span>' : '<span class="badge badge-expired">Inactive/Expired</span>';
-                
-                html += `
-                    <tr>
-                        <td><strong>${u.full_name || '-'}</strong></td>
-                        <td>${u.shop_name || '-'}</td>
-                        <td>${u.mobile_number || '-'}</td>
-                        <td>${st}</td>
-                        <td style="color:${remDays>0?'#16a34a':'#dc2626'}; font-weight:bold;">${remDays} दिवस</td>
-                        <td>${u.expire_date || '-'}</td>
-                        <td><span class="badge badge-info">${u.total_renews || 0} वेळा</span></td>
-                        <td><button class="btn-blue" onclick="openModal('${u.id}')">Manage</button></td>
-                    </tr>
-                `;
-            });
-            tbody.innerHTML = html;
-        }
-
-        function openModal(id) {
-            const u = allUsersData.find(x => x.id === id);
-            if(!u) return;
-            document.getElementById('editUserId').value = u.id;
-            document.getElementById('edName').value = u.full_name || '';
-            document.getElementById('edShop').value = u.shop_name || '';
-            document.getElementById('edStatus').value = u.plan_status || 'Active';
-            document.getElementById('edAction').value = 'None';
-            document.getElementById('userEditModal').classList.add('open');
-        }
-        function closeModal() { document.getElementById('userEditModal').classList.remove('open'); }
-
-        // 🟢 मॅन्युअल अपडेट आणि ट्रॅन्झॅक्शन्समध्ये तारखा टाकणे
-        async function saveUserUpdates(e) {
+        async function processAndDownload(e) {
             e.preventDefault();
-            const userId = document.getElementById('editUserId').value;
-            const action = document.getElementById('edAction').value;
-            const days = parseInt(document.getElementById('edDays').value) || 0;
+            
+            let userId = sessionStorage.getItem('userId');
+            const btn = document.getElementById('btnProcess');
+            const errorMsg = document.getElementById('errorMsg');
+            const successMsg = document.getElementById('successMsg');
+            
+            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> फाईल प्रोसेस होत आहे...";
+            btn.disabled = true;
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('pdfFile', document.getElementById('pdfFile').files[0]);
+            formData.append('password', document.getElementById('pdfPassword').value.trim());
+            formData.append('size', document.getElementById('printSize').value);
+            formData.append('cardName', 'Aadhaar'); 
+            formData.append('brightness', document.getElementById('rangeBrightness').value);
+            formData.append('userId', userId);
 
             try {
-                const u = allUsersData.find(x => x.id === userId);
-                
-                let updateData = {
-                    full_name: document.getElementById('edName').value,
-                    shop_name: document.getElementById('edShop').value,
-                    plan_status: document.getElementById('edStatus').value
-                };
-
-                if (action !== 'None') {
-                    let currentExp = u.expire_date ? new Date(u.expire_date) : new Date();
-                    let today = new Date();
-                    today.setHours(0,0,0,0);
-                    
-                    let startD = today;
-                    let newExp = new Date();
-                    
-                    if (action === 'Zero Days') { 
-                        newExp.setDate(newExp.getDate() - 1); 
-                        updateData.plan_status = 'Expired'; 
-                    }
-                    else if (action === 'Reduce Days') { 
-                        startD = currentExp;
-                        newExp = new Date(currentExp); 
-                        newExp.setDate(newExp.getDate() - days); 
-                    }
-                    else { 
-                        if (currentExp >= today) {
-                            startD = currentExp; 
-                            newExp = new Date(currentExp);
-                        } else {
-                            startD = today;
-                            newExp = new Date(today);
-                        }
-                        newExp.setDate(newExp.getDate() + days); 
-                        updateData.plan_status = 'Active'; 
-                    }
-                    
-                    let startDStr = startD.toISOString().split('T')[0];
-                    updateData.expire_date = newExp.toISOString().split('T')[0];
-
-                    let remarkText = "Admin Manual Adjustment";
-                    if (action === 'Plan Renew') {
-                        updateData.total_renews = (u.total_renews || 0) + 1;
-                        remarkText = "Admin Direct Plan Renew";
-                    } else if (action === 'Demo Plan') {
-                        updateData.total_renews = u.total_renews || 0;
-                        remarkText = "Free Promotional Demo Plan";
-                    }
-
-                    // 🟢 ट्रॅन्झॅक्शन टेबलमध्ये start_date आणि expiry_date सेव्ह करणे
-                    await _supabase.from('transactions').insert([{ 
-                        user_id: userId, 
-                        action: action, 
-                        remark: remarkText,
-                        start_date: startDStr,
-                        expiry_date: updateData.expire_date,
-                        status: 'Success' 
-                    }]);
-                }
-
-                await _supabase.from('user_profiles').update(updateData).eq('id', userId);
-                alert("प्रोफाईल आणि प्लॅन यशस्वीरीत्या अपडेट झाले!");
-                closeModal();
-                
-                // फक्त शोधलेला युझर रिफ्रेश करा
-                if(document.getElementById('userSearchInput').value.trim() !== "") {
-                    searchUserDB();
-                } else {
-                    loadAllUsersDB();
-                }
-                loadDashboardStats();
-            } catch (err) { alert(err.message); }
-        }
-
-        // 🟢 स्टेटमेंटसाठी थेट डेटाबेस सर्च करणे
-        async function searchUserForStatementDB() {
-            const num = document.getElementById('stmtSearch').value.trim();
-            if(!num) return alert("मोबाईल नंबर टाका.");
-            
-            document.getElementById('stmtSelectedUser').value = "शोधत आहे...";
-            
-            try {
-                const { data: u, error } = await _supabase.from('user_profiles').select('*').eq('mobile_number', num).maybeSingle();
-                
-                if(u) {
-                    document.getElementById('stmtUserId').value = u.id;
-                    document.getElementById('stmtSelectedUser').value = `${u.full_name} (${u.shop_name})`;
-                    
-                    document.getElementById('pdfName').innerText = u.full_name;
-                    document.getElementById('pdfShop').innerText = u.shop_name;
-                    document.getElementById('pdfMobile').innerText = u.mobile_number;
-                    document.getElementById('pdfStatus').innerText = u.plan_status;
-                } else { 
-                    document.getElementById('stmtSelectedUser').value = "";
-                    alert("युझर सापडला नाही."); 
-                }
-            } catch(e) {
-                alert("नेटवर्क एरर.");
-            }
-        }
-
-        async function generateStatement() {
-            const uid = document.getElementById('stmtUserId').value;
-            const fromD = document.getElementById('stmtFrom').value;
-            const toD = document.getElementById('stmtTo').value;
-
-            if(!uid || !fromD || !toD) return alert("युझर निवडा आणि तारखा टाका.");
-
-            const { data: trans } = await _supabase.from('transactions').select('*')
-                .eq('user_id', uid).gte('created_at', fromD).lte('created_at', toD + ' 23:59:59').order('created_at', { ascending: true });
-
-            const tbody = document.getElementById('pdfTableBody');
-            tbody.innerHTML = '';
-
-            if(!trans || trans.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7">कोणतेही ट्रॅन्झॅक्शन सापडले नाही.</td></tr>';
-            } else {
-                trans.forEach((tx, i) => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${i+1}</td>
-                            <td>${new Date(tx.created_at).toLocaleDateString('mr-IN')}</td>
-                            <td>${tx.action}</td>
-                            <td>${tx.remark}</td>
-                            <td>${tx.start_date || '-'}</td>
-                            <td>${tx.expiry_date || '-'}</td>
-                            <td>${tx.status}</td>
-                        </tr>
-                    `;
+                const response = await fetch(`${BACKEND_URL}/api/services/process-card`, {
+                    method: 'POST',
+                    body: formData
                 });
+
+                if(response.ok) {
+                    const data = await response.json();
+                    
+                    // 🟢 थेट डाऊनलोड लॉजिक
+                    const linkSource = `data:application/pdf;base64,${data.pdf_base64}`;
+                    const downloadLink = document.createElement("a");
+                    downloadLink.href = linkSource;
+                    downloadLink.download = `QuickIDPrint_Aadhaar_${document.getElementById('printSize').value}_${Date.now()}.pdf`;
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+                    
+                    successMsg.style.display = 'block';
+                    btn.innerHTML = "<i class='fas fa-check'></i> काम पूर्ण झाले";
+                    
+                    // डाऊनलोड झाल्यानंतर डॅशबोर्डवर परत जाणे
+                    setTimeout(() => { window.location.href = "home.html"; }, 2000);
+
+                } else {
+                    const errData = await response.json();
+                    errorMsg.innerText = "त्रुटी: " + (errData.error || "प्रोसेसिंग पूर्ण होऊ शकले नाही.");
+                    errorMsg.style.display = 'block';
+                    btn.innerHTML = "<i class='fas fa-download'></i> प्रोसेस आणि डाऊनलोड करा";
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                errorMsg.innerText = "नेटवर्क एरर! सर्व्हरशी संपर्क होऊ शकला नाही.";
+                errorMsg.style.display = 'block';
+                btn.innerHTML = "<i class='fas fa-download'></i> प्रोसेस आणि डाऊनलोड करा";
+                btn.disabled = false;
             }
-
-            document.getElementById('pdfFrom').innerText = fromD.split('-').reverse().join('-');
-            document.getElementById('pdfTo').innerText = toD.split('-').reverse().join('-');
-            document.getElementById('pdfGenDate').innerText = new Date().toLocaleDateString('mr-IN');
-            document.getElementById('printAreaWrapper').style.display = 'block';
         }
-
-        async function logoutAdmin() { sessionStorage.removeItem('QUICKID_ADMIN_SESSION'); window.location.href = "login.html"; }
     </script>
 </body>
 </html>
