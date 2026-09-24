@@ -66,8 +66,6 @@
                     <input type="file" id="pdfFile" accept="application/pdf" required>
                 </div>
 
-                <!-- 🟢 Password field removed completely -->
-
                 <button type="submit" id="btnProcess" class="btn-process">
                     <i class="fas fa-download"></i> कार्ड प्रोसेस आणि डाऊनलोड करा
                 </button>
@@ -79,9 +77,11 @@
         async function submitToBackend(e) {
             e.preventDefault();
             
+            // 🟢 सर्व संभाव्य कीजमधून सुरक्षितपणे User ID शोधणे
             let userId = sessionStorage.getItem('userId') || 
                          localStorage.getItem('userId') || 
-                         sessionStorage.getItem('user_id');
+                         sessionStorage.getItem('user_id') ||
+                         localStorage.getItem('user_id') || '';
 
             const btn = document.getElementById('btnProcess');
             const errorMsg = document.getElementById('errorMsg');
@@ -92,17 +92,17 @@
 
             const formData = new FormData();
             formData.append('pdfFile', document.getElementById('pdfFile').files[0]);
-            
-            // Password blank thevala aahe, karan tyachi garaj nahi
             formData.append('password', '');
-            
             formData.append('size', document.getElementById('printSize').value);
             formData.append('cardName', 'Voter'); 
-            formData.append('userId', userId || '');
+            formData.append('userId', userId);
+
+            // 🟢 URL मधील स्लॅश (Double Slash) चूक दुरुस्त करणे
+            const baseUrl = (typeof BACKEND_URL !== 'undefined' ? BACKEND_URL : '').replace(/\/+$/, '');
+            const targetEndpoint = `${baseUrl}/api/services/process-voter`;
 
             try {
-                // 🟢 URL fixed: small 'v' for /process-voter
-                const response = await fetch(`${BACKEND_URL}/api/services/process-voter`, {
+                const response = await fetch(targetEndpoint, {
                     method: 'POST',
                     body: formData
                 });
@@ -126,16 +126,23 @@
                         btn.innerHTML = "<i class='fas fa-download'></i> कार्ड प्रोसेस आणि डाऊनलोड करा";
                         btn.style.background = ""; 
                         btn.disabled = false;
-                    }, 500);
+                    }, 1000);
                 } else {
-                    const errData = await response.json();
-                    errorMsg.innerText = "त्रुटी: " + (errData.error || "प्रोसेसिंग पूर्ण होऊ शकले नाही.");
+                    let errMsgText = "प्रोसेसिंग पूर्ण होऊ शकले नाही.";
+                    try {
+                        const errData = await response.json();
+                        errMsgText = errData.error || errMsgText;
+                    } catch(jsonErr) {
+                        errMsgText = `सर्व्हर त्रुटी (Status: ${response.status})`;
+                    }
+                    errorMsg.innerText = "त्रुटी: " + errMsgText;
                     errorMsg.style.display = 'block';
                     btn.innerHTML = "<i class='fas fa-download'></i> कार्ड प्रोसेस आणि डाऊनलोड करा";
                     btn.disabled = false;
                 }
             } catch (err) {
-                errorMsg.innerText = "नेटवर्क एरर! सर्व्हरशी संपर्क होऊ शकला नाही.";
+                console.error("Fetch Error:", err);
+                errorMsg.innerText = "नेटवर्क एरर! सर्व्हरशी संपर्क होऊ शकला नाही. (" + (err.message || "तपासा") + ")";
                 errorMsg.style.display = 'block';
                 btn.innerHTML = "<i class='fas fa-download'></i> कार्ड प्रोसेस आणि डाऊनलोड करा";
                 btn.disabled = false;
