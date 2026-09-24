@@ -104,7 +104,7 @@
             formData.append('userId', userId || '');
 
             try {
-                const response = await fetch(`${BACKEND_URL}/api/services/process-card`, {
+                const response = await fetch(`${BACKEND_URL}/api/services/process-voter`, {
                     method: 'POST',
                     body: formData
                 });
