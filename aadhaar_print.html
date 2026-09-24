@@ -79,7 +79,11 @@
         async function submitToBackend(e) {
             e.preventDefault();
             
-            let userId = sessionStorage.getItem('userId');
+            // 🟢 Session किंवा LocalStorage मधून User ID मिळवणे
+            let userId = sessionStorage.getItem('userId') || 
+                         localStorage.getItem('userId') || 
+                         sessionStorage.getItem('user_id');
+
             const btn = document.getElementById('btnProcess');
             const errorMsg = document.getElementById('errorMsg');
             
@@ -92,7 +96,7 @@
             formData.append('password', document.getElementById('pdfPassword').value.trim());
             formData.append('size', document.getElementById('printSize').value);
             formData.append('cardName', 'Aadhaar'); 
-            formData.append('userId', userId);
+            formData.append('userId', userId || '');
 
             try {
                 const response = await fetch(`${BACKEND_URL}/api/services/process-card`, {
