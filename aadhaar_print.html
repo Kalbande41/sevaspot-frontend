@@ -31,7 +31,7 @@
         .btn-process:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,0.3); }
         .btn-process:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
         
-        .error { color: #dc2626; font-weight: bold; display: none; margin-top: 20px; background: #fee2e2; padding: 12px; border-radius: 8px; border: 1px solid #fecaca; }
+        .error { color: #dc2626; font-weight: bold; display: none; margin-top: 20px; background: #fee2e2; padding: 15px; border-radius: 8px; border: 1px solid #fecaca; font-size: 16px; text-align: center; }
         
         .feature-list { text-align: left; background: #eff6ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; color: #1e3a8a; border: 1px dashed #bfdbfe; }
         .feature-list i { color: #2563eb; margin-right: 6px; }
@@ -44,42 +44,57 @@
 
         <h2><i class="fas fa-fingerprint"></i> स्मार्ट आधार प्रिंट</h2>
         
-        <div class="feature-list">
-            <div><i class="fas fa-magic"></i> फोटो आपोआप HD क्लिअर होईल.</div>
-            <div style="margin-top:5px;"><i class="fas fa-crop-alt"></i> अचूक साईझ आणि कटिंगसाठी काळी बॉर्डर लागू होईल.</div>
+        <p id="errorMsg" class="error"></p>
+
+        <div id="mainContent">
+            <div class="feature-list">
+                <div><i class="fas fa-magic"></i> फोटो आपोआप HD क्लिअर होईल.</div>
+                <div style="margin-top:5px;"><i class="fas fa-crop-alt"></i> अचूक साईझ आणि कटिंगसाठी काळी बॉर्डर लागू होईल.</div>
+            </div>
+            
+            <form id="cardForm" onsubmit="submitToBackend(event)">
+                <div class="form-group">
+                    <label>पेपरची साईझ निवडा:</label>
+                    <select id="printSize">
+                        <option value="4x6">4x6 Photo Paper (Smart Crop)</option>
+                        <option value="A4">A4 Full Size Paper</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>आधारची PDF फाईल निवडा:</label>
+                    <input type="file" id="pdfFile" accept="application/pdf" required>
+                </div>
+
+                <div class="form-group">
+                    <label>PDF पासवर्ड (असल्यास):</label>
+                    <input type="password" id="pdfPassword" placeholder="उदा. नाव 4 अक्षर + जन्मवर्ष">
+                </div>
+
+                <button type="submit" id="btnProcess" class="btn-process">
+                    <i class="fas fa-download"></i> कार्ड प्रोसेस आणि डाऊनलोड करा
+                </button>
+            </form>
         </div>
-        
-        <form id="cardForm" onsubmit="submitToBackend(event)">
-            <div class="form-group">
-                <label>पेपरची साईझ निवडा:</label>
-                <select id="printSize">
-                    <option value="4x6">4x6 Photo Paper (Smart Crop)</option>
-                    <option value="A4">A4 Full Size Paper</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>आधारची PDF फाईल निवडा:</label>
-                <input type="file" id="pdfFile" accept="application/pdf" required>
-            </div>
-
-            <div class="form-group">
-                <label>PDF पासवर्ड (असल्यास):</label>
-                <input type="password" id="pdfPassword" placeholder="उदा. नाव 4 अक्षर + जन्मवर्ष">
-            </div>
-
-            <button type="submit" id="btnProcess" class="btn-process">
-                <i class="fas fa-download"></i> कार्ड प्रोसेस आणि डाऊनलोड करा
-            </button>
-            <p id="errorMsg" class="error"></p>
-        </form>
     </div>
 
     <script>
+        // 🟢 Local Validity Check On Page Load
+        document.addEventListener("DOMContentLoaded", () => {
+            const daysLeft = parseInt(sessionStorage.getItem('remainingDays')) || 0;
+            const status = sessionStorage.getItem('planStatus');
+            
+            if (daysLeft <= 0 || status !== 'Active') {
+                document.getElementById('mainContent').style.display = 'none';
+                const errMsg = document.getElementById('errorMsg');
+                errMsg.innerHTML = "⚠️ तुमचा प्लॅन संपला आहे. सेवा वापरण्यासाठी कृपया रिचार्ज करा.";
+                errMsg.style.display = 'block';
+            }
+        });
+
         async function submitToBackend(e) {
             e.preventDefault();
             
-            // 🟢 Session किंवा LocalStorage मधून User ID मिळवणे
             let userId = sessionStorage.getItem('userId') || 
                          localStorage.getItem('userId') || 
                          sessionStorage.getItem('user_id');
@@ -107,7 +122,6 @@
                 if(response.ok) {
                     const data = await response.json();
                     
-                    // 🟢 थेट PDF डाऊनलोड ट्रिगर करणे
                     const linkSource = `data:application/pdf;base64,${data.pdf_base64}`;
                     const downloadLink = document.createElement("a");
                     downloadLink.href = linkSource;
