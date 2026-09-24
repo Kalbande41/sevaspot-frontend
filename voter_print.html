@@ -42,7 +42,6 @@
     <div class="container">
         <a href="home.html" class="back-link"><i class="fas fa-arrow-left"></i> डॅशबोर्ड</a>
 
-        <!-- 🟢 Heading Changed for Voter -->
         <h2><i class="fas fa-id-card"></i> स्मार्ट व्होटर कार्ड प्रिंट</h2>
         
         <p id="errorMsg" class="error"></p>
@@ -67,10 +66,7 @@
                     <input type="file" id="pdfFile" accept="application/pdf" required>
                 </div>
 
-                <div class="form-group">
-                    <label>PDF पासवर्ड (असल्यास):</label>
-                    <input type="password" id="pdfPassword" placeholder="पासवर्ड असल्यास टाका">
-                </div>
+                <!-- 🟢 Password field removed completely -->
 
                 <button type="submit" id="btnProcess" class="btn-process">
                     <i class="fas fa-download"></i> कार्ड प्रोसेस आणि डाऊनलोड करा
@@ -96,15 +92,17 @@
 
             const formData = new FormData();
             formData.append('pdfFile', document.getElementById('pdfFile').files[0]);
-            formData.append('password', document.getElementById('pdfPassword').value.trim());
-            formData.append('size', document.getElementById('printSize').value);
             
-            // 🟢 Backend parameter changed to Voter
+            // Password blank thevala aahe, karan tyachi garaj nahi
+            formData.append('password', '');
+            
+            formData.append('size', document.getElementById('printSize').value);
             formData.append('cardName', 'Voter'); 
             formData.append('userId', userId || '');
 
             try {
-                const response = await fetch(`${BACKEND_URL}/api/services/process-Voter`, {
+                // 🟢 URL fixed: small 'v' for /process-voter
+                const response = await fetch(`${BACKEND_URL}/api/services/process-voter`, {
                     method: 'POST',
                     body: formData
                 });
@@ -123,7 +121,6 @@
                     btn.innerHTML = "<i class='fas fa-check'></i> डाऊनलोड पूर्ण झाले!";
                     btn.style.background = "linear-gradient(135deg, #16a34a 0%, #15803d 100%)";
                     
-                    // 🟢 0.5 sec (500ms) Reset Logic[cite: 10]
                     setTimeout(() => { 
                         document.getElementById('cardForm').reset();
                         btn.innerHTML = "<i class='fas fa-download'></i> कार्ड प्रोसेस आणि डाऊनलोड करा";
