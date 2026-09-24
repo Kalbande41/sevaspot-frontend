@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voter ID Service - QuickIDPrint</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="auth-guard.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Mukta', sans-serif; }
+        body { background-color: #f1f5f9; color: #1e293b; padding: 20px; text-align: center; }
+        
+        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.08); max-width: 550px; margin: 40px auto; position: relative; }
+        .back-link { position: absolute; top: 20px; right: 20px; color: #2563eb; text-decoration: none; font-weight: 600; font-size: 15px; }
+        .back-link:hover { text-decoration: underline; }
+
+        h2 { color: #2563eb; margin-bottom: 25px; border-bottom: 2px solid #2563eb; padding-bottom: 10px; display: inline-block; font-size: 24px; }
+        
+        .form-group { margin-bottom: 18px; text-align: left; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #334155; }
+        .form-group input, .form-group select { width: 100%; padding: 14px; font-size: 16px; border-radius: 8px; border: 1.5px solid #cbd5e1; background: #f8fafc; outline: none; transition: 0.3s; }
+        .form-group input:focus, .form-group select:focus { border-color: #2563eb; background: #fff; }
+        
+        .btn-process { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; padding: 16px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 15px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 15px rgba(37,99,235,0.2); }
+        .btn-process:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,0.3); }
+        .btn-process:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+        
+        .error { color: #dc2626; font-weight: bold; display: none; margin-top: 20px; background: #fee2e2; padding: 15px; border-radius: 8px; border: 1px solid #fecaca; font-size: 16px; text-align: center; }
+        
+        .feature-list { text-align: left; background: #eff6ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; color: #1e3a8a; border: 1px dashed #bfdbfe; }
+        .feature-list i { color: #2563eb; margin-right: 6px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="home.html" class="back-link"><i class="fas fa-arrow-left"></i> डॅशबोर्ड</a>
+
+        <!-- 🟢 Heading Changed for Voter -->
+        <h2><i class="fas fa-id-card"></i> स्मार्ट व्होटर कार्ड प्रिंट</h2>
+        
+        <p id="errorMsg" class="error"></p>
+
+        <div id="mainContent">
+            <div class="feature-list">
+                <div><i class="fas fa-magic"></i> फोटो आपोआप HD क्लिअर होईल.</div>
+                <div style="margin-top:5px;"><i class="fas fa-crop-alt"></i> अचूक साईझ आणि नॅचरल बॉर्डर लागू होईल.</div>
+            </div>
+            
+            <form id="cardForm" onsubmit="submitToBackend(event)">
+                <div class="form-group">
+                    <label>पेपरची साईझ निवडा:</label>
+                    <select id="printSize">
+                        <option value="4x6">4x6 Photo Paper (Smart Crop)</option>
+                        <option value="A4">A4 Full Size Paper</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>व्होटर कार्डची (e-EPIC) PDF फाईल निवडा:</label>
+                    <input type="file" id="pdfFile" accept="application/pdf" required>
+                </div>
+
+                <div class="form-group">
+                    <label>PDF पासवर्ड (असल्यास):</label>
+                    <input type="password" id="pdfPassword" placeholder="पासवर्ड असल्यास टाका">
+                </div>
+
+                <button type="submit" id="btnProcess" class="btn-process">
+                    <i class="fas fa-download"></i> कार्ड प्रोसेस आणि डाऊनलोड करा
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        async function submitToBackend(e) {
+            e.preventDefault();
+            
+            let userId = sessionStorage.getItem('userId') || 
+                         localStorage.getItem('userId') || 
+                         sessionStorage.getItem('user_id');
+
+            const btn = document.getElementById('btnProcess');
+            const errorMsg = document.getElementById('errorMsg');
+            
+            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> कार्ड तयार होत आहे, कृपया थांबा...";
+            btn.disabled = true;
+            errorMsg.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('pdfFile', document.getElementById('pdfFile').files[0]);
+            formData.append('password', document.getElementById('pdfPassword').value.trim());
+            formData.append('size', document.getElementById('printSize').value);
+            
+            // 🟢 Backend parameter changed to Voter
+            formData.append('cardName', 'Voter'); 
+            formData.append('userId', userId || '');
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/services/process-card`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if(response.ok) {
+                    const data = await response.json();
+                    
+                    const linkSource = `data:application/pdf;base64,${data.pdf_base64}`;
+                    const downloadLink = document.createElement("a");
+                    downloadLink.href = linkSource;
+                    downloadLink.download = `QuickIDPrint_Voter_${document.getElementById('printSize').value}_${Date.now()}.pdf`;
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+
+                    btn.innerHTML = "<i class='fas fa-check'></i> डाऊनलोड पूर्ण झाले!";
+                    btn.style.background = "linear-gradient(135deg, #16a34a 0%, #15803d 100%)";
+                    
+                    // 🟢 0.5 sec (500ms) Reset Logic[cite: 10]
+                    setTimeout(() => { 
+                        document.getElementById('cardForm').reset();
+                        btn.innerHTML = "<i class='fas fa-download'></i> कार्ड प्रोसेस आणि डाऊनलोड करा";
+                        btn.style.background = ""; 
+                        btn.disabled = false;
+                    }, 500);
+                } else {
+                    const errData = await response.json();
+                    errorMsg.innerText = "त्रुटी: " + (errData.error || "प्रोसेसिंग पूर्ण होऊ शकले नाही.");
+                    errorMsg.style.display = 'block';
+                    btn.innerHTML = "<i class='fas fa-download'></i> कार्ड प्रोसेस आणि डाऊनलोड करा";
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                errorMsg.innerText = "नेटवर्क एरर! सर्व्हरशी संपर्क होऊ शकला नाही.";
+                errorMsg.style.display = 'block';
+                btn.innerHTML = "<i class='fas fa-download'></i> कार्ड प्रोसेस आणि डाऊनलोड करा";
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
