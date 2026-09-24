@@ -101,7 +101,8 @@
             formData.append('userId', userId || '');
 
             try {
-                const response = await fetch(`${BACKEND_URL}/api/services/process-card`, {
+                // 🟢 Updated endpoint for independent Aadhaar route
+                const response = await fetch(`${BACKEND_URL}/api/services/process-aadhaar`, {
                     method: 'POST',
                     body: formData
                 });
