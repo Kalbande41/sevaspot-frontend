@@ -709,7 +709,38 @@
 
     <!-- ----- Updated Supabase Logic JS ----- -->
     <script>
+        // 🟢 ग्लोबल व्हेरिएबल्स (Global Variables)
+        let isPlanLoaded = false;
+        let isPlanActive = false;
+
         document.addEventListener("DOMContentLoaded", async function() {
+            // 🟢 सर्व 'सेवा सुरु करा' बटणांवर क्लिक इव्हेंट (Interceptor) लावणे
+            document.querySelectorAll('.start-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault(); // थेट पेज उघडण्यापासून थांबवणे
+                    const targetUrl = this.getAttribute('href');
+                    
+                    // 'मोफत' (Free) टूल्ससाठी प्लॅनची गरज नाही[cite: 11]
+                    if (targetUrl.includes('pdf_compressor.html') || targetUrl.includes('photo_resizer.html')) {
+                        window.location.href = targetUrl;
+                        return;
+                    }
+
+                    // माहिती लोड झाली नसेल तर थांबवणे
+                    if (!isPlanLoaded) {
+                        alert("कृपया थांबा, तुमची माहिती लोड होत आहे...");
+                        return;
+                    }
+
+                    // प्लॅन ॲक्टिव्ह असेल तरच पुढे जाऊ देणे
+                    if (isPlanActive) {
+                        window.location.href = targetUrl; 
+                    } else {
+                        alert("⚠️ तुमचा प्लॅन संपला आहे. सेवा वापरण्यासाठी कृपया रिचार्ज करा.");
+                    }
+                });
+            });
+
             try {
                 // १. युजर लॉगिन आहे का हे तपासणे
                 const { data: { session }, error: sessionError } = await _supabase.auth.getSession();
@@ -736,9 +767,13 @@
                 // ४. प्लॅनची उरलेली मुदत (Validity) मोजणे आणि दाखवणे
                 const displayObj = document.getElementById('displayExpiry');
                 
+                isPlanLoaded = true; // माहिती यशस्वीरीत्या लोड झाली
+
                 if (profileData.expire_date && profileData.plan_status === 'Active') {
                     const today = new Date();
+                    today.setHours(0,0,0,0);
                     const expDate = new Date(profileData.expire_date);
+                    expDate.setHours(0,0,0,0);
                     
                     // दिवसांचा फरक काढणे
                     const timeDiff = expDate.getTime() - today.getTime();
@@ -746,11 +781,14 @@
 
                     if (remainingDays >= 0) {
                         displayObj.innerHTML = `उरलेले दिवस: ${remainingDays} <small>(${profileData.expire_date})</small>`;
+                        isPlanActive = true; // ✅ प्लॅन चालू आहे
                     } else {
                         displayObj.innerHTML = `<span style="color:#ef4444; font-weight:800;">प्लॅन संपला आहे</span>`;
+                        isPlanActive = false; // ❌ प्लॅन संपला
                     }
                 } else {
                     displayObj.innerHTML = `<span style="color:#ef4444; font-weight:800;">प्लॅन ॲक्टिव्ह नाही</span>`;
+                    isPlanActive = false; // ❌ प्लॅन ॲक्टिव्ह नाही
                 }
 
             } catch (err) {
