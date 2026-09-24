@@ -79,6 +79,19 @@
     </div>
 
     <script>
+        // Local Validity Check On Page Load
+        document.addEventListener("DOMContentLoaded", () => {
+            const daysLeft = parseInt(sessionStorage.getItem('remainingDays')) || 0;
+            const status = sessionStorage.getItem('planStatus');
+            
+            if (daysLeft <= 0 || status !== 'Active') {
+                document.getElementById('mainContent').style.display = 'none';
+                const errMsg = document.getElementById('errorMsg');
+                errMsg.innerHTML = "⚠️ तुमचा प्लॅन संपला आहे. सेवा वापरण्यासाठी कृपया रिचार्ज करा.";
+                errMsg.style.display = 'block';
+            }
+        });
+
         async function submitToBackend(e) {
             e.preventDefault();
             
@@ -88,6 +101,7 @@
 
             const btn = document.getElementById('btnProcess');
             const errorMsg = document.getElementById('errorMsg');
+            const cardForm = document.getElementById('cardForm');
             
             btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> कार्ड तयार होत आहे, कृपया थांबा...";
             btn.disabled = true;
@@ -120,9 +134,14 @@
                     btn.innerHTML = "<i class='fas fa-check'></i> डाऊनलोड पूर्ण झाले!";
                     btn.style.background = "linear-gradient(135deg, #16a34a 0%, #15803d 100%)";
                     
+                    // 🟢 Update: Form reset kela, tyanmule user page varach rahil ani dusre card lagech process karu shakel
                     setTimeout(() => { 
-                        window.location.href = "home.html"; 
-                    }, 2000);
+                        cardForm.reset();
+                        btn.innerHTML = "<i class='fas fa-download'></i> कार्ड प्रोसेस आणि डाऊनलोड करा";
+                        btn.style.background = ""; // Default blue color parat yeil
+                        btn.disabled = false;
+                    }, 2500);
+
                 } else {
                     const errData = await response.json();
                     errorMsg.innerText = "त्रुटी: " + (errData.error || "प्रोसेसिंग पूर्ण होऊ शकले नाही.");
